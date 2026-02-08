@@ -316,10 +316,9 @@ namespace SetStartDupes
 				}
 				public class REROLLDURINGGAME_CAREPACKAGES
 				{
-					public static LocString NAME = "Reroll or select Care Packages";
+					public static LocString NAME = "Reroll Care Packages";
 					public static LocString TOOLTIP = "Enable this option to add the reroll button to printing pod care packages.";
 				}
-
 				public class PRINTINGPODRECHARGETIME
 				{
 					public static LocString NAME = "Printing pod cooldown time";
@@ -422,8 +421,6 @@ namespace SetStartDupes
 					public static LocString NAME = "Override printing pod care package count";
 					public static LocString TOOLTIP = "Override the number of care packages offered in the printing pod.\nA value of 0 or lower disables this feature.\nDisabling care packages in the difficulty settings disables this feature.\nNo effect if care packages only mode is active.";
 				}
-
-
 				public class CAREPACKAGESONLYPACKAGECAP
 				{
 					public static LocString NAME = "Number of care packages for care packages only";
@@ -438,6 +435,11 @@ namespace SetStartDupes
 				{
 					public static LocString NAME = "Skins for active Duplicants";
 					public static LocString TOOLTIP = "Change the Skin of already existing duplicants";
+				}
+				public class PODDUPESKINCHANGE
+				{
+					public static LocString NAME = "Skin selection for Printing Pod Duplicants";
+					public static LocString TOOLTIP = "Change the Skin of printing pod duplicants";
 				}
 				public class SKINSDOREACTS
 				{

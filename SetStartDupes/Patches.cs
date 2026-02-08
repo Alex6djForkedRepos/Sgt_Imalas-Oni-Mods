@@ -1440,6 +1440,7 @@ namespace SetStartDupes
 				bool is_starter = __instance.controller is MinionSelectScreen;
 
 				bool AllowModification = Config.Instance.ModifyDuringGame || (EditingSingleDupe && Config.Instance.JorgeAndCryopodDupes);
+				bool allowReskin = Config.Instance.SkinDuringGame || (EditingSingleDupe && Config.Instance.JorgeAndCryopodDupes);
 
 				bool modelDropdownEnabled = __instance.modelDropDown.transform.parent.gameObject.activeInHierarchy && Game.IsDlcActiveForCurrentSave(DlcManager.DLC3_ID);
 
@@ -1487,28 +1488,28 @@ namespace SetStartDupes
 
 				//var TextInput = titlebar.transform.Find("LabelGroup/");
 				//TextInput.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 3, 60);
+				System.Action RebuildDupePanel = () => __instance.RefreshDuplicantPanel();
 
-				///Make skin button
-				var skinBtn = Util.KInstantiateUI(buttonPrefab, titlebar);
-				skinBtn.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, insetDistance, skinBtn.rectTransform().sizeDelta.x);
-
-				skinBtn.name = "DupeSkinButton";
-				skinBtn.GetComponent<ToolTip>().toolTip = STRINGS.UI.BUTTONS.DUPESKINBUTTONTOOLTIP;
-
-				skinBtn.transform.Find("Image").GetComponent<KImage>().sprite = Assets.GetSprite("ic_dupe");
-
-
-				buttonsToDeactivateOnEdit[__instance].Add(skinBtn.FindComponent<KButton>());
-
-				//var currentlySelectedIdentity = __instance.GetComponent<MinionIdentity>();
-
-				System.Action RebuildDupePanel = () =>
+				if (is_starter || allowReskin)
 				{
-					__instance.RefreshDuplicantPanel();
-				};
+					///Make skin button
+					var skinBtn = Util.KInstantiateUI(buttonPrefab, titlebar);
+					skinBtn.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, insetDistance, skinBtn.rectTransform().sizeDelta.x);
 
-				UIUtils.AddActionToButton(skinBtn.transform, "", () => DupeSkinScreenAddon.ShowSkinScreen(__instance));
+					skinBtn.name = "DupeSkinButton";
+					skinBtn.GetComponent<ToolTip>().toolTip = STRINGS.UI.BUTTONS.DUPESKINBUTTONTOOLTIP;
 
+					skinBtn.transform.Find("Image").GetComponent<KImage>().sprite = Assets.GetSprite("ic_dupe");
+
+
+					buttonsToDeactivateOnEdit[__instance].Add(skinBtn.FindComponent<KButton>());
+
+					//var currentlySelectedIdentity = __instance.GetComponent<MinionIdentity>();
+
+					
+
+					UIUtils.AddActionToButton(skinBtn.transform, "", () => DupeSkinScreenAddon.ShowSkinScreen(__instance));
+				}
 				if (is_starter || AllowModification)
 				{
 					///Make modify button
