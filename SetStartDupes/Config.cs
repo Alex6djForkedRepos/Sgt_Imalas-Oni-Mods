@@ -53,6 +53,10 @@ namespace SetStartDupes
 		[JsonProperty]
 		public bool RerollDuringGame_CarePackage { get; set; } = true;
 
+		[Option("STRINGS.UI.DSS_OPTIONS.REROLLDURINGGAME_LIMITCOUNTER.NAME", "STRINGS.UI.DSS_OPTIONS.REROLLDURINGGAME_LIMITCOUNTER.TOOLTIP", "STRINGS.UI.DSS_OPTIONS.CATEGORIES.B_PRINTINGPOD")]
+		[JsonProperty]
+		public int RerollDuringGame_Limiter { get; set; } = 0;
+
 		[Option("STRINGS.UI.DSS_OPTIONS.MODIFYDURINGGAME_CAREPACKAGES.NAME", "STRINGS.UI.DSS_OPTIONS.MODIFYDURINGGAME_CAREPACKAGES.TOOLTIP", "STRINGS.UI.DSS_OPTIONS.CATEGORIES.B_PRINTINGPOD")]
 		[JsonProperty]
 		public bool ModifyDuringGame_CarePackage { get; set; } = true;

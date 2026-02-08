@@ -319,6 +319,11 @@ namespace SetStartDupes
 					public static LocString NAME = "Reroll Care Packages";
 					public static LocString TOOLTIP = "Enable this option to add the reroll button to printing pod care packages.";
 				}
+				public class REROLLDURINGGAME_LIMITCOUNTER
+				{
+					public static LocString NAME = "Limit Reroll Count";
+					public static LocString TOOLTIP = "Limit how many times you can reroll in tge printing pod each time the it becomes ready.\n\nOnly has an effect if any of the printing pod reroll options are enabled\n\nA value of 0 disables any limiting.\n\nDoes not affect direct editing options, play with those disabled if you want to avoid temptation.";
+				}
 				public class PRINTINGPODRECHARGETIME
 				{
 					public static LocString NAME = "Printing pod cooldown time";

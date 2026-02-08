@@ -3,6 +3,7 @@ using FMOD;
 using HarmonyLib;
 using Klei.AI;
 using SetStartDupes.DuplicityEditing;
+using SetStartDupes.UI.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -579,8 +580,16 @@ namespace SetStartDupes
 				var m_TargetMethod = AccessTools.Method("ImmigrantScreen, Assembly-CSharp:Initialize");
 				//var m_Transpiler = AccessTools.Method(typeof(CharacterSelectionController_Patch), "Transpiler");
 				var m_Postfix = AccessTools.Method(typeof(ImmigrantScreen_Initialize_Patch2), "Postfix");
+				var m_Prefix = AccessTools.Method(typeof(ImmigrantScreen_Initialize_Patch2), "Prefix");
 
-				harmony.Patch(m_TargetMethod, postfix: new HarmonyMethod(m_Postfix));
+				harmony.Patch(m_TargetMethod, new HarmonyMethod(m_Prefix), new HarmonyMethod(m_Postfix));
+			}
+			public static void Prefix(ImmigrantScreen __instance)
+			{
+				if(__instance.containers == null || !__instance.containers.Any())
+				{
+					RerollDisabler.RefreshCounter();
+				}
 			}
 			public static void Postfix(Telepad telepad, ImmigrantScreen __instance)
 			{
@@ -605,6 +614,7 @@ namespace SetStartDupes
 								//Prevents multiple selections
 								characterContainer.controller.RemoveLast();
 							};
+							var block = characterContainer.reshuffleButton.gameObject.AddOrGet<RerollDisabler>();
 						}
 						else if (container is CarePackageContainer carePackContainer && Config.Instance.RerollDuringGame_CarePackage)
 						{
@@ -615,13 +625,14 @@ namespace SetStartDupes
 								carePackContainer.controller.RemoveLast();
 								carePackContainer.Reshuffle(false);
 							};
+							carePackContainer.reshuffleButton.gameObject.AddOrGet<RerollDisabler>();
+							carePackContainer.reshuffleButton.GetComponentInChildren<LocText>().GetComponent<LayoutElement>()?.preferredWidth = 100;
 							UIUtils.AddSimpleTooltipToObject(carePackContainer.reshuffleButton.transform, STRINGS.UI.BUTTONS.REROLLCAREPACKAGE, true, onBottom: true);
 						}
 					}
 				}
 			}
 		}
-
 
 		//[HarmonyPatch(typeof(ImmigrantScreen))]
 		//[HarmonyPatch(nameof(ImmigrantScreen.OnPressBack))]
@@ -1599,6 +1610,7 @@ namespace SetStartDupes
 				if (is_starter)
 				{
 					GameObject removeSlotButton = Util.KInstantiateUI(__instance.reshuffleButton.gameObject, __instance.reshuffleButton.transform.parent.gameObject, true);
+					removeSlotButton.GetComponent<RerollDisabler>()?.SelfDestruct();
 					removeSlotButton.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, modelDropdownEnabled ? -84 : -40, 40f);
 					removeSlotButton.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 0, 80f);
 					var text = removeSlotButton.transform.Find("Text");
@@ -1622,6 +1634,7 @@ namespace SetStartDupes
 					//traitReroll
 					{
 						GameObject rerollTraitBtn = Util.KInstantiateUI(__instance.reshuffleButton.gameObject, __instance.reshuffleButton.transform.parent.gameObject, true);
+						rerollTraitBtn.GetComponent<RerollDisabler>()?.SelfDestruct();
 						rerollTraitBtn.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, 120f);
 						rerollTraitBtn.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, -84, 40f);
 						var text = rerollTraitBtn.transform.Find("Text");
@@ -1638,6 +1651,7 @@ namespace SetStartDupes
 						{
 							UnityTraitRerollingScreen.ShowWindow(() =>
 							{
+								RerollDisabler.OnRerolled();
 								__instance.Reshuffle(is_starter);
 								UpdateTraitLockButton(__instance);
 							},
