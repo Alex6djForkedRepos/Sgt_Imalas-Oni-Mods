@@ -243,9 +243,9 @@ namespace OniRetroEdition
 		[HarmonyPatch(nameof(GeyserGenericConfig.CreateGeyser), [typeof(string), typeof(string), typeof(int), typeof(int), typeof(string), typeof(string), typeof(HashedString), typeof(float), typeof(string[]), typeof(string[])])]
 		public static class GeyserResize
 		{
-			public static void Prefix(string id, ref int width, ref int height)
+			public static void Prefix(string id, string anim, ref int width, ref int height)
 			{
-				//if (id.Contains("steam") || id.Contains("hot_steam") || id.Contains("methane"))
+				if (anim.Contains("geyser_gas"))
 				{
 					width = 3;
 					height = 3;
