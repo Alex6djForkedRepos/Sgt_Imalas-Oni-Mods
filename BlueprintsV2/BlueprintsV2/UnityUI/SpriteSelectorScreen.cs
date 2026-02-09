@@ -157,13 +157,28 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		{
 			toPopulate.Clear();
 			PopulateElements(false);
-			PopulateCritters(false);
+			PopulateFromTag(GameTags.Creature, false);
 			PopulateBuildings(false);
+			PopulateFromTag(GameTags.Plant, false);
+			PopulateFromTag(GameTags.PedestalDisplayable, false);
 			PopulateSprites(false);
 			StartCoroutine(PopulateAsync());
 		}
 
 
+		void PopulateFromTag(Tag tag, bool executeCoroutine = true)
+		{
+			foreach (var entity in Assets.GetPrefabsWithTag(tag))
+			{
+				string name = entity.GetProperName();
+				var spriteColor = Def.GetUISprite(entity);
+				Color color = spriteColor.second;
+				color.a = 1;
+				toPopulate.Add(new(name, spriteColor.first, color, entity.PrefabID().ToString()));
+			}
+			if (executeCoroutine)
+				StartCoroutine(PopulateAsync());
+		}
 
 		void PopulateElements(bool executeCoroutine = true)
 		{
@@ -178,19 +193,6 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 					color.a = 1;
 					toPopulate.Add(new(element.name, c.first, color, element.tag.ToString()));
 				}
-			}
-			if (executeCoroutine)
-				StartCoroutine(PopulateAsync());
-		}
-		void PopulateCritters(bool executeCoroutine = true)
-		{
-			foreach (var entity in Assets.GetPrefabsWithTag(GameTags.Creature))
-			{
-				string name = entity.GetProperName();
-				var spriteColor = Def.GetUISprite(entity);
-				Color color = spriteColor.second;
-				color.a = 1;
-				toPopulate.Add(new(name, spriteColor.first, color, entity.PrefabID().ToString()));
 			}
 			if (executeCoroutine)
 				StartCoroutine(PopulateAsync());
