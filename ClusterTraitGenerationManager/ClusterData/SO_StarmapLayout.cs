@@ -260,37 +260,37 @@ namespace ClusterTraitGenerationManager.UI.SO_StarmapEditor
 				HashSet<AxialI> poiForbiddenLocations = new HashSet<AxialI>();
 
 				float num = 0.5f;
-				int num2 = 3;
-				int num3 = 0;
-				foreach (SpaceMapPOIPlacement item3 in list2)
+				int maxTries = 3;
+				int tries = 0;
+				foreach (SpaceMapPOIPlacement placement in list2)
 				{
-					List<string> list4 = new List<string>(item3.pois);
-					for (int j = 0; j < item3.numToSpawn; j++)
+					List<string> placementListCopy = new List<string>(placement.pois);
+					for (int j = 0; j < placement.numToSpawn; j++)
 					{
-						bool num4 = myRandom.RandomRange(0f, 1f) <= num;
+						bool fiftyFiftyRoll = myRandom.RandomRange(0f, 1f) <= num;
 						List<AxialI> axialIList = null;
-						if (num4 && num3 < num2 && !item3.avoidClumping)
+						if (fiftyFiftyRoll && tries < maxTries && !placement.avoidClumping)
 						{
-							num3++;
-							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, item3.allowedRings.min, Mathf.Min(item3.allowedRings.max, numRings - 1))
+							tries++;
+							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, placement.allowedRings.min, Mathf.Min(placement.allowedRings.max, numRings - 1))
 										  where !assignedLocations.Contains(location) && poiClumpLocations.Contains(location) && !poiWorldAvoidance.Contains(location)
 										  select location).ToList();
 						}
 
 						if (axialIList == null || axialIList.Count <= 0)
 						{
-							num3 = 0;
+							tries = 0;
 							poiClumpLocations.Clear();
-							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, item3.allowedRings.min, Mathf.Min(item3.allowedRings.max, numRings - 1))
+							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, placement.allowedRings.min, Mathf.Min(placement.allowedRings.max, numRings - 1))
 										  where !assignedLocations.Contains(location) && !poiWorldAvoidance.Contains(location) && !poiForbiddenLocations.Contains(location)
 										  select location).ToList();
 						}
 
-						if (item3.guarantee && (axialIList == null || axialIList.Count <= 0))
+						if (placement.guarantee && (axialIList == null || axialIList.Count <= 0))
 						{
-							num3 = 0;
+							tries = 0;
 							poiClumpLocations.Clear();
-							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, item3.allowedRings.min, Mathf.Min(item3.allowedRings.max, numRings - 1))
+							axialIList = (from location in AxialUtil.GetRings(AxialI.ZERO, placement.allowedRings.min, Mathf.Min(placement.allowedRings.max, numRings - 1))
 										  where !assignedLocations.Contains(location) && !poiWorldAvoidance.Contains(location)
 										  select location).ToList();
 						}
@@ -298,20 +298,20 @@ namespace ClusterTraitGenerationManager.UI.SO_StarmapEditor
 						if (axialIList != null && axialIList.Count > 0)
 						{
 							AxialI axialI3 = axialIList[myRandom.RandomRange(0, axialIList.Count)];
-							string text2 = list4[myRandom.RandomRange(0, list4.Count)];
-							if (!item3.canSpawnDuplicates)
+							string poiId = placementListCopy[myRandom.RandomRange(0, placementListCopy.Count)];
+							if (!placement.canSpawnDuplicates)
 							{
-								list4.Remove(text2);
+								placementListCopy.Remove(poiId);
 							}
 
-							OverridePlacements[axialI3] = text2;
+							OverridePlacements[axialI3] = poiId;
 							poiForbiddenLocations.UnionWith(AxialUtil.GetRings(axialI3, 1, 3));
 							poiClumpLocations.UnionWith(AxialUtil.GetRings(axialI3, 1, 1));
 							assignedLocations.Add(axialI3);
 						}
 						else
 						{
-							Debug.LogWarning(string.Format("There is no room for a Space POI in ring range [{0}, {1}] with pois: {2}", item3.allowedRings.min, item3.allowedRings.max, string.Join("\n - ", item3.pois.ToArray())));
+							Debug.LogWarning(string.Format("There is no room for a Space POI in ring range [{0}, {1}] with pois: {2}", placement.allowedRings.min, placement.allowedRings.max, string.Join("\n - ", placement.pois.ToArray())));
 						}
 					}
 				}
