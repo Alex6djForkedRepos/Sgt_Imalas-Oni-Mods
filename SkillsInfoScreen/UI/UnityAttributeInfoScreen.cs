@@ -88,9 +88,12 @@ namespace SkillsInfoScreen.UI
 			SortBySpacerPrefab = transform.Find("Info/spacer").gameObject;
 
 			Close = transform.Find("TopBar/CloseButton").gameObject.AddOrGet<FButton>();
-			Close.OnClick += () => Show(false);
+			Close.OnClick += () => ManagementMenu.Instance.CloseAll();
+			Close.PlayClickSound = false;
 
 			transform.Find("TopBar").gameObject.AddOrGet<DraggablePanel>().Target = transform;
+
+			transform.Find("ResizeKnob").gameObject.AddOrGet<ResizeDragKnob>().Target = transform;
 
 			InitAttributeFilters();
 		}
