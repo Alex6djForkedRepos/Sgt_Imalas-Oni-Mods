@@ -69,7 +69,7 @@ namespace SkillsInfoScreen
 			var attributeDb = Db.Get().Attributes;
 			MaxSkillLevels = [];
 
-			var stats = DUPLICANTSTATS.ALL_ATTRIBUTES.OrderBy(id => STRINGS.UI.StripLinkFormatting(attributeDb.TryGet(id)?.Name ?? "unknown"));
+			var stats = DUPLICANTSTATS.ALL_ATTRIBUTES.OrderBy(id => global::STRINGS.UI.StripLinkFormatting(attributeDb.TryGet(id)?.Name ?? "unknown"));
 
 			foreach (var attributeId in stats)
 			{
@@ -139,7 +139,7 @@ namespace SkillsInfoScreen
 				case TableRow.RowType.Minion:
 					if (minion == null)
 						break;
-					tooltip.AddMultiStringTooltip(string.Format(STRINGS.UI.TABLESCREENS.GOTO_DUPLICANT_BUTTON, minion.GetProperName()), (TextStyleSetting)null);
+					tooltip.AddMultiStringTooltip(string.Format(global::STRINGS.UI.TABLESCREENS.GOTO_DUPLICANT_BUTTON, minion.GetProperName()), (TextStyleSetting)null);
 					break;
 			}
 		}
@@ -396,8 +396,8 @@ namespace SkillsInfoScreen
 			OptionsPanel.transform.Find("Reset").gameObject.SetActive(false);
 
 
-			UIUtils.TryChangeText(OptionsPanel.transform, "Advanced Mode/Text", MOD_STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE);
-			UIUtils.AddSimpleTooltipToObject(OptionsPanel, MOD_STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE_TOOLTIP);
+			UIUtils.TryChangeText(OptionsPanel.transform, "Advanced Mode/Text", STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE);
+			UIUtils.AddSimpleTooltipToObject(OptionsPanel, STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE_TOOLTIP);
 			EffectToggle = OptionsPanel.transform.Find("Advanced Mode/Checkbox").gameObject.AddOrGet<FToggle>();
 			EffectToggle.SetCheckmark("Checkbox");
 			EffectToggle.SetOnFromCode(IncludeTempEffects);

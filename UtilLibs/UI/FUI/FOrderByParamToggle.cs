@@ -9,7 +9,7 @@ using UtilLibs.UIcmp;
 
 namespace UtilLibs.UI.FUI
 {
-	public class FOrdeByParamToggle : KMonoBehaviour
+	public class FOrderByParamToggle : KMonoBehaviour
 	{
 		[SerializeField] public string Label;
 		[SerializeField] public bool StartDescending;

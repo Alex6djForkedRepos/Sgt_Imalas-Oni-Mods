@@ -78,7 +78,7 @@ namespace BlueprintsV2.UnityUI
 		public Dictionary<BlueprintFolder, FolderHierarchyEntry> FolderEntries = new();
 		public Dictionary<Blueprint, FileHierarchyEntry> BlueprintEntries = new();
 
-		public FOrdeByParamToggle OrderByName, OrderByDate;
+		public FOrderByParamToggle OrderByName, OrderByDate;
 
 		//Blueprint Info Screen
 		public LocText BlueprintName;
@@ -194,9 +194,9 @@ namespace BlueprintsV2.UnityUI
 			CreateNewBlueprintFromOverrides.OnClick += OnCreateFromOverrides;
 			UIUtils.AddSimpleTooltipToObject(CreateNewBlueprintFromOverrides.gameObject, CREATEMODIFIED.TOOLTIP);
 
-			OrderByName = transform.Find("FileHierarchy/Filters/NameSort").gameObject.AddOrGet<FOrdeByParamToggle>();
+			OrderByName = transform.Find("FileHierarchy/Filters/NameSort").gameObject.AddOrGet<FOrderByParamToggle>();
 			OrderByName.SetActions(() => ChangeSortBy(OrderBy.NameAscending), () => ChangeSortBy(OrderBy.NameDescending));
-			OrderByDate = transform.Find("FileHierarchy/Filters/DateSort").gameObject.AddOrGet<FOrdeByParamToggle>();
+			OrderByDate = transform.Find("FileHierarchy/Filters/DateSort").gameObject.AddOrGet<FOrderByParamToggle>();
 			OrderByDate.SetActions(() => ChangeSortBy(OrderBy.CreationDateAscending), () => ChangeSortBy(OrderBy.CreationDateDescending));
 			OrderByDate.StartDescending = true;
 
