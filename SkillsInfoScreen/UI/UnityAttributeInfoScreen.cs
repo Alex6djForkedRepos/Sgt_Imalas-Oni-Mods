@@ -1,4 +1,5 @@
-﻿using Klei.AI;
+﻿using Epic.OnlineServices.Platform;
+using Klei.AI;
 using SkillsInfoScreen.UI.UIComponents;
 using System;
 using System.Collections;
@@ -10,10 +11,13 @@ using System.Threading.Tasks;
 using TemplateClasses;
 using TUNING;
 using UnityEngine;
+using UnityEngine.Device;
+using UnityEngine.UI;
 using UtilLibs;
 using UtilLibs.UI.FUI;
 using UtilLibs.UIcmp;
 using static GameTags;
+using static SkillsInfoScreen.STRINGS.ATTRIBUTESCREEN_DROPDOWN;
 using static STRINGS.BUILDINGS.PREFABS.DOOR.CONTROL_STATE;
 
 namespace SkillsInfoScreen.UI
@@ -39,6 +43,7 @@ namespace SkillsInfoScreen.UI
 		Dictionary<string, Klei.AI.Attribute> Columns = [];
 		Dictionary<int, WorldHeaderEntry> WorldHeaders = [];
 		Dictionary<int, DuplicantEntry> MinionEntries = [];
+		FMultiSelectDropdown Options;
 
 		static Dictionary<string, float> MaxSkillLevels;
 
@@ -67,6 +72,7 @@ namespace SkillsInfoScreen.UI
 			base.OnPrefabInit();
 			Init();
 		}
+
 		bool init;
 		void Init()
 		{
@@ -91,11 +97,74 @@ namespace SkillsInfoScreen.UI
 			Close.OnClick += () => ManagementMenu.Instance.CloseAll();
 			Close.PlayClickSound = false;
 
-			transform.Find("TopBar").gameObject.AddOrGet<DraggablePanel>().Target = transform;
+			Options = transform.Find("TopBar/FilterButton").gameObject.AddOrGet<FMultiSelectDropdown>();
+			Options.DropDownEntries = [
+				new FMultiSelectDropdown.FDropDownEntry(TEMP_EFFECT_TOGGLE.NAME,SetAsteroidSplit,true, TEMP_EFFECT_TOGGLE.TOOLTIP),
+				new FMultiSelectDropdown.FDropDownEntry(TINT_VALUES.NAME,SetValueTint,true, TINT_VALUES.TOOLTIP),
+				new FMultiSelectDropdown.FDropDownEntry(TINT_XP.NAME,SetXpTint,true, TINT_VALUES.TOOLTIP),
+				new FMultiSelectDropdown.FDropDownButtonEntry(RESETPOS.NAME, OnResetPos),
+				new FMultiSelectDropdown.FDropDownButtonEntry(RESETSIZE.NAME, OnResetSize)
+				];
 
-			transform.Find("ResizeKnob").gameObject.AddOrGet<ResizeDragKnob>().Target = transform;
+			if (DlcManager.IsExpansion1Active())
+				Options.DropDownEntries.Insert(0, new FMultiSelectDropdown.FDropDownEntry(SHOW_ASTEROIDS.NAME, SetAsteroidSplit, ModAssets.Config.SplitByAsteroid, SHOW_ASTEROIDS.TOOLTIP));
 
+			Options.InitializeDropDown();
+
+			var drag = transform.Find("TopBar").gameObject.AddOrGet<DraggablePanel>();
+			drag.Target = transform;
+			drag.OnDragged = OnMoved;
+
+			var resize = transform.Find("ResizeKnob").gameObject.AddOrGet<ResizeDragKnob>();
+			resize.Target = transform;
+			resize.OnResized = OnResized;
+			transform.rectTransform().sizeDelta = ModAssets.Config.SizeDelta;
+			transform.localPosition = ModAssets.Config.LocalPosition;
 			InitAttributeFilters();
+		}
+		void SetAsteroidSplit(bool enable)
+		{
+		}
+		void SetTempEffectInclude(bool include)
+		{
+			ModAssets.Config.SortWithEffects = include;
+			ModAssets.Config.Write();
+		}
+		void SetValueTint(bool on)
+		{
+			ModAssets.Config.TintValue = on;
+			ModAssets.Config.Write();
+
+		}
+		void SetXpTint(bool on)
+		{
+			ModAssets.Config.TintXP = on;
+			ModAssets.Config.Write();
+		}
+		void OnResized()
+		{
+			ModAssets.Config.OnResized(transform.rectTransform());
+		}
+		void OnMoved()
+		{
+			var pos = transform.localPosition;
+			var canvas = transform.GetComponentInParent<Canvas>().pixelRect;
+			var scale = transform.GetComponentInParent<CanvasScaler>().scaleFactor;
+			pos.y = Mathf.Clamp(pos.y, -((canvas.height / scale) - 180), 60);
+			pos.x = Mathf.Clamp(pos.x, -((canvas.width / scale) - 150), 20);
+
+			transform.SetLocalPosition(pos);
+			ModAssets.Config.OnMoved(transform);
+		}
+		void OnResetSize(bool _)
+		{
+			transform.rectTransform().sizeDelta = new(1400, 720);
+			OnResized();
+		}
+		void OnResetPos(bool _)
+		{
+			transform.SetLocalPosition(new(0, -45f));
+			OnMoved();
 		}
 
 		void Refresh()
@@ -149,6 +218,7 @@ namespace SkillsInfoScreen.UI
 		void InitAttributeFilters()
 		{
 			var attributeDb = Db.Get().Attributes;
+			var skillGroupsDb = Db.Get().SkillGroups;
 			MaxSkillLevels = [];
 
 			var stats = DUPLICANTSTATS.ALL_ATTRIBUTES.OrderBy(id => global::STRINGS.UI.StripLinkFormatting(attributeDb.TryGet(id)?.Name ?? "unknown"));
@@ -163,15 +233,22 @@ namespace SkillsInfoScreen.UI
 				Columns[attributeId] = attribute;
 
 				var filterGO = Util.KInstantiateUI(SortByAttributePrefab, SortByContainer);
-				filterGO.SetActive(true);
-				filterGO.GetComponentInChildren<LocText>().SetText(attribute.Name);
 				var toggle = filterGO.AddOrGet<FOrderByParamToggle>();
+				toggle.Label = attribute.Name;
+				var relevantSkillGroup = skillGroupsDb.resources.FirstOrDefault(r => r.relevantAttributes.Contains(attribute));
+				if (relevantSkillGroup != null)
+				{
+					toggle.SetCompactIcon(Assets.GetSprite(relevantSkillGroup.archetypeIcon), 55);
+				}
+				filterGO.SetActive(true);
+
 				SortByAttributes[attributeId] = toggle;
 
 				if (attributeId != stats.Last())
 					Util.KInstantiateUI(SortBySpacerPrefab, SortByContainer, true);
 				SgtLogger.l("Adding column for " + attributeId);
 			}
+			transform.Find("Info/EndSpacer")?.SetAsLastSibling();
 		}
 
 		DuplicantEntry AddOrGetMinionEntry(MinionIdentity minion)
@@ -205,7 +282,7 @@ namespace SkillsInfoScreen.UI
 
 		public override void OnKeyDown(KButtonEvent e)
 		{
-			if (e.TryConsume(Action.Escape) || e.TryConsume(Action.MouseRight))
+			if (e.TryConsume(Action.Escape) || (mouseOver && e.TryConsume(Action.MouseRight)))
 			{
 				this.Show(false);
 			}

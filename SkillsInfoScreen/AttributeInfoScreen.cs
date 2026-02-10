@@ -396,8 +396,8 @@ namespace SkillsInfoScreen
 			OptionsPanel.transform.Find("Reset").gameObject.SetActive(false);
 
 
-			UIUtils.TryChangeText(OptionsPanel.transform, "Advanced Mode/Text", STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE);
-			UIUtils.AddSimpleTooltipToObject(OptionsPanel, STRINGS.SKILLINFO_TEMP_EFFECT_TOGGLE_TOOLTIP);
+			UIUtils.TryChangeText(OptionsPanel.transform, "Advanced Mode/Text", STRINGS.ATTRIBUTESCREEN_DROPDOWN.TEMP_EFFECT_TOGGLE.NAME);
+			UIUtils.AddSimpleTooltipToObject(OptionsPanel, STRINGS.ATTRIBUTESCREEN_DROPDOWN.TEMP_EFFECT_TOGGLE.TOOLTIP);
 			EffectToggle = OptionsPanel.transform.Find("Advanced Mode/Checkbox").gameObject.AddOrGet<FToggle>();
 			EffectToggle.SetCheckmark("Checkbox");
 			EffectToggle.SetOnFromCode(IncludeTempEffects);

@@ -12,9 +12,11 @@ namespace SkillsInfoScreen.UI.UIComponents
 	internal class DraggablePanel : KMonoBehaviour, IBeginDragHandler, IDragHandler
 	{
 		public Transform Target;
+		public System.Action OnDragged;
 
 		private Vector3 startMousePosition;
 		private Vector3 startPosition;
+		
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
@@ -30,6 +32,7 @@ namespace SkillsInfoScreen.UI.UIComponents
 			Vector3 pos = startPosition + diff;
 
 			Target.position = pos;
+			OnDragged?.Invoke();
 		}
 
 	}

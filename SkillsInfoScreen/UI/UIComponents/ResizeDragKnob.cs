@@ -15,8 +15,8 @@ namespace SkillsInfoScreen.UI.UIComponents
 	internal class ResizeDragKnob : KMonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 	{
 		public Transform Target;
-		public Vector2 MinSize = new Vector2(600, 400);
-
+		public Vector2 MinSize = new Vector2(700, 400);
+		internal System.Action OnResized;
 		private Vector3 ownStartPosition;
 
 		private Vector3 startMousePosition;
@@ -54,6 +54,7 @@ namespace SkillsInfoScreen.UI.UIComponents
 			size.y = Mathf.Max(size.y, MinSize.y);
 			size.x = Mathf.Max(size.x, MinSize.x);
 			rect.sizeDelta = size;
+			OnResized?.Invoke();
 		}
 	}
 }

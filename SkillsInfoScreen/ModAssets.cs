@@ -1,11 +1,14 @@
 ﻿using Klei.AI;
+using Newtonsoft.Json;
 using SkillsInfoScreen.UI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UtilLibs;
 
 namespace SkillsInfoScreen
@@ -13,6 +16,53 @@ namespace SkillsInfoScreen
 	internal class ModAssets
 	{
 		public static GameObject ScreenGO;
+
+		public static Settings Config = new();
+		static string ConfigPath;
+		internal static void LoadConfig()
+		{
+			ConfigPath = Path.Combine(IO_Utils.ConfigsFolder, "AttributeInfoScreen", "Config.json");
+
+			Directory.CreateDirectory(Directory.GetParent(ConfigPath).FullName);
+
+			if (File.Exists(ConfigPath) && IO_Utils.ReadFromFile<Settings>(ConfigPath, out var setting))
+				Config = setting;
+			else
+				Config = new Settings();
+		}
+
+		public class Settings
+		{
+			public bool SortWithEffects = true;
+			public bool SplitByAsteroid = true;
+			public float PosX = 0, PosY = -45f, Width = 1400, Height = 720;
+			internal bool TintValue;
+			internal bool TintXP;
+
+			[JsonIgnore]
+			public Vector2 SizeDelta => new(Width, Height);
+			[JsonIgnore]
+			public Vector3 LocalPosition => new(PosX, PosY);
+
+			internal void OnResized(RectTransform rectTransform)
+			{
+				Width = rectTransform.sizeDelta.x;
+				Height = rectTransform.sizeDelta.y;
+				Write();
+			}
+			internal void OnMoved(Transform transform)
+			{
+				PosX = transform.localPosition.x;
+				PosY = transform.localPosition.y;
+				Write();
+			}
+
+			internal void Write()
+			{
+				IO_Utils.WriteToFile(this, ConfigPath);
+			}
+		}
+
 
 		public static void LoadAssets()
 		{
@@ -107,7 +157,7 @@ namespace SkillsInfoScreen
 			float multiplier = 0f;
 			for (int i = 0; i != instance.Modifiers.Count; i++)
 			{
-				AttributeModifier attributeModifier = instance.Modifiers[i];				
+				AttributeModifier attributeModifier = instance.Modifiers[i];
 
 				if (!attributeModifier.IsMultiplier)
 				{
