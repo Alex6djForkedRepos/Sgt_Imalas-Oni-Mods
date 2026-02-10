@@ -33,11 +33,10 @@ namespace SkillsInfoScreen
 
 		public class Settings
 		{
-			public bool SortWithEffects = true;
-			public bool SplitByAsteroid = true;
+			public bool IncludeTemporaryEffects = true;
+			public bool SortPerWorld = true;
+			public bool TintValue = true;
 			public float PosX = 0, PosY = -45f, Width = 1400, Height = 720;
-			internal bool TintValue;
-			internal bool TintXP;
 
 			[JsonIgnore]
 			public Vector2 SizeDelta => new(Width, Height);
@@ -62,7 +61,103 @@ namespace SkillsInfoScreen
 				IO_Utils.WriteToFile(this, ConfigPath);
 			}
 		}
+		public static string GetAttributeTooltip(IAssignableIdentity identity, Klei.AI.Attribute attribute)
+		{
+			string tooltip = string.Empty;
+			if (identity is MinionIdentity minion)
+			{
+				if (minion.TryGetComponent<Modifiers>(out var modifiers))
+				{
+					var instance = modifiers.attributes.Get(attribute.Id);
 
+					tooltip = instance.GetAttributeValueTooltip();
+				}
+			}
+			else if (identity is StoredMinionIdentity storedMinion)
+			{
+				tooltip = storedMinion.minionModifiers.attributes.Get(attribute.Id).GetAttributeValueTooltip();
+			}
+			return tooltip;
+		}
+
+		public static Dictionary<string, float> MaxSkillLevels = [];
+		public static int GetAttributeLevel(IAssignableIdentity identity, Klei.AI.Attribute attribute)
+		{
+			if(identity.IsNullOrDestroyed()) 
+				return 0;
+			int level = -1;
+			if (identity is MinionIdentity minion && !minion.IsNullOrDestroyed() && !minion.gameObject.IsNullOrDestroyed() && minion.TryGetComponent<Modifiers>(out var modifiers))
+			{
+				AttributeInstance instance = modifiers.attributes.Get(attribute.Id);
+				level = (int)GetTotalDisplayValue(instance);
+
+			}
+			else if (identity is StoredMinionIdentity storedMinion && !storedMinion.IsNullOrDestroyed() && !storedMinion.gameObject.IsNullOrDestroyed())
+			{
+				AttributeInstance instance = storedMinion.minionModifiers.attributes.Get(attribute.Id);
+				level = (int)GetTotalDisplayValue(instance);
+
+			}
+
+			if (level > MaxSkillLevels[attribute.Id])
+				MaxSkillLevels[attribute.Id] = level;
+			return level;
+		}
+		public static float GetTotalDisplayValue(AttributeInstance instance)
+		{
+			bool includeNonTraitEffects = Config.IncludeTemporaryEffects;
+			float value = instance.GetBaseValue();
+			float multiplier = 0f;
+			for (int i = 0; i != instance.Modifiers.Count; i++)
+			{
+				AttributeModifier attributeModifier = instance.Modifiers[i];
+				//SgtLogger.l(attributeModifier.Description + " " + attributeModifier.Value);
+				if (!includeNonTraitEffects && !IsTraitModifier(attributeModifier))
+				{
+					//SgtLogger.l(attributeModifier.GetDescription() + " is not a trait modifier?");
+					continue;
+				}
+
+				if (!attributeModifier.IsMultiplier)
+				{
+					value += attributeModifier.Value;
+				}
+				else
+				{
+					multiplier += attributeModifier.Value;
+				}
+			}
+
+			if (multiplier != 0f)
+			{
+				value += Mathf.Abs(value) * multiplier;
+			}
+
+			return value;
+		}
+
+		static Dictionary<AttributeModifier, bool> IsTraitModifierCache = [];
+		static bool IsTraitModifier(AttributeModifier modifier)
+		{
+			if (IsTraitModifierCache.TryGetValue(modifier, out var result))
+				return result;
+
+
+			string description = modifier.GetDescription();
+			if (description == Strings.Get("STRINGS.DUPLICANTS.MODIFIERS.SKILLLEVEL.NAME"))
+				return true;
+
+			foreach (var trait in Db.Get().traits.resources)
+			{
+				if (trait.GetName().Contains(description))
+				{
+					IsTraitModifierCache[modifier] = true;
+					return true;
+				}
+			}
+			IsTraitModifierCache[modifier] = false;
+			return false;
+		}
 
 		public static void LoadAssets()
 		{
@@ -98,7 +193,8 @@ namespace SkillsInfoScreen
 			Bad.a = 1;
 			Bad = UIUtils.Darken(Bad, 10);
 		}
-		public static Color GetIntensityColor(float level, float maxLevel, string attributeId)
+		public static string ColorAttributeText(int value, string attributeId) => UIUtils.EmboldenText(UIUtils.ColorText(value.ToString(), GetIntensityColor(value, attributeId)));
+		public static Color GetIntensityColor(float level, string attributeId)
 		{
 			LoadColors();
 
@@ -111,6 +207,7 @@ namespace SkillsInfoScreen
 				float hsvShift = (level * 6f) / 360f;
 				return UIUtils.Darken(UIUtils.HSVShift(Color.red, hsvShift * 100), 25);
 			}
+			float maxLevel = MaxSkillLevels[attributeId];
 			float midPoint = maxLevel / 2;
 
 			///This is a way less resource intensive lerp than color.lerp
@@ -149,32 +246,6 @@ namespace SkillsInfoScreen
 				b_final = Mathf.Sqrt(b_bad * lerpInv + b_mid * lerp);
 			}
 			return new Color(r_final, g_final, b_final);
-		}
-
-		public static float GetTotalDisplayValue(AttributeInstance instance)
-		{
-			float value = instance.GetBaseValue();
-			float multiplier = 0f;
-			for (int i = 0; i != instance.Modifiers.Count; i++)
-			{
-				AttributeModifier attributeModifier = instance.Modifiers[i];
-
-				if (!attributeModifier.IsMultiplier)
-				{
-					value += attributeModifier.Value;
-				}
-				else
-				{
-					multiplier += attributeModifier.Value;
-				}
-			}
-
-			if (multiplier != 0f)
-			{
-				value += Mathf.Abs(value) * multiplier;
-			}
-
-			return value;
 		}
 	}
 }

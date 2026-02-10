@@ -17,12 +17,15 @@ namespace SkillsInfoScreen.UI.UIComponents
 
 		public FExpandToggle Toggle;
 
-		internal void Init(WorldContainer worldContainer)
+		public bool Expanded => Toggle.Expanded;
+
+		internal void Init(WorldContainer worldContainer, System.Action RefreshAction)
 		{
 			Label = GetComponentInChildren<LocText>();
 			Icon = transform.Find("IconContainer/Icon").gameObject.GetComponent<Image>();
 			World = worldContainer;
 			Toggle = transform.Find("SortButton").gameObject.AddOrGet<FExpandToggle>();
+			Toggle.OnChange = _ => RefreshAction.Invoke();
 			Refresh();
 		}
 

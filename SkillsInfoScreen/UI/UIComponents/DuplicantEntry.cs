@@ -8,13 +8,17 @@ using System.Threading.Tasks;
 using TUNING;
 using UnityEngine;
 using UnityEngine.UI;
+using UtilLibs.UI.FUI;
+using UtilLibs.UIcmp;
 
 namespace SkillsInfoScreen.UI.UIComponents
 {
 	internal class DuplicantEntry : KMonoBehaviour
 	{
-		MinionIdentity Minion;
+		IAssignableIdentity Minion;
 		MinionResume Resume;
+		StoredMinionIdentity Stored;
+		MinionIdentity Identity;
 		Image MinionImage;
 		GameObject TraitPrefab, TraitContainer;
 		LocText MinionName;
@@ -24,12 +28,20 @@ namespace SkillsInfoScreen.UI.UIComponents
 		Dictionary<string, AttributeMinionEntry> Attributes = [];
 		Dictionary<string, GameObject> Traits = [];
 
-		public void Init(MinionIdentity minion)
+		public void Init(IAssignableIdentity minion)
 		{
 			ModAssets.LoadColors();
 
 			Minion = minion;
-			Resume = minion.GetComponent<MinionResume>();
+			if (minion is MinionIdentity minionIdentity)
+			{
+				Identity = minionIdentity;
+				Resume = minionIdentity.GetComponent<MinionResume>();
+			}
+			else if (minion is StoredMinionIdentity stored)
+			{
+				Stored = stored;
+			}
 
 			XP_Progressbar = transform.Find("XP/XPBar/fill").gameObject.GetComponent<Image>();
 			XP_Progress = transform.Find("XP/XPBar/amountText").gameObject.GetComponent<LocText>();
@@ -42,7 +54,19 @@ namespace SkillsInfoScreen.UI.UIComponents
 			MinionName = transform.Find("NameTraitContainer/DupeName").gameObject.GetComponent<LocText>();
 			MinionName.SetText(minion.GetProperName());
 			MinionImage = transform.Find("IconContainer/Icon").gameObject.GetComponent<Image>();
-			MinionImage.sprite = Db.Get().Personalities.Get(minion.personalityResourceId).GetMiniIcon();
+			if(Identity != null)
+			{
+				MinionImage.gameObject.AddOrGet<MinionSelectButton>().Minion = Identity;
+			}
+				
+
+			HashedString personalityResourceID = HashedString.Invalid;
+			if (Identity != null)
+				personalityResourceID = Identity.personalityResourceId;
+			else if (Stored != null)
+				personalityResourceID = Stored.personalityResourceId;
+
+			MinionImage.sprite = Db.Get().Personalities.Get(personalityResourceID).GetMiniIcon();
 
 			TraitContainer = transform.Find("NameTraitContainer").gameObject;
 			TraitPrefab = transform.Find("NameTraitContainer/TraitPrefab").gameObject;
@@ -61,15 +85,30 @@ namespace SkillsInfoScreen.UI.UIComponents
 		}
 		void RefreshXP()
 		{
-			var totalSkillPoints = Resume.TotalSkillPointsGained;
-			var availableSkillPoints = Resume.AvailableSkillpoints;
-			SkillpointsInfo.SetText($"{availableSkillPoints}/{totalSkillPoints} " + global::STRINGS.UI.SKILLS_SCREEN.SORT_BY_SKILL_AVAILABLE);
-
+			int totalSkillPoints = 0;
+			string availableSkillPoints = string.Empty;
+			string skillPointsText = string.Empty;
+			float totalExperience = 0;
+			if(Resume != null)
+			{
+				totalSkillPoints = Resume.TotalSkillPointsGained;
+				availableSkillPoints = Resume.AvailableSkillpoints.ToString();
+				totalExperience = Resume.TotalExperienceGained;
+			}
+			else if(Stored != null)
+			{
+				totalExperience = Stored.TotalExperienceGained;
+				totalSkillPoints = MinionResume.CalculateTotalSkillPointsGained(totalExperience);
+				
+			}
+			skillPointsText = availableSkillPoints != string.Empty ? $"{availableSkillPoints}/{totalSkillPoints}" : totalSkillPoints.ToString();
+			skillPointsText += " " + global::STRINGS.UI.SKILLS_SCREEN.SORT_BY_SKILL_AVAILABLE;
+			SkillpointsInfo.SetText(skillPointsText);
 
 			float previousExperienceBar = MinionResume.CalculatePreviousExperienceBar(totalSkillPoints);
 			float nextExperienceBar = MinionResume.CalculateNextExperienceBar(totalSkillPoints);
-			float currentXPPercentage = (Resume.TotalExperienceGained - previousExperienceBar) / (nextExperienceBar - previousExperienceBar);
-			this.XP_Progress.SetText($"{Mathf.RoundToInt(Resume.TotalExperienceGained - previousExperienceBar).ToString()} / {Mathf.RoundToInt(nextExperienceBar - previousExperienceBar).ToString()}");
+			float currentXPPercentage = (totalExperience - previousExperienceBar) / (nextExperienceBar - previousExperienceBar);
+			this.XP_Progress.SetText($"{Mathf.RoundToInt(totalExperience - previousExperienceBar).ToString()} / {Mathf.RoundToInt(nextExperienceBar - previousExperienceBar).ToString()}");
 			this.XP_Progressbar.fillAmount = currentXPPercentage;
 		}
 
@@ -80,20 +119,20 @@ namespace SkillsInfoScreen.UI.UIComponents
 			//too cluttered ui
 			return;
 
-			var minionTraits = Minion.GetComponent<Traits>().TraitList;
-			minionTraits.RemoveAll(t => t.Id.Contains("BaseTrait") || DUPLICANTSTATS.JOYTRAITS.Any(j => j.id == t.Id) || DUPLICANTSTATS.STRESSTRAITS.Any(s => s.id == t.Id) || t.Id == "StressShocker");
-			bool tooManyTraits = minionTraits.Count > 4;
-			if (tooManyTraits)
-			{
-				AddOrGetTraitContainer(TooMany, minionTraits.Count + " " + global::STRINGS.UI.CHARACTERCONTAINER_TRAITS_TITLE, null);
-			}
-			else
-			{
-				foreach (var trait in Minion.GetComponent<Traits>().TraitList)
-				{
-					AddOrGetTraitContainer(trait.Id, trait.GetName(), trait.PositiveTrait);
-				}
-			}
+			//var minionTraits = Minion.GetComponent<Traits>().TraitList;
+			//minionTraits.RemoveAll(t => t.Id.Contains("BaseTrait") || DUPLICANTSTATS.JOYTRAITS.Any(j => j.id == t.Id) || DUPLICANTSTATS.STRESSTRAITS.Any(s => s.id == t.Id) || t.Id == "StressShocker");
+			//bool tooManyTraits = minionTraits.Count > 4;
+			//if (tooManyTraits)
+			//{
+			//	AddOrGetTraitContainer(TooMany, minionTraits.Count + " " + global::STRINGS.UI.CHARACTERCONTAINER_TRAITS_TITLE, null);
+			//}
+			//else
+			//{
+			//	foreach (var trait in Minion.GetComponent<Traits>().TraitList)
+			//	{
+			//		AddOrGetTraitContainer(trait.Id, trait.GetName(), trait.PositiveTrait);
+			//	}
+			//}
 		}
 		const string TooMany = "TooManyTraitsEntry";
 

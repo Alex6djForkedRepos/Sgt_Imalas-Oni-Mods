@@ -19,11 +19,22 @@ using UtilLibs.UIcmp;
 using static GameTags;
 using static SkillsInfoScreen.STRINGS.ATTRIBUTESCREEN_DROPDOWN;
 using static STRINGS.BUILDINGS.PREFABS.DOOR.CONTROL_STATE;
+using static System.Net.WebRequestMethods;
 
 namespace SkillsInfoScreen.UI
 {
 	internal class UnityAttributeInfoScreen : KScreen
 	{
+		public enum OrderBy
+		{
+			NameAs, NameDes,
+			XpAs, XpDes,
+			AttributeAs, AttributeDes,
+		}
+		OrderBy CurrentSort = OrderBy.NameAs;
+		Klei.AI.Attribute CurrentSortAttribute = null;
+
+
 		public UnityAttributeInfoScreen() : base()
 		{
 			ConsumeMouseScroll = true;
@@ -42,10 +53,8 @@ namespace SkillsInfoScreen.UI
 
 		Dictionary<string, Klei.AI.Attribute> Columns = [];
 		Dictionary<int, WorldHeaderEntry> WorldHeaders = [];
-		Dictionary<int, DuplicantEntry> MinionEntries = [];
+		Dictionary<IAssignableIdentity, DuplicantEntry> MinionEntries = [];
 		FMultiSelectDropdown Options;
-
-		static Dictionary<string, float> MaxSkillLevels;
 
 		public static void DestroyInstance() { Instance = null; }
 
@@ -86,8 +95,15 @@ namespace SkillsInfoScreen.UI
 			DuplicantEntryPrefab = transform.Find("ScrollArea/Content/DupePrefab").gameObject.AddOrGet<DuplicantEntry>();
 			DuplicantEntryPrefab.gameObject.SetActive(false);
 			SplitByAsteroids = transform.Find("Info/ShowAsteroids/Checkbox").gameObject.AddOrGet<FToggle>();
+
 			SortByName = transform.Find("Info/Filter_Name").gameObject.AddOrGet<FOrderByParamToggle>();
+			SortByName.SetActions(() => SetOrderedBy(OrderBy.NameAs), () => SetOrderedBy(OrderBy.NameDes));
+			SortByName.ActivateToggle();
+
 			SortByXP = transform.Find("Info/Filter_XP").gameObject.AddOrGet<FOrderByParamToggle>();
+			SortByXP.StartDescending = true;
+			SortByXP.SetActions(() => SetOrderedBy(OrderBy.XpAs), () => SetOrderedBy(OrderBy.XpDes));
+
 			SortByContainer = transform.Find("Info").gameObject;
 			SortByAttributePrefab = transform.Find("Info/Attribute_Filter").gameObject;
 			SortByAttributePrefab.gameObject.SetActive(false);
@@ -99,15 +115,15 @@ namespace SkillsInfoScreen.UI
 
 			Options = transform.Find("TopBar/FilterButton").gameObject.AddOrGet<FMultiSelectDropdown>();
 			Options.DropDownEntries = [
-				new FMultiSelectDropdown.FDropDownEntry(TEMP_EFFECT_TOGGLE.NAME,SetAsteroidSplit,true, TEMP_EFFECT_TOGGLE.TOOLTIP),
+				new FMultiSelectDropdown.FDropDownEntry(TEMP_EFFECT_TOGGLE.NAME,SetTempEffectInclude,true, TEMP_EFFECT_TOGGLE.TOOLTIP),
 				new FMultiSelectDropdown.FDropDownEntry(TINT_VALUES.NAME,SetValueTint,true, TINT_VALUES.TOOLTIP),
-				new FMultiSelectDropdown.FDropDownEntry(TINT_XP.NAME,SetXpTint,true, TINT_VALUES.TOOLTIP),
+				//new FMultiSelectDropdown.FDropDownEntry(TINT_XP.NAME,SetXpTint,true, TINT_VALUES.TOOLTIP),
 				new FMultiSelectDropdown.FDropDownButtonEntry(RESETPOS.NAME, OnResetPos),
 				new FMultiSelectDropdown.FDropDownButtonEntry(RESETSIZE.NAME, OnResetSize)
 				];
 
 			if (DlcManager.IsExpansion1Active())
-				Options.DropDownEntries.Insert(0, new FMultiSelectDropdown.FDropDownEntry(SHOW_ASTEROIDS.NAME, SetAsteroidSplit, ModAssets.Config.SplitByAsteroid, SHOW_ASTEROIDS.TOOLTIP));
+				Options.DropDownEntries.Insert(0, new FMultiSelectDropdown.FDropDownEntry(SHOW_ASTEROIDS.NAME, SetAsteroidSplit, ModAssets.Config.SortPerWorld, SHOW_ASTEROIDS.TOOLTIP));
 
 			Options.InitializeDropDown();
 
@@ -122,25 +138,39 @@ namespace SkillsInfoScreen.UI
 			transform.localPosition = ModAssets.Config.LocalPosition;
 			InitAttributeFilters();
 		}
+
+		void SetOrderedBy(OrderBy mode, Klei.AI.Attribute attribute = null)
+		{
+			CurrentSort = mode;
+			CurrentSortAttribute = attribute;
+			Refresh();
+		}
+
 		void SetAsteroidSplit(bool enable)
 		{
+			ModAssets.Config.SortPerWorld = enable;
+			ModAssets.Config.Write();
+			Refresh();
+			Refresh();
 		}
 		void SetTempEffectInclude(bool include)
 		{
-			ModAssets.Config.SortWithEffects = include;
+			ModAssets.Config.IncludeTemporaryEffects = include;
 			ModAssets.Config.Write();
+			Refresh();
 		}
 		void SetValueTint(bool on)
 		{
 			ModAssets.Config.TintValue = on;
 			ModAssets.Config.Write();
-
+			Refresh();
 		}
-		void SetXpTint(bool on)
-		{
-			ModAssets.Config.TintXP = on;
-			ModAssets.Config.Write();
-		}
+		//void SetXpTint(bool on)
+		//{
+		//	ModAssets.Config.TintXP = on;
+		//	ModAssets.Config.Write();
+		//	Refresh();
+		//}
 		void OnResized()
 		{
 			ModAssets.Config.OnResized(transform.rectTransform());
@@ -171,7 +201,23 @@ namespace SkillsInfoScreen.UI
 		{
 			RefreshAsteroidHeaders();
 			RefreshMinionEntries();
+			RefreshOrderByToggles();
 		}
+		void RefreshOrderByToggles()
+		{
+			if (CurrentSort != OrderBy.NameAs && CurrentSort != OrderBy.NameDes)
+				SortByName.DeactivateToggle();
+			if (CurrentSort != OrderBy.XpAs && CurrentSort != OrderBy.XpDes)
+				SortByXP.DeactivateToggle();
+
+			string currentAttribute = CurrentSortAttribute?.Id ?? string.Empty;
+			foreach (var toggleKVP in SortByAttributes)
+			{
+				if (toggleKVP.Key != currentAttribute)
+					toggleKVP.Value.DeactivateToggle();
+			}
+		}
+
 		void RefreshAsteroidHeaders()
 		{
 			if (DlcManager.IsPureVanilla())
@@ -180,36 +226,118 @@ namespace SkillsInfoScreen.UI
 			{
 				entry.gameObject.SetActive(false);
 			}
+			if (!ModAssets.Config.SortPerWorld)
+				return;
 			foreach (var worldContainer in ClusterManager.Instance.WorldContainers)
 			{
 				if (!worldContainer.isDiscovered)
 					continue;
-				if (!Components.LiveMinionIdentities.Any(id => id.GetMyWorldId() == worldContainer.id))
+				if (!Components.LiveMinionIdentities.Any(id => id.GetMyWorldId() == worldContainer.id) && !Components.MinionStorages.Any(storage => storage.GetMyWorldId() == worldContainer.id))
 					continue;
 				int id = worldContainer.id;
 				var header = AddOrGetWorldHeader(id);
 				header.Refresh();
 			}
 		}
+		object GetCurrentSort(IAssignableIdentity minion)
+		{
+			switch (CurrentSort)
+			{
+				case OrderBy.NameAs:
+				case OrderBy.NameDes:
+					return minion.GetProperName();
+				case OrderBy.XpAs:
+				case OrderBy.XpDes:
+					if (minion is StoredMinionIdentity st)
+						return st.TotalExperienceGained;
+					if (minion is MinionIdentity i)
+						return i.GetComponent<MinionResume>().TotalExperienceGained;
+					break;
+				case OrderBy.AttributeAs:
+				case OrderBy.AttributeDes:
+					return ModAssets.GetAttributeLevel(minion, CurrentSortAttribute);
+			}
+			return 0;
+		}
+		int WorldSort(IAssignableIdentity minion)
+		{
+			var worldsSorted = ClusterManager.Instance.GetWorldIDsSorted();
+
+			if (minion is MinionIdentity i)
+				return worldsSorted.IndexOf(i.GetMyWorldId());
+			else if (minion is StoredMinionIdentity st)
+			{
+				int world = st.assignableProxy.Get().GetMyWorldId();
+				return worldsSorted.IndexOf(world);
+			}
+			return 0;
+		}
+
 		void RefreshMinionEntries()
 		{
 			foreach (var entry in MinionEntries.Values)
 			{
 				entry.gameObject.SetActive(false);
 			}
-			var minions =
-				Components.LiveMinionIdentities
-				.OrderBy(minion => minion.GetMyWorldId())
-				.ThenByDescending(minion => minion.GetProperName());
+			IOrderedEnumerable<IAssignableIdentity> minions = null;
 
+			var allMinions = new List<IAssignableIdentity>();
+			allMinions.AddRange(Components.LiveMinionIdentities);
+			foreach (MinionStorage storage in Components.MinionStorages)
+			{
+				foreach (var stored in storage.GetStoredMinionInfo())
+					if (stored.serializedMinion != null)
+						allMinions.Add(stored.serializedMinion.Get<StoredMinionIdentity>());
+			}
 
-			foreach (MinionIdentity minion in minions)
+			
+			minions = allMinions.OrderBy(WorldSort);
+
+			foreach (var minion in minions)
+			{
+				SgtLogger.l("WORLD: " + minion.GetProperName() + ": " + WorldSort(minion));
+			}
+			bool descendingSort = (int)CurrentSort % 2 == 0;
+
+			if (ModAssets.Config.SortPerWorld)
+			{
+				if (descendingSort)
+					minions = minions.OrderBy(WorldSort).ThenByDescending(GetCurrentSort);
+				else
+					minions = minions.OrderBy(WorldSort).ThenBy(GetCurrentSort);
+			}
+			else
+			{
+				//without asteroid headers, the ordering is inverted
+				if (descendingSort)
+					minions = minions.OrderBy(GetCurrentSort);
+				else
+					minions = minions.OrderByDescending(GetCurrentSort);
+			}
+
+			foreach (IAssignableIdentity minion in minions)
 			{
 				var entry = AddOrGetMinionEntry(minion);
 				entry.Refresh();
-				if (DlcManager.IsExpansion1Active() && WorldHeaders.TryGetValue(minion.GetMyWorldId(), out var header))
+
+				int worldId = 0;
+				if (minion is MinionIdentity m)
+					worldId = m.GetMyWorldId();
+				else if (minion is StoredMinionIdentity id)
+				{
+					MinionStorage storage = Components.MinionStorages.Items.FirstOrDefault(s => s.GetStoredMinionInfo().Any(info => info.serializedMinion.Get()== id.GetComponent<KPrefabID>()));
+					if(storage != null)
+						worldId = storage.GetMyWorldId();
+				}
+
+				if (DlcManager.IsExpansion1Active() && ModAssets.Config.SortPerWorld && WorldHeaders.TryGetValue(worldId, out WorldHeaderEntry header))
 				{
 					entry.transform.SetSiblingIndex(header.transform.GetSiblingIndex() + 1);
+					entry.gameObject.SetActive(header.Expanded);
+				}
+				else
+				{
+					entry.transform.SetAsLastSibling();
 				}
 			}
 
@@ -219,7 +347,7 @@ namespace SkillsInfoScreen.UI
 		{
 			var attributeDb = Db.Get().Attributes;
 			var skillGroupsDb = Db.Get().SkillGroups;
-			MaxSkillLevels = [];
+			ModAssets.MaxSkillLevels = [];
 
 			var stats = DUPLICANTSTATS.ALL_ATTRIBUTES.OrderBy(id => global::STRINGS.UI.StripLinkFormatting(attributeDb.TryGet(id)?.Name ?? "unknown"));
 
@@ -227,7 +355,7 @@ namespace SkillsInfoScreen.UI
 			{
 				if (attributeId == "SpaceNavigation" && !DlcManager.IsExpansion1Active())
 					continue;
-				MaxSkillLevels[attributeId] = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MAX_GAINED_ATTRIBUTE_LEVEL;
+				ModAssets.MaxSkillLevels[attributeId] = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MAX_GAINED_ATTRIBUTE_LEVEL;
 
 				var attribute = attributeDb.TryGet(attributeId);
 				Columns[attributeId] = attribute;
@@ -235,6 +363,9 @@ namespace SkillsInfoScreen.UI
 				var filterGO = Util.KInstantiateUI(SortByAttributePrefab, SortByContainer);
 				var toggle = filterGO.AddOrGet<FOrderByParamToggle>();
 				toggle.Label = attribute.Name;
+				toggle.StartDescending = true;
+				toggle.SetActions(() => SetOrderedBy(OrderBy.AttributeAs, attribute), () => SetOrderedBy(OrderBy.AttributeDes, attribute));
+
 				var relevantSkillGroup = skillGroupsDb.resources.FirstOrDefault(r => r.relevantAttributes.Contains(attribute));
 				if (relevantSkillGroup != null)
 				{
@@ -251,13 +382,13 @@ namespace SkillsInfoScreen.UI
 			transform.Find("Info/EndSpacer")?.SetAsLastSibling();
 		}
 
-		DuplicantEntry AddOrGetMinionEntry(MinionIdentity minion)
+		DuplicantEntry AddOrGetMinionEntry(IAssignableIdentity minion)
 		{
-			if (!MinionEntries.TryGetValue(minion.GetInstanceID(), out var value))
+			if (!MinionEntries.TryGetValue(minion, out var value))
 			{
 				value = Util.KInstantiateUI<DuplicantEntry>(DuplicantEntryPrefab.gameObject, ItemContainer, true);
 				value.Init(minion);
-				MinionEntries.Add(minion.GetInstanceID(), value);
+				MinionEntries.Add(minion, value);
 			}
 			value.gameObject.SetActive(true);
 			return value;
@@ -267,7 +398,8 @@ namespace SkillsInfoScreen.UI
 			if (!WorldHeaders.TryGetValue(worldId, out var value))
 			{
 				value = Util.KInstantiateUI<WorldHeaderEntry>(WorldHeaderPrefab.gameObject, ItemContainer, true);
-				value.Init(ClusterManager.Instance.GetWorld(worldId));
+				value.Init(ClusterManager.Instance.GetWorld(worldId), Refresh);
+				value.transform.SetAsLastSibling();
 				WorldHeaders.Add(worldId, value);
 			}
 			value.gameObject.SetActive(true);
@@ -278,15 +410,6 @@ namespace SkillsInfoScreen.UI
 		public override void Show(bool show = true)
 		{
 			base.Show(show);
-		}
-
-		public override void OnKeyDown(KButtonEvent e)
-		{
-			if (e.TryConsume(Action.Escape) || (mouseOver && e.TryConsume(Action.MouseRight)))
-			{
-				this.Show(false);
-			}
-			base.OnKeyDown(e);
 		}
 	}
 }

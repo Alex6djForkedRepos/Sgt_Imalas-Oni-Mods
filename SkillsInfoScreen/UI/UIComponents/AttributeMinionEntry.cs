@@ -1,4 +1,5 @@
 ﻿using FMOD;
+using JetBrains.Annotations;
 using Klei.AI;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using TUNING;
 using UnityEngine;
 using UnityEngine.UI;
+using UtilLibs;
 using static KSerialization.DebugLog;
 using static STRINGS.UI.UISIDESCREENS.AUTOPLUMBERSIDESCREEN.BUTTONS;
 
@@ -18,19 +20,27 @@ namespace SkillsInfoScreen.UI.UIComponents
 		Image XP_Progressbar;
 		LocText XP_Progress, XPLevelInfo, TotalLevelInfo;
 		AttributeLevels Levels;
-		MinionIdentity Minion;
+		IAssignableIdentity Identity;
+		ToolTip TT;
+		StoredMinionIdentity Stored;
 
 
-		public void Init(MinionIdentity minion, Attribute attribute)
+		public void Init(IAssignableIdentity assignableIdentity, Attribute attribute)
 		{
-			Minion = minion;
+			Identity = assignableIdentity;
 			Attribute = attribute;
-			Levels = minion.GetComponent<AttributeLevels>();
+			if (assignableIdentity is MinionIdentity mi)
+			{
+				Levels = mi.GetComponent<AttributeLevels>();
+			}
+			else if (assignableIdentity is StoredMinionIdentity stored)
+				Stored = stored;
 
 			XP_Progressbar = transform.Find("XPBar/fill").gameObject.GetComponent<Image>();
 			XP_Progress = transform.Find("XPBar/amountText").gameObject.GetComponent<LocText>();
 			XPLevelInfo = transform.Find("XPBar/levelText").gameObject.GetComponent<LocText>();
 			TotalLevelInfo = transform.Find("SkillPoints").gameObject.GetComponent<LocText>();
+			TT = UIUtils.AddSimpleTooltipToObject(TotalLevelInfo.gameObject, string.Empty);
 			Refresh();
 		}
 		public override void OnSpawn()
@@ -40,25 +50,35 @@ namespace SkillsInfoScreen.UI.UIComponents
 		}
 		public void Refresh()
 		{
-			if(Levels != null)
+			string levelVal = "0", currentLvlXp = "0", maxLvlXp = string.Empty;
+			float levelPercentage = 0;
+			
+			if (Levels != null)
 			{
-				int levelVal = Levels.GetLevel(Attribute);
+				levelVal = Levels.GetLevel(Attribute).ToString();
 				//int maxLevelVal = DUPLICANTSTATS.ATTRIBUTE_LEVELING.MAX_GAINED_ATTRIBUTE_LEVEL;
 				var level = Levels.GetAttributeLevel(Attribute.Id);
-				int currentLvlXp = Mathf.RoundToInt(level.experience);
-				int maxLvlXp = Mathf.RoundToInt(level.GetExperienceForNextLevel());
-				float levelPercentage = level.GetPercentComplete();
-
-				XP_Progressbar.fillAmount = levelPercentage;
-				XP_Progress.SetText(STRINGS.XP_VERY_SHORT+$"{currentLvlXp}/{maxLvlXp}");
-				XPLevelInfo.SetText(STRINGS.LEVEL_VERY_SHORT+ levelVal);
+				currentLvlXp = Mathf.RoundToInt(level.experience).ToString();
+				maxLvlXp = Mathf.RoundToInt(level.GetExperienceForNextLevel()).ToString();
+				levelPercentage = level.GetPercentComplete();
 			}
-			if(Minion != null)
+			else if (Stored != null)
 			{
-				AttributeInstance instance = Minion.modifiers.attributes.Get(Attribute.Id);
-				int level = (int)ModAssets.GetTotalDisplayValue(instance);
-				TotalLevelInfo.SetText(level.ToString());
+				var storedLevel = Stored.attributeLevels.FirstOrDefault(lvl => lvl.attributeId == Attribute.Id);
+				
+				levelVal = storedLevel.level.ToString();
+				currentLvlXp = Mathf.RoundToInt(storedLevel.experience).ToString();
+				maxLvlXp = string.Empty;
+				levelPercentage = 0;
 			}
+			XP_Progressbar.fillAmount = levelPercentage;
+			XP_Progress.SetText(STRINGS.XP_VERY_SHORT + (maxLvlXp != string.Empty? $"{currentLvlXp}/{maxLvlXp}" : currentLvlXp));
+			XPLevelInfo.SetText(STRINGS.LEVEL_VERY_SHORT + levelVal);
+
+
+			TT.SetSimpleTooltip(ModAssets.GetAttributeTooltip(Identity, Attribute));
+			int totalLevel = (int)ModAssets.GetAttributeLevel(Identity, Attribute);
+			TotalLevelInfo.SetText(ModAssets.Config.TintValue ? ModAssets.ColorAttributeText(totalLevel, Attribute.Id) : UIUtils.EmboldenText(totalLevel.ToString()));
 		}
 	}
 }
