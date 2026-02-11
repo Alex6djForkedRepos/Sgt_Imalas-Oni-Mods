@@ -14,7 +14,7 @@ namespace UtilLibs.UI.FUI
 		Image IconOpen, IconClose;
 		FButton button;
 		public bool Expanded = true;
-		System.Action<bool> OnChange;
+		public System.Action<bool> OnChange;
 
 		public override void OnPrefabInit()
 		{
