@@ -39,8 +39,8 @@ namespace Rockets_TinyYetBig.Buildings.CargoBays
 			buildingDef.ObjectLayer = ObjectLayer.Building;
 			buildingDef.CanMove = true;
 			buildingDef.Cancellable = false;
-			//only goes into effect without space light, half of regular chamber building
-			buildingDef.EnergyConsumptionWhenActive = 60;
+			//only goes into effect without space light, same wattage as regular chamber building
+			buildingDef.EnergyConsumptionWhenActive = 120;
 			buildingDef.UseHighEnergyParticleInputPort = true;
 			buildingDef.HighEnergyParticleInputOffset = new CellOffset(0, 2);
 			buildingDef.UseHighEnergyParticleOutputPort = true;
