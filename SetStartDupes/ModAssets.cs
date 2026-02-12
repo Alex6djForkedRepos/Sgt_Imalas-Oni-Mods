@@ -179,7 +179,7 @@ namespace SetStartDupes
 		public static Dictionary<CharacterContainer, List<KButton>> buttonsToDeactivateOnEdit = new Dictionary<CharacterContainer, List<KButton>>();
 		public static Dictionary<MinionStartingStats, DupeTraitManager> DupeTraitManagers = new Dictionary<MinionStartingStats, DupeTraitManager>();
 
-		public static void ApplySkinToExistingDuplicant(Personality Skin, GameObject Duplicant)
+		public static void ApplySkinToExistingDuplicant(Personality PersonalitySkin, GameObject Duplicant)
 		{
 			if (Duplicant.TryGetComponent<MinionIdentity>(out var IdentityHolder))
 			{
@@ -187,14 +187,14 @@ namespace SetStartDupes
 
 				if (IdentityHolder.name == OldPersonality.Name)
 				{
-					IdentityHolder.SetName(Skin.Name);
+					IdentityHolder.SetName(PersonalitySkin.Name);
 				}
-				IdentityHolder.nameStringKey = Skin.nameStringKey;
-				IdentityHolder.genderStringKey = Skin.genderStringKey;
-				IdentityHolder.personalityResourceId = Skin.IdHash;
-				IdentityHolder.voiceIdx = ModApi.GetVoiceIdxOverrideForPersonality(Skin.nameStringKey);
-				IdentityHolder.SetStickerType(Skin.stickerType);
-				IdentityHolder.SetGender(Skin.genderStringKey);
+				IdentityHolder.nameStringKey = PersonalitySkin.nameStringKey;
+				IdentityHolder.genderStringKey = PersonalitySkin.genderStringKey;
+				IdentityHolder.personalityResourceId = PersonalitySkin.IdHash;
+				IdentityHolder.voiceIdx = ModApi.GetVoiceIdxOverrideForPersonality(PersonalitySkin.nameStringKey);
+				IdentityHolder.SetStickerType(PersonalitySkin.stickerType);
+				IdentityHolder.SetGender(PersonalitySkin.genderStringKey);
 			}
 
 			//Changing Joy/Stress Traits if applicable
@@ -217,13 +217,13 @@ namespace SetStartDupes
 				}
 				if (!Config.Instance.NoJoyReactions)
 				{
-					var newJoyTrait = Db.Get().traits.TryGet(Skin.stresstrait);
+					var newJoyTrait = Db.Get().traits.TryGet(PersonalitySkin.stresstrait);
 					if (newJoyTrait != null)
 						traits.Add(newJoyTrait);
 				}
 				if (!Config.Instance.NoStressReactions)
 				{
-					var newStressTrait = Db.Get().traits.TryGet(Skin.joyTrait);
+					var newStressTrait = Db.Get().traits.TryGet(PersonalitySkin.joyTrait);
 					if (newStressTrait != null)
 						traits.Add(newStressTrait);
 				}
@@ -232,7 +232,7 @@ namespace SetStartDupes
 			if (Duplicant.TryGetComponent<Accessorizer>(out var accessorizer))
 			{
 
-				accessorizer.ApplyMinionPersonality(Skin);
+				accessorizer.ApplyMinionPersonality(PersonalitySkin);
 				accessorizer.UpdateHairBasedOnHat();
 
 				///These symbols get overidden at dupe creation, as we are editing already spawned dupes, we have to remove the old overrides and add the new overrides
@@ -251,8 +251,8 @@ namespace SetStartDupes
 					symbolOverride.AddSymbolOverride((HashedString)Db.Get().AccessorySlots.HatHair.targetSymbolId, Db.Get().AccessorySlots.HatHair.Lookup("hat_" + HashCache.Get().Get(accessorizer.GetAccessory(Db.Get().AccessorySlots.Hair).symbol.hash)).symbol, 1);
 				}
 			}
-			ApplyOutfit(Skin, Duplicant);
-			ApplyJoyResponseOutfit(Skin, Duplicant);
+			ApplyOutfit(PersonalitySkin, Duplicant);
+			ApplyJoyResponseOutfit(PersonalitySkin, Duplicant);
 		}
 		public static void ApplyOutfit(Personality personality, GameObject go)
 		{
