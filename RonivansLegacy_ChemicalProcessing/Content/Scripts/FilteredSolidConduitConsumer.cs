@@ -20,7 +20,9 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 		private Building building;
 		[MyCmpReq]
 		private Storage storage;
-
+		[MyCmpGet]
+		private StorageLocker locker;
+		
 
 		public override void OnSpawn()
 		{
@@ -34,6 +36,14 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 		{
 			SolidConduit.GetFlowManager().RemoveConduitUpdater(ConduitUpdate);
 			base.OnCleanUp();
+		}
+
+		public float GetRemainingCapacity()
+		{
+			if (locker == null)
+				return storage.RemainingCapacity();
+
+			return locker.UserMaxCapacity - locker.AmountStored;
 		}
 
 		private void ConduitUpdate(float dt)
@@ -52,7 +62,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 
 			foreach (var acceptedTag in acceptedTags)
 			{
-				float capacity = storage.RemainingCapacity();
+				float capacity = GetRemainingCapacity();
 				if (pickupable.HasTag(acceptedTag) && pickupable.TotalAmount <= capacity)
 				{
 					var toStore = pickupable.Take(capacity);

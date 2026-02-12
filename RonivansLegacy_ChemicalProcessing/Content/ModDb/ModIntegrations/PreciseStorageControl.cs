@@ -10,7 +10,7 @@ using UtilLibs;
 namespace RonivansLegacy_ChemicalProcessing.Content.ModDb.ModIntegrations
 {
 	/// <summary>
-	/// Integration with the mod HysteresisStorage
+	/// Integration with the mod PreciseStorageControl
 	/// </summary>
 	public static class PreciseStorageControl
 	{
