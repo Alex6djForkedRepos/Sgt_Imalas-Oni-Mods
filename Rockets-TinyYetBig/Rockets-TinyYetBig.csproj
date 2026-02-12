@@ -51,4 +51,8 @@
 	    <HintPath>..\TwitchLib\ONITwitchLib.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ModAssets\anim\assets\rocket_storage_liquid_small\" />
+	</ItemGroup>
 </Project>

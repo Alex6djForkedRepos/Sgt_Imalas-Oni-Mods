@@ -1,5 +1,6 @@
 ﻿using Rockets_TinyYetBig.Behaviours;
 using Rockets_TinyYetBig.Buildings.Utility;
+using Rockets_TinyYetBig.Content.Scripts.Buildings.RocketModules;
 using System.Collections.Generic;
 using TUNING;
 using UnityEngine;
@@ -38,8 +39,8 @@ namespace Rockets_TinyYetBig.Buildings.CargoBays
 			buildingDef.ObjectLayer = ObjectLayer.Building;
 			buildingDef.CanMove = true;
 			buildingDef.Cancellable = false;
-
-
+			//only goes into effect without space light, half of regular chamber building
+			buildingDef.EnergyConsumptionWhenActive = 60;
 			buildingDef.UseHighEnergyParticleInputPort = true;
 			buildingDef.HighEnergyParticleInputOffset = new CellOffset(0, 2);
 			buildingDef.UseHighEnergyParticleOutputPort = true;
@@ -84,6 +85,7 @@ namespace Rockets_TinyYetBig.Buildings.CargoBays
 			energyParticleStorage.PORT_ID = ID;
 			energyParticleStorage.showCapacityStatusItem = true;
 			energyParticleStorage.showCapacityAsMainStatus = true;
+
 			go.AddOrGet<LoopingSounds>();
 			var HEPBatteryModule = go.AddOrGet<RadiationBatteryOutputHandler>();
 			HEPBatteryModule.physicalFuelCapacity = Config.Instance.RadboltStorageCapacity;
@@ -94,6 +96,8 @@ namespace Rockets_TinyYetBig.Buildings.CargoBays
 		{
 			Prioritizable.AddRef(go);
 
+			go.AddOrGet<ModuleEnergyConsumer>();
+			go.GetComponent<HighEnergyParticlePort>().requireOperational = false;
 			//WireUtilitySemiVirtualNetworkLink virtualNetworkLink = go.AddOrGet<WireUtilitySemiVirtualNetworkLink>();
 			//virtualNetworkLink.visualizeOnly = true;
 			BuildingTemplates.ExtendBuildingToRocketModuleCluster(go, null, ROCKETRY.BURDEN.MODERATE_PLUS);

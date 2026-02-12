@@ -15,6 +15,8 @@ namespace Rockets_TinyYetBig.Behaviours
 
 		[MyCmpReq]
 		private KSelectable selectable;
+		[MyCmpReq]
+		private Operational operational;
 		[Serialize]
 		private EightDirection _direction;
 		private MeterController directionController;
@@ -24,6 +26,8 @@ namespace Rockets_TinyYetBig.Behaviours
 
 		[MyCmpReq]
 		public HighEnergyParticleStorage hepStorage;
+		[MyCmpReq]
+		public KBatchedAnimController kbac;
 		private MeterController m_meter;
 
 		[MyCmpAdd]
@@ -34,9 +38,12 @@ namespace Rockets_TinyYetBig.Behaviours
 		private bool isLogicActive;
 		private float launchTimer = 0;
 		private readonly float minLaunchInterval = 1f;
+
+
 		public void Sim200ms(float dt)
 		{
-			bool shouldDecay = ShouldDecay();
+			RefreshSkyCoverage();
+			bool shouldDecay = ShouldDecay(dt);
 			if (shouldDecay)
 				DoConsumeParticlesWhileDisabled(dt);
 			else
@@ -44,7 +51,7 @@ namespace Rockets_TinyYetBig.Behaviours
 
 			UpdateDecayStatusItem(shouldDecay);
 			launchTimer += dt;
-			if (launchTimer < (double)minLaunchInterval || !AllowSpawnParticles || (double)hepStorage.Particles < particleThreshold)
+			if (launchTimer < minLaunchInterval || !AllowSpawnParticles || hepStorage.Particles < particleThreshold)
 				return;
 			launchTimer = 0.0f;
 			Fire();
@@ -60,13 +67,13 @@ namespace Rockets_TinyYetBig.Behaviours
 				{
 					if (!(this.statusHandle == Guid.Empty))
 						return;
-					this.statusHandle = this.GetComponent<KSelectable>().AddStatusItem(Db.Get().BuildingStatusItems.LosingRadbolts);
+					this.statusHandle = selectable.AddStatusItem(Db.Get().BuildingStatusItems.LosingRadbolts);
 				}
 				else
 				{
 					if (!(this.statusHandle != Guid.Empty))
 						return;
-					this.GetComponent<KSelectable>().RemoveStatusItem(this.statusHandle);
+					selectable.RemoveStatusItem(this.statusHandle);
 					this.statusHandle = Guid.Empty;
 				}
 			}
@@ -74,18 +81,38 @@ namespace Rockets_TinyYetBig.Behaviours
 			{
 				if (!(this.statusHandle != Guid.Empty))
 					return;
-				this.GetComponent<KSelectable>().RemoveStatusItem(this.statusHandle);
+				selectable.RemoveStatusItem(this.statusHandle);
 				this.statusHandle = Guid.Empty;
 			}
 		}
 
-		public bool ShouldDecay()
+		void RefreshSkyCoverage()
 		{
-			if (!HasSkyVisibility() && module.CraftInterface.m_clustercraft.Status == Clustercraft.CraftStatus.Grounded)
-			{
-				return true;
-			}
+			//only consume power if no sky visibility
+			bool solarPanelsHaveLight = HasSkyVisibility();
+			kbac.SetSymbolVisiblity("solar_panel_glow", solarPanelsHaveLight);
+			//using the active flag for the power consumer so it can use power leeching as backup
+			operational.SetActive(!solarPanelsHaveLight);
+		}
+
+		public bool ShouldDecay(float dt)
+		{
+			if (HasSkyVisibility() || module.CraftInterface.m_clustercraft.Status != Clustercraft.CraftStatus.Grounded)
+				return false;
+
+			return !operational.IsOperational;
+		}
+		public bool TryLeechPowerFromBatteries(float dt)
+		{
 			return false;
+			//var network = Game.Instance.electricalConduitSystem.GetNetworkForVirtualKey(module.CraftInterface);
+			//if (network == null)
+			//	return false;
+
+			//if(network is not ElectricalUtilityNetwork eNetwork)
+			//	return false;
+
+			//eNetwork.ba
 		}
 
 		public bool HasSkyVisibility()

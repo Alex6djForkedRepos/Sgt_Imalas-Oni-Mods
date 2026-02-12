@@ -547,7 +547,7 @@ namespace Rockets_TinyYetBig
 					public static LocString DESC = "Particles packed up and ready to visit the stars.";
 					public static LocString EFFECT = ("Stores Radbolts in a high-energy state, ready for transport.\n\n" +
 						"Requires a " + FormatAsAutomationState("Green Signal", AutomationState.Active) + " to release radbolts from storage when the Radbolt threshold is reached.\n\n" +
-						"Radbolts in storage won't decay as long as the modules solar panels can function.\n\n" +
+						"Radbolts in storage won't decay as long as the module is powered, this can either happen via its built in solar panels or power connectors on battery- and spacefarer modules\n\n" +
 						"Automatically refills a " + RYB_NOSECONEHEPHARVEST.NAME);
 				}
 
