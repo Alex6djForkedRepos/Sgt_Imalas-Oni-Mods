@@ -9,11 +9,13 @@ namespace CoreMolior
 {
 	internal class STRINGS
 	{
-		public class BUILDINGS
+		public static LocString COREMOLIOR_NAME = "Coremolior Cluster";
+		public class WORLDS
 		{
-			public class PREFABS
+			public class DEMOLIORCORE_MOONLET
 			{
-				///create a new mini planetoid in space when destroying demolior: demolior core
+				public static LocString NAME = "Core of Demolior";
+				public static LocString DESC = "The shattered remains of the demolior impactor asteroids.";
 			}
 		}
 	}
