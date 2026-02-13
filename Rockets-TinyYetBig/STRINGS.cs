@@ -589,7 +589,42 @@ namespace Rockets_TinyYetBig
 					public static LocString STATUSITEM_TOOLTIP_ACTIVE = "The custom condition \"{0}\" is completed";
 					public static LocString STATUSITEM_TOOLTIP_INACTIVE = "The custom condition \"{0}\" is incomplete!";
 				}
-
+				public class RTB_DERELICTWALLTILE
+				{
+					public static LocString NAME = FormatAsLink("Derelict Wall Tile", "RTB_DERELICTWALLTILE");
+					public static LocString DESC = "Keeps the space out.";
+					public static LocString EFFECT = "The walls of a space derelict.";
+				}
+				public class RTB_POI_SOLARPANEL
+				{
+					public static LocString NAME = FormatAsLink("Derelict Solar Panel", "RTB_POI_SOLARPANEL");
+					public static LocString DESC = "It has stopped working";
+					public static LocString EFFECT = "The the dysfunctional remains of a solar panel.";
+				}
+				public class RTB_DERELICTEXTERIORWALL
+				{
+					public static LocString NAME = FormatAsLink("Derelict Wall", "RTB_DERELICTEXTERIORWALL");
+					public static LocString DESC = "Wall panelling that creaks with age";
+					public static LocString EFFECT = $"Prevents {FormatAsLink("Gas", "ELEMENTS_GAS")} and {FormatAsLink("Liquid", "ELEMENTS_LIQUID")} loss in space.";
+				}
+				public class RTB_TECHUNLOCK
+				{
+					public static LocString NAME = FormatAsLink("Abandoned Station Computer", "RTB_TECHUNLOCK");
+					public static LocString DESC = $"An ancient computer terminal, it still runs on Windows 42\n\n\nThis computer terminal is somehow still able to function.\n\nIt contains valuable insights on the mysteries of the cosmos\n\nInteract to unlock new Technologies.";
+				}
+				public class RTB_PROPLADDER
+				{
+					public static LocString NAME = FormatAsLink("Derelict Ladder", "RTB_PROPLADDER");
+					public static LocString DESC = "A functional ladder, made a long time ago";
+					public static LocString EFFECT = "Increases Duplicant climbing speed.";
+				}
+				public class RTB_DERELICTANTENNA
+				{
+					public static LocString NAME = FormatAsLink("Derelict Antenna", "RTB_DERELICTANTENNA");
+					public static LocString DESC = "The transmission speed on this thing must have been great.";
+					public static LocString EFFECT = "A broken down antenna that was once used to transmit data";
+				}
+				
 			}
 		}
 

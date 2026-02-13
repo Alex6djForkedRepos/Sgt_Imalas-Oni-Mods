@@ -4,7 +4,7 @@ using System;
 namespace Rockets_TinyYetBig.SpaceStations.Construction
 {
 	[Serializable]
-	public class PartProject : KMonoBehaviour
+	public struct PartProject
 	{
 		[Serialize] Tag _resourceTag = null;
 		[Serialize] float _resourceAmountMass = 0;
@@ -21,6 +21,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 			_totalConstructionTime = constructionTime;
 			_primaryConstruction = primaryConstruction;
 		}
+
 		public float TotalConstructionTime => _totalConstructionTime;
 		public float ResourceAmountMass => _resourceAmountMass;
 		public Tag ResourceTag => _resourceTag;

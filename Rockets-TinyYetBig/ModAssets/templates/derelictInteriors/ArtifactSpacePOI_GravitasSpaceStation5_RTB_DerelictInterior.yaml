@@ -71,7 +71,7 @@ cells:
   location_x: 9
   location_y: -10
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 10
   location_y: -10
@@ -82,7 +82,7 @@ cells:
   location_x: -9
   location_y: -9
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -8
   location_y: -9
@@ -139,17 +139,17 @@ cells:
   location_x: 7
   location_y: -9
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 8
   location_y: -9
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 9
   location_y: -9
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 10
   location_y: -9
@@ -160,7 +160,7 @@ cells:
   location_x: -9
   location_y: -8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -8
   location_y: -8
@@ -188,7 +188,7 @@ cells:
   location_x: -1
   location_y: -8
 - element: Obsidian
-  mass: 450
+  mass: 100
   temperature: 293.149994
   location_y: -8
 - element: Steel
@@ -215,12 +215,12 @@ cells:
   location_x: 7
   location_y: -8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 8
   location_y: -8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.14801
   location_x: 9
   location_y: -8
@@ -228,17 +228,17 @@ cells:
   location_x: 10
   location_y: -8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -10
   location_y: -7
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -9
   location_y: -7
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -8
   location_y: -7
@@ -764,7 +764,7 @@ cells:
   location_x: 1
 - element: Cuprite
   mass: 100
-  temperature: 293.702576
+  temperature: 293.983154
   location_x: 2
 - element: Vacuum
   location_x: 3
@@ -780,7 +780,7 @@ cells:
   location_x: 8
 - element: Steel
   mass: 100
-  temperature: 287.922272
+  temperature: 288.183228
   location_x: 9
 - element: Vacuum
   location_x: 10
@@ -829,7 +829,7 @@ cells:
   location_y: 1
 - element: Steel
   mass: 100
-  temperature: 292.798981
+  temperature: 293.029694
   location_x: 2
   location_y: 1
 - element: Vacuum
@@ -846,17 +846,17 @@ cells:
   location_y: 1
 - element: Steel
   mass: 100
-  temperature: 286.711243
+  temperature: 287.724945
   location_x: 7
   location_y: 1
 - element: Steel
   mass: 100
-  temperature: 286.163483
+  temperature: 287.206146
   location_x: 8
   location_y: 1
 - element: Steel
   mass: 28
-  temperature: 287.129395
+  temperature: 288.075378
   location_x: 9
   location_y: 1
 - element: Vacuum
@@ -911,32 +911,32 @@ cells:
   location_y: 2
 - element: Steel
   mass: 100
-  temperature: 291.90094
+  temperature: 292.099884
   location_x: 2
   location_y: 2
 - element: Steel
   mass: 100
-  temperature: 291.07608
+  temperature: 291.284515
   location_x: 3
   location_y: 2
 - element: Steel
   mass: 100
-  temperature: 290.226501
+  temperature: 290.451752
   location_x: 4
   location_y: 2
 - element: Steel
   mass: 100
-  temperature: 289.405579
+  temperature: 289.601837
   location_x: 5
   location_y: 2
 - element: Steel
   mass: 100
-  temperature: 288.420471
+  temperature: 288.814026
   location_x: 6
   location_y: 2
 - element: Steel
   mass: 33.1800003
-  temperature: 287.691986
+  temperature: 288.581665
   location_x: 7
   location_y: 2
 - element: Vacuum
@@ -1219,7 +1219,7 @@ cells:
   location_x: -9
   location_y: 7
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -8
   location_y: 7
@@ -1246,9 +1246,7 @@ cells:
 - element: Vacuum
   location_x: -1
   location_y: 7
-- element: Steel
-  mass: 100
-  temperature: 293.221069
+- element: Vacuum
   location_y: 7
 - element: Vacuum
   location_x: 1
@@ -1283,17 +1281,17 @@ cells:
   location_x: 10
   location_y: 7
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -10
   location_y: 8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149963
   location_x: -9
   location_y: 8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -8
   location_y: 8
@@ -1320,9 +1318,7 @@ cells:
 - element: Vacuum
   location_x: -1
   location_y: 8
-- element: Steel
-  mass: 100
-  temperature: 293.221069
+- element: Vacuum
   location_y: 8
 - element: Vacuum
   location_x: 1
@@ -1357,7 +1353,7 @@ cells:
   location_x: 10
   location_y: 8
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -10
   location_y: 9
@@ -1435,7 +1431,7 @@ cells:
   location_x: 10
   location_y: 9
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: -10
   location_y: 10
@@ -1496,7 +1492,7 @@ cells:
   location_x: 9
   location_y: 10
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 10
   location_y: 10
@@ -1557,407 +1553,411 @@ cells:
   location_x: 8
   location_y: 11
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 9
   location_y: 11
 - element: Glass
-  mass: 800
+  mass: 100
   temperature: 300.149994
   location_x: 10
   location_y: 11
 buildings:
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: 4
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: 3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: 2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: 4
   element: Steel
   temperature: 292.635468
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: 3
   element: Steel
   temperature: 291.754791
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: 2
   element: Steel
-  temperature: 291.90094
-- id: BunkerTile
+  temperature: 292.099884
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 2
   element: Steel
-  temperature: 291.07608
-- id: BunkerTile
+  temperature: 291.284515
+- id: RTB_DerelictWallTile
   location_x: 4
   location_y: 2
   element: Steel
-  temperature: 290.226501
-- id: BunkerTile
+  temperature: 290.451752
+- id: RTB_DerelictWallTile
   location_x: 5
   location_y: 2
   element: Steel
-  temperature: 289.405579
-- id: BunkerTile
+  temperature: 289.601837
+- id: RTB_DerelictWallTile
   location_x: 6
   location_y: 2
   element: Steel
-  temperature: 288.420471
-- id: BunkerTile
+  temperature: 288.814026
+- id: RTB_DerelictWallTile
   location_x: 8
   location_y: 1
   element: Steel
-  temperature: 286.163483
-- id: BunkerTile
+  temperature: 287.206146
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -4
   location_y: 2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -5
   location_y: 2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -6
   location_y: 2
   element: Steel
   temperature: 293.15033
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -7
   location_y: 2
   element: Steel
   temperature: 293.156006
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -8
   location_y: -2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 8
   location_y: -2
   element: Steel
   temperature: 290.648224
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -3
   element: Steel
   temperature: 294.07724
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -4
   element: Steel
   temperature: 293.408783
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -5
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -6
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -7
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -4
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -5
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -6
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -7
   element: Steel
   temperature: 293.591309
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -1
   location_y: -7
   element: Steel
   temperature: 294.236542
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -1
   location_y: -8
   element: Steel
   temperature: 293.591309
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 1
   location_y: -8
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 1
   location_y: -7
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 9
   location_y: -1
   element: Steel
   temperature: 288.9198
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 9
   element: Steel
-  temperature: 287.922272
-- id: BunkerTile
+  temperature: 288.183228
+- id: RTB_DerelictWallTile
   location_x: -9
   location_y: 1
   element: Steel
   temperature: 293.158539
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -9
   location_y: -1
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 5
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 6
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 7
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 8
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -1
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 1
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 8
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 7
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 5
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: -3
   element: Steel
   temperature: 293.410553
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 4
   location_y: -3
   element: Steel
   temperature: 293.591888
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 5
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 6
   location_y: -3
   element: Steel
   temperature: 292.928375
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 7
   location_y: -3
   element: Steel
   temperature: 292.124847
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 9
   location_y: -2
   element: Steel
   temperature: 289.777527
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -3
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -4
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -5
   location_y: -3
   element: Steel
   temperature: 293.591888
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -6
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -7
   location_y: -3
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -9
   location_y: -2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -2
   element: Steel
   temperature: 294.914001
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: 1
   element: Steel
-  temperature: 292.798981
-- id: BunkerTile
+  temperature: 293.029694
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: 1
   element: Steel
   temperature: 293.994476
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -2
   element: Steel
   temperature: 294.045044
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -7
   location_y: -2
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -7
   location_y: 1
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -8
   location_y: 1
   element: Steel
   temperature: 293.151581
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 7
   location_y: -2
   element: Steel
   temperature: 291.26825
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 7
   location_y: 1
   element: Steel
-  temperature: 286.711243
-- id: BunkerTile
+  temperature: 287.724945
+- id: RTB_DerelictWallTile
   location_x: -1
   location_y: -9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 1
   location_y: -9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -9
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: -2
   location_y: -10
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 2
   location_y: -10
   element: Steel
   temperature: 293.149994
-- id: BunkerTile
+- id: RTB_DerelictWallTile
   location_x: 3
   location_y: 6
   element: Steel
+  temperature: 293.149994
+- id: POIDoorInternal
+  location_y: 7
+  element: Cuprite
   temperature: 293.149994
 - id: WireRefined
   location_x: -2
@@ -2068,13 +2068,13 @@ buildings:
 - id: WireRefined
   location_x: 9
   element: Copper
-  temperature: 287.922272
+  temperature: 288.183228
   connections: 12
 - id: WireRefined
   location_x: 9
   location_y: 1
   element: Copper
-  temperature: 287.129395
+  temperature: 288.075378
   connections: 13
 - id: WireRefined
   location_x: 9
@@ -2115,45 +2115,109 @@ buildings:
   location_x: 2
   location_y: 2
   element: Copper
-  temperature: 291.90094
+  temperature: 292.099884
   connections: 3
 - id: WireRefined
   location_x: 3
   location_y: 2
   element: Copper
-  temperature: 291.07608
+  temperature: 291.284515
   connections: 3
 - id: WireRefined
   location_x: 4
   location_y: 2
   element: Copper
-  temperature: 290.226501
+  temperature: 290.451752
   connections: 3
 - id: WireRefined
   location_x: 5
   location_y: 2
   element: Copper
-  temperature: 289.405579
+  temperature: 289.601837
   connections: 3
 - id: WireRefined
   location_x: 6
   location_y: 2
   element: Copper
-  temperature: 288.420471
+  temperature: 288.814026
   connections: 1
 - id: WireRefined
   location_x: 7
   location_y: 1
   element: Copper
-  temperature: 286.711243
+  temperature: 287.724945
   connections: 2
 - id: WireRefined
   location_x: 8
   location_y: 1
   element: Copper
-  temperature: 286.163483
+  temperature: 287.206146
   connections: 3
-- id: ExteriorWall
+- id: WireRefined
+  location_x: -9
+  location_y: 3
+  element: Copper
+  temperature: 293.149994
+  connections: 12
+- id: WireRefined
+  location_x: -9
+  location_y: 4
+  element: Copper
+  temperature: 293.149994
+  connections: 8
+- id: WireRefined
+  location_x: -9
+  location_y: -4
+  element: Copper
+  temperature: 293.149994
+  connections: 12
+- id: WireRefined
+  location_x: -9
+  location_y: -5
+  element: Copper
+  temperature: 293.149994
+  connections: 4
+- id: WireRefined
+  location_x: 9
+  location_y: -4
+  element: Copper
+  temperature: 293.149994
+  connections: 12
+- id: WireRefined
+  location_x: 9
+  location_y: -5
+  element: Copper
+  temperature: 293.149994
+  connections: 4
+- id: WireRefined
+  location_x: 9
+  location_y: 3
+  element: Copper
+  temperature: 293.149994
+  connections: 12
+- id: WireRefined
+  location_x: 9
+  location_y: 4
+  element: Copper
+  temperature: 293.149994
+  connections: 8
+- id: InsulationTile
+  location_y: -8
+  element: Obsidian
+  temperature: 293.149994
+- id: RTB_DerelictExteriorWall
+  location_x: 9
+  location_y: 1
+  element: SandStone
+  temperature: 288.075378
+  facadeid: ExteriorWall_basic_grey_charcoal
+- id: RTB_DerelictExteriorWall
+  location_x: 7
+  location_y: 2
+  element: SandStone
+  temperature: 288.581665
+  facadeid: ExteriorWall_basic_grey_charcoal
+- id: RTB_DerelictExteriorWall
   location_x: 2
   location_y: -1
   element: SandStone
@@ -2170,477 +2234,463 @@ buildings:
   location_y: -1
   element: Cuprite
   temperature: 293.149994
-- id: RTB_POI_SolarPanel
-  location_x: -9
-  location_y: -5
-  element: Diamond
-  temperature: 293.149994
-  rotationOrientation: R180
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -9
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -10
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -10
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -10
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
-  element: Isoresin
+- id: RTB_DerelictExteriorWall
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -1
   location_y: 8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -2
   location_y: 8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -2
   location_y: 7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -2
   location_y: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -2
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
-  location_y: 8
-  element: Isoresin
-  temperature: 293.221069
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 2
   location_y: 8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 2
   location_y: 7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
-  location_y: 7
-  element: Isoresin
-  temperature: 293.221069
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 2
   location_y: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 2
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_y: 3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 1
   location_y: 4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 3
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 3
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 3
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 4
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 5
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 6
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 6
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 7
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 8
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 6
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 5
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 4
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 4
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 5
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: 5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -3
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -3
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -3
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -3
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -4
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -5
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -6
   location_y: 1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -6
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -7
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -8
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -8
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -7
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -6
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -6
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -5
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -4
   location_y: -2
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -4
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -5
   location_y: -1
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -5
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
-- id: PropGravitasWall
+- id: RTB_DerelictExteriorWall
   location_x: -4
-  element: Isoresin
+  element: Unobtanium
   temperature: 298.149994
 - id: RTB_POI_SolarPanel
   location_x: -9
@@ -2652,18 +2702,6 @@ buildings:
   location_y: 4
   element: Diamond
   temperature: 293.149994
-- id: WireRefined
-  location_x: 9
-  location_y: 4
-  element: Copper
-  temperature: 293.149994
-  connections: 8
-- id: POIBunkerExteriorDoor
-  location_y: 7
-  element: Steel
-  temperature: 293.221069
-  other_values:
-  - id: sealedDoorDirection
 - id: RTB_POI_SolarPanel
   location_x: 9
   location_y: 2
@@ -2696,64 +2734,106 @@ buildings:
   element: Diamond
   temperature: 293.149994
   rotationOrientation: R180
-- id: WireRefined
-  location_x: 9
-  location_y: 3
-  element: Copper
-  temperature: 293.149994
-  connections: 12
 - id: RTB_POI_SolarPanel
   location_x: -9
   location_y: -3
   element: Diamond
   temperature: 293.149994
   rotationOrientation: R180
-- id: InsulationCompositionTile
-  location_y: -8
-  element: Obsidian
-  temperature: 293.149994
-- id: WireRefined
-  location_x: -9
-  location_y: 3
-  element: Copper
-  temperature: 293.149994
-  connections: 12
-- id: WireRefined
-  location_x: -9
-  location_y: 4
-  element: Copper
-  temperature: 293.149994
-  connections: 8
-- id: WireRefined
-  location_x: -9
-  location_y: -4
-  element: Copper
-  temperature: 293.149994
-  connections: 12
-- id: WireRefined
+- id: RTB_POI_SolarPanel
   location_x: -9
   location_y: -5
-  element: Copper
+  element: Diamond
   temperature: 293.149994
-  connections: 4
-- id: WireRefined
-  location_x: 9
-  location_y: -4
-  element: Copper
-  temperature: 293.149994
-  connections: 12
-- id: WireRefined
-  location_x: 9
+  rotationOrientation: R180  
+- id: RTB_PropLadder
+  location_y: -10
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -7
+  element: Unobtanium
+  temperature: 294.149109
+- id: RTB_PropLadder
+  location_y: -9
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 6
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -6
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
   location_y: -5
-  element: Copper
-  temperature: 293.149994
-  connections: 4
-- id: ItemPedestal
-  location_x: 6
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -4
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -3
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_x: 1
   location_y: -2
-  element: IgneousRock
-  temperature: 293.149994
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_x: -1
+  location_y: -2
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -2
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: -1
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 1
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 2
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 3
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 4
+  element: Unobtanium
+  temperature: 294.149994
+- id: RTB_PropLadder
+  location_y: 5
+  element: Unobtanium
+  temperature: 294.149994
 otherEntities:
+- id: RTB_DerelictSuitLocker
+  location_x: 2
+  location_y: 5
+  element: Unobtanium
+  temperature: 294.149994
+  units: 1
+  type: Other
+- id: RTB_DerelictSuitLocker
+  location_x: -2
+  location_y: 5
+  element: Unobtanium
+  temperature: 294.149994
+  units: 1
+  type: Other
 - id: PropGravitasRobitcTable
   location_x: 4
   location_y: -2
@@ -2761,133 +2841,16 @@ otherEntities:
   temperature: 293.609497
   units: 1
   type: Other
-- id: PropGravitasDeskPodiumGeothermalPlant
+- id: PropGravitasDeskPodium
   location_x: -5
   location_y: -2
   element: Granite
   temperature: 293.609497
   units: 1
   type: Other
-- id: PropExoSetLocker
-  location_x: -7
+- id: RTB_TechUnlock
+  location_x: 7
   location_y: -1
   element: Unobtanium
-  temperature: 294.149994
+  temperature: 293.149994
   units: 1
-  type: Other
-- id: PropExoSetLocker
-  location_x: -8
-  location_y: -1
-  element: Unobtanium
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -10
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -7
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -9
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 6
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -6
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -5
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -4
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -3
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_x: 1
-  location_y: -2
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_x: -1
-  location_y: -2
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -2
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: -1
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 1
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 2
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 3
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 4
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other
-- id: PropLadder
-  location_y: 5
-  element: Polypropylene
-  temperature: 294.149994
-  units: 1
-  type: Other

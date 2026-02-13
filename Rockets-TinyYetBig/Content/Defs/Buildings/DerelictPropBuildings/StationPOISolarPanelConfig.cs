@@ -8,7 +8,7 @@ using TUNING;
 using UnityEngine;
 using static Grid;
 
-namespace Rockets_TinyYetBig.Content.Defs.Buildings
+namespace Rockets_TinyYetBig.Content.Defs.Buildings.DerelictPropBuildings
 {
 	internal class StationPOISolarPanelConfig : IBuildingConfig
 	{
@@ -30,14 +30,16 @@ namespace Rockets_TinyYetBig.Content.Defs.Buildings
 				decor: DECOR.BONUS.TIER0,
 				noise: NOISE_POLLUTION.NONE);
 
-			buildingDef.SceneLayer = SceneLayer.BuildingFront;
+			buildingDef.SceneLayer = SceneLayer.LogicGatesFront;
 			buildingDef.Floodable = false;
 			buildingDef.Overheatable = false;
 			buildingDef.Entombable = false;
+			buildingDef.Invincible = true;
 			buildingDef.AudioCategory = "Metal";
 			buildingDef.AudioSize = "small";
 			buildingDef.BaseTimeUntilRepair = -1f;
 			buildingDef.PermittedRotations = PermittedRotations.R360;
+			buildingDef.ShowInBuildMenu = false;
 
 			return buildingDef;
 		}
@@ -51,7 +53,10 @@ namespace Rockets_TinyYetBig.Content.Defs.Buildings
 		public override void DoPostConfigureComplete(GameObject go)
 		{
 			var anim = go.AddOrGet<AnimTileable>();
-			go.GetComponent<KPrefabID>().AddTag(GameTags.Bunker);
+			KPrefabID component = go.GetComponent<KPrefabID>();
+			component.AddTag(GameTags.Bunker);
+			component.AddTag(GameTags.NoRocketRefund);
+			go.GetComponent<Deconstructable>().allowDeconstruction = false;
 		}
 	}
 }

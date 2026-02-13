@@ -12,7 +12,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 		[Serialize] List<PartProject> OpenParts = new List<PartProject>();
 		[Serialize] List<PartProject> InProgressParts = new List<PartProject>();
 		[Serialize] List<PartProject> FinishedParts = new List<PartProject>();
-		[Serialize] ConstructionProjectAssembly CurrentProject = null;
+		[Serialize] ConstructionProjectAssembly? CurrentProject = null;
 
 
 		public bool SetDerelict(bool value) => _derelictStation = value;
@@ -39,13 +39,13 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 			if (!AllPartsFinished())
 				return;
 
-			CurrentProject.OnConstructionFinishedAction.Invoke(this);
+			CurrentProject.Value.OnConstructionFinishedAction.Invoke(this);
 			CurrentProject = null;
 		}
 
 
 
-		public bool CancelCurrentProject()
+		public bool TryCancelCurrentProject()
 		{
 			if (CurrentProject == null)
 			{
@@ -61,8 +61,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 		}
 		public void ForceFinishProject(ConstructionProjectAssembly project)
 		{
-
-			foreach (var part in project.Parts)
+			foreach (PartProject part in project.Parts)
 			{
 				FinishedParts.Add(part);
 
@@ -82,15 +81,11 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 				else
 					SgtLogger.warning(part.ResourceTag + " was not a valid resource");
 			}
-			if (CancelCurrentProject())
-			{
-				OpenParts.AddRange(new List<PartProject>(project.Parts));
-				CurrentProject = project;
-			}
+			TryCancelCurrentProject();
 		}
 		public void StartCompleteDeconstruction()
 		{
-			if (CancelCurrentProject())
+			if (TryCancelCurrentProject())
 			{
 				_currentlyDeconstructing = true;
 				List<PartProject> toDeconstruct = new List<PartProject>();
@@ -107,7 +102,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 		}
 		public void AssignProject(ConstructionProjectAssembly project)
 		{
-			if (CancelCurrentProject())
+			if (TryCancelCurrentProject())
 			{
 				_currentlyDeconstructing = false;
 				OpenParts.AddRange(new List<PartProject>(project.Parts));
@@ -167,7 +162,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 				part.IsConstructionProcess = true;
 				OpenParts.Remove(part);
 				InProgressParts.Add(part);
-				this.Trigger(ModAssets.Hashes.OnStationPartConstructionStarted, part);
+				this.BoxingTrigger(ModAssets.Hashes.OnStationPartConstructionStarted, part);
 				return true;
 			}
 			return false;
@@ -192,7 +187,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 			{
 				InProgressParts.Remove(part);
 				FinishedParts.Add(part);
-				this.Trigger(ModAssets.Hashes.OnStationPartConstructionFinished, part);
+				this.BoxingTrigger(ModAssets.Hashes.OnStationPartConstructionFinished, part);
 				return true;
 			}
 			return false;
@@ -207,7 +202,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 
 				FinishedParts.Remove(part);
 				InProgressParts.Add(part);
-				this.Trigger(ModAssets.Hashes.OnStationPartConstructionStarted, part);
+				this.BoxingTrigger(ModAssets.Hashes.OnStationPartConstructionStarted, part);
 				return true;
 			}
 			return false;
@@ -235,7 +230,7 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 			{
 				InProgressParts.Remove(part);
 				OpenParts.Add(part);
-				this.Trigger(ModAssets.Hashes.OnStationPartConstructionFinished, part);
+				this.BoxingTrigger(ModAssets.Hashes.OnStationPartConstructionFinished, part);
 
 				part.IsConstructionProcess = true;
 				return true;

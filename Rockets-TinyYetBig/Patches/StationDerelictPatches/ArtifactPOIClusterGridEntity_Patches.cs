@@ -17,7 +17,7 @@ namespace Rockets_TinyYetBig.Patches.StationDerelictPatches
 		public static class ArtifactPOIClusterGridEntity_ReplaceOnReveal
 		{
 			[HarmonyPrepare]
-			static bool Prepare() => false; //disabled because derelict stations arent an official feature yet
+			static bool Prepare() => Config.Derelicts;
 			public static void Postfix(ArtifactPOIClusterGridEntity __instance, ref bool __result)
 			{
 				if (__instance.TryGetComponent<LoreBearer>(out var loreBearer))

@@ -17,13 +17,14 @@ namespace Rockets_TinyYetBig.Patches.StationDerelictPatches
 		public static class RevealDerelictOnLoreRead
 		{
 			[HarmonyPrepare]
-			static bool Prepare() => false;
+			static bool Prepare() => Config.Derelicts;
 			public static void Postfix(LoreBearer __instance)
 			{
 				ClusterManager.Instance.Trigger(1943181844, "lorebearer revealed");
 				if (__instance.TryGetComponent<ArtifactPOIClusterGridEntity>(out var artifact))
 				{
-					DerelictStation.SpawnNewDerelictStation(artifact);
+					if(DerelictStation.SpawnNewDerelictStation(artifact, out var entity))
+						ClusterMapSelectTool.Instance.SelectNextFrame(entity.GetComponent<KSelectable>());
 				}
 
 			}

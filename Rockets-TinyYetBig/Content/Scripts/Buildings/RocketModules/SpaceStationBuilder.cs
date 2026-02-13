@@ -9,7 +9,7 @@ namespace Rockets_TinyYetBig.SpaceStations
 		[MyCmpGet] Storage storage;
 
 		[Serialize]
-		PartProject CurrentProject = null;
+		PartProject? CurrentProject = null;
 		[Serialize]
 		SpaceConstructable CurrentSite = null;
 
@@ -18,10 +18,12 @@ namespace Rockets_TinyYetBig.SpaceStations
 		{
 			constructionProcess = true;
 			remainingTime = -1;
+
 			if (HasProject)
 			{
-				constructionProcess = CurrentProject.IsConstructionProcess;
-				remainingTime = CurrentProject.TotalConstructionTime - CurrentProject.CurrentConstructionTime;
+				var project = CurrentProject.Value;
+				constructionProcess = project.IsConstructionProcess;
+				remainingTime = project.TotalConstructionTime - project.CurrentConstructionTime;
 				return true;
 			}
 			return false;
@@ -54,7 +56,7 @@ namespace Rockets_TinyYetBig.SpaceStations
 		{
 			if (HasProject)
 			{
-				if (CurrentProject.IsConstructionProcess)
+				if (CurrentProject.Value.IsConstructionProcess)
 					ProgressConstruction(dt);
 				else
 					ProgressDeconstruction(dt);
@@ -62,26 +64,28 @@ namespace Rockets_TinyYetBig.SpaceStations
 		}
 		private void ProgressDeconstruction(float dt)
 		{
-			if (CurrentProject.CurrentConstructionTime >= 0)
+			var project = CurrentProject.Value;
+			if (project.CurrentConstructionTime >= 0)
 			{
-				CurrentProject.CurrentConstructionTime += dt;
-				if (CurrentProject.CurrentConstructionTime >= CurrentProject.TotalConstructionTime)
+				project.CurrentConstructionTime += dt;
+				if (project.CurrentConstructionTime >= project.TotalConstructionTime)
 				{
-					CurrentSite.FinishConstruction(CurrentProject);
-					CurrentSite.PutInConstructionStorage(CurrentProject, storage);
+					CurrentSite.FinishConstruction(project);
+					CurrentSite.PutInConstructionStorage(project, storage);
 					CurrentProject = null;
 				}
 			}
 		}
 		private void ProgressConstruction(float dt)
 		{
-			if (CurrentProject.CurrentConstructionTime >= 0)
+			var project = CurrentProject.Value;
+			if (project.CurrentConstructionTime >= 0)
 			{
-				CurrentProject.CurrentConstructionTime += dt;
-				if (CurrentProject.CurrentConstructionTime >= CurrentProject.TotalConstructionTime)
+				project.CurrentConstructionTime += dt;
+				if (project.CurrentConstructionTime >= project.TotalConstructionTime)
 				{
-					CurrentSite.FinishConstruction(CurrentProject);
-					CurrentSite.PutInConstructionStorage(CurrentProject, storage);
+					CurrentSite.FinishConstruction(project);
+					CurrentSite.PutInConstructionStorage(project, storage);
 					CurrentProject = null;
 				}
 			}
@@ -109,10 +113,11 @@ namespace Rockets_TinyYetBig.SpaceStations
 		{
 			if (HasProject)
 			{
-				if (CurrentProject.IsConstructionProcess)
-					CurrentSite.CancelConstruction(CurrentProject);
+				var project = CurrentProject.Value;
+				if (project.IsConstructionProcess)
+					CurrentSite.CancelConstruction(project);
 				else
-					CurrentSite.CancelDeconstruction(CurrentProject);
+					CurrentSite.CancelDeconstruction(project);
 
 				CurrentProject = null;
 			}

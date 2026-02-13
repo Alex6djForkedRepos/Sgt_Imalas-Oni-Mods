@@ -335,7 +335,7 @@ namespace Rockets_TinyYetBig.SpaceStations
 		{
 		}
 
-		public bool SidescreenEnabled() => true;
+		public bool SidescreenEnabled() => !IsDerelict;
 
 		public bool SidescreenButtonInteractable() => CanUpgrade;
 

@@ -19,6 +19,7 @@ using UtilLibs;
 using Rockets_TinyYetBig.Content.Defs.Buildings.RocketPortAdapters;
 using Rockets_TinyYetBig.Content.Defs.Buildings.Research;
 using Rockets_TinyYetBig.Content.Defs.Buildings;
+using Rockets_TinyYetBig.Content.Defs.Buildings.DerelictPropBuildings;
 
 namespace Rockets_TinyYetBig.Content.ModDb
 {

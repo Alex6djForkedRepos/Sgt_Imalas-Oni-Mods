@@ -4,8 +4,13 @@ using UnityEngine;
 
 namespace Rockets_TinyYetBig.SpaceStations.Construction
 {
-	public class ConstructionProjectAssembly
+	public struct ConstructionProjectAssembly
 	{
+		public ConstructionProjectAssembly(List<PartProject> parts)
+		{
+			Parts = [.. parts];
+		}
+
 		public string ProjectName = "Space Project";
 		public string ProjectDescription = "Space Project Desc.";
 
@@ -18,6 +23,5 @@ namespace Rockets_TinyYetBig.SpaceStations.Construction
 
 		public Sprite PreviewSprite = null;
 		public Action<SpaceConstructable> OnConstructionFinishedAction = null;
-
 	}
 }

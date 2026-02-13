@@ -12,10 +12,10 @@ namespace Rockets_TinyYetBig.Derelicts
 		public static readonly string DerelictTemplateName = "_RTB_DerelictInterior";
 		List<Tuple<string, Vector2I, string>> POIS = new List<Tuple<string, Vector2I, string>>()
 		{
-			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation1",new Vector2I (32,32),"station_1" ),
-			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation2",new Vector2I (32,32),"station_2" ),
-			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation3",new Vector2I (32,32),"station_3" ),
-			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation4",new Vector2I (19,18),"station_4" ),
+			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation1",new Vector2I (21,11),"station_1" ),
+			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation2",new Vector2I (15,24),"station_2" ),
+			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation3",new Vector2I (16,22),"station_3" ),
+			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation4",new Vector2I (20,18),"station_4" ),
 			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation5",new Vector2I (32,32),"station_5" ),
 			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation6",new Vector2I (32,32),"station_6" ),
 			new Tuple<string, Vector2I, string>("ArtifactSpacePOI_GravitasSpaceStation7",new Vector2I (32,32),"station_7" ),

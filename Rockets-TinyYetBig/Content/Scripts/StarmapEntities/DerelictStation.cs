@@ -59,27 +59,28 @@ namespace Rockets_TinyYetBig.Derelicts
 				RTB_SavegameStoredSettings.Instance.DerelictInteriorWorlds.Add(SpaceStationInteriorId);
 
 		}
-		public static void SpawnNewDerelictStation(ArtifactPOIClusterGridEntity source)
+		public static bool SpawnNewDerelictStation(ArtifactPOIClusterGridEntity source, out DerelictStation spaceStation)
 		{
-
+			spaceStation = null;
 			source.TryGetComponent<KPrefabID>(out var id);
 			var targetStationId = id.PrefabID() + DerelictStationConfigs.DerelictTemplateName;
 			SgtLogger.l(targetStationId, "targetStation");
 			if (Assets.GetPrefab(targetStationId) == null)
-				return;
+				return false;
 			var originalDef = source.gameObject.GetSMI<ArtifactPOIStates.Instance>();
 			if (originalDef == null || originalDef.configuration.DestroyOnHarvest())
-				return;
+				return false;
 
 			Vector3 position = new Vector3(-1f, -1f, 0.0f);
 			GameObject sat = Util.KInstantiate(Assets.GetPrefab(targetStationId), position);
 			sat.SetActive(true);
-			var spaceStation = sat.GetComponent<DerelictStation>();
+			spaceStation = sat.GetComponent<DerelictStation>();
 			spaceStation.Location = source.Location;
 			var site = sat.AddOrGet<SpaceConstructable>();
 			site.buildPartStorage = sat.AddComponent<Storage>();
 			site.SetDerelict(true);
 			site.ForceFinishProject(ConstructionProjects.DerelictStation);
+			return true;
 		}
 		public override void OnCleanUp()
 		{
