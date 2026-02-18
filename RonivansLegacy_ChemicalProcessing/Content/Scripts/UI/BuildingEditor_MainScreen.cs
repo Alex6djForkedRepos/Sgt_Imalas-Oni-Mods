@@ -100,7 +100,8 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts.UI
 
 		public void UpdateEntryList()
 		{
-			foreach (var outline in BuildingManager.ConfigCollection.BuildingConfigurations)
+			var configs = BuildingManager.ConfigCollection.BuildingConfigurations.OrderBy(kvp => kvp.Value.GetDisplayName()).ToList();
+			foreach (var outline in configs)
 			{
 				var uiElement = AddOrGetBuildingConfigUIEntry(outline.Value);
 				uiElement.UpdateUI();

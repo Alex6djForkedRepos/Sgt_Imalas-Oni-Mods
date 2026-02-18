@@ -164,7 +164,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb.BuildingConfigurations
 
 		internal string GetDisplayName()
 		{
-			return Strings.Get($"STRINGS.BUILDINGS.PREFABS.{BuildingID.ToUpperInvariant()}.NAME");
+			return global::STRINGS.UI.StripLinkFormatting(Strings.Get($"STRINGS.BUILDINGS.PREFABS.{BuildingID.ToUpperInvariant()}.NAME"));
 		}
 		internal string GetDisplayDescription()
 		{

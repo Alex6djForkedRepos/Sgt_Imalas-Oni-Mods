@@ -7,8 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UtilLibs;
-using static Grid.Restriction;
-using static Operational;
 
 namespace RonivansLegacy_ChemicalProcessing.Patches.HPA
 {
@@ -17,6 +15,8 @@ namespace RonivansLegacy_ChemicalProcessing.Patches.HPA
 	/// </summary>
 	class BuildingDef_Patches
 	{
+		static bool StructuralTilesOrHPRailsEnabled() => Config.Instance.DupesEngineering_Enabled || Config.Instance.HPA_Rails_Mod_Enabled;
+
 		static Dictionary<BuildingDef, bool> HasStructuralTileMarkerCache = [];
 		static bool DefHasStructuralTileMarker(BuildingDef def)
 		{
@@ -32,7 +32,7 @@ namespace RonivansLegacy_ChemicalProcessing.Patches.HPA
 		public class BuildingDef_IsValidTileLocation_Patch
 		{
 			[HarmonyPrepare]
-			public static bool Prepare() => Config.Instance.HPA_Rails_Mod_Enabled;
+			public static bool Prepare() => StructuralTilesOrHPRailsEnabled();
 			public static void Postfix(BuildingDef __instance, GameObject source_go, int cell, bool replacement_tile, ref string fail_reason, ref bool __result)
 			{
 				switch (__instance.BuildLocationRule)
@@ -83,7 +83,7 @@ namespace RonivansLegacy_ChemicalProcessing.Patches.HPA
 		public class BuildingDef_IsValidBuildLocation_Patch
 		{
 			[HarmonyPrepare]
-			public static bool Prepare() => Config.Instance.ChemicalProcessing_IndustrialOverhaul_Enabled;
+			public static bool Prepare() => StructuralTilesOrHPRailsEnabled();
 			/// <summary>
 			/// allow placing wires inside of structure tiles
 			/// </summary>
@@ -153,7 +153,7 @@ namespace RonivansLegacy_ChemicalProcessing.Patches.HPA
 		public class BuildingDef_IsValidPlaceLocation_Patch
 		{
 			[HarmonyPrepare]
-			public static bool Prepare() => Config.Instance.ChemicalProcessing_IndustrialOverhaul_Enabled || Config.Instance.HPA_Rails_Mod_Enabled;
+			public static bool Prepare() => StructuralTilesOrHPRailsEnabled();
 
 			public static void Postfix(BuildingDef __instance, GameObject source_go, int cell, Orientation orientation, bool replace_tile, ref string fail_reason, bool restrictToActiveWorld, ref bool __result)
 			{
