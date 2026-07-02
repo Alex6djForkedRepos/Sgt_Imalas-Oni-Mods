@@ -58,6 +58,9 @@ namespace AnimExportTool
 			//Instance = this;
 			if (TryGetComponent<TreeFilterable>(out var filter))
 				filter.tintOnNoFiltersSet = false;
+			if(TryGetComponent<Ownable>(out var ownable))
+				ownable.tintWhenUnassigned = false;
+
 		}
 
 		public override void OnSpawn()
