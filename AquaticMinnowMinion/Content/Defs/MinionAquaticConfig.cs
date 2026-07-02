@@ -101,7 +101,7 @@ namespace AquaticMinnowMinion.Content.Defs
 
 			go.GetComponent<OxygenBreather>().AddGasProvider((OxygenBreather.IGasProvider)new GasOrWaterBreatherFromWorldProvider());
 
-			if(go.TryGetComponent<MinionResume>(out var resume))
+			if (go.TryGetComponent<MinionResume>(out var resume))
 			{
 				var db = Db.Get().SkillPerks;
 				SkillPerk[] swimPerks = [
@@ -114,12 +114,19 @@ namespace AquaticMinnowMinion.Content.Defs
 				//SgtLogger.l("Aquatic effect addition");
 				resume.ApplyAdditionalSkillPerks(swimPerks);
 			}
-			if(go.TryGetComponent<Effects>(out var effects))
+			if (go.TryGetComponent<Effects>(out var effects))
 			{
 				///Immunities to liquid induced hazards
-				effects.AddImmunity(Db.Get().effects.Get("SoakingWet"), NAME);
-				effects.AddImmunity(Db.Get().effects.Get("WetFeet"), NAME);
-				effects.AddImmunity(Db.Get().effects.Get("RecentlySlippedTracker"), NAME);
+				foreach (var immuneToEffect in AQ_TUNING.EFFECT_IMMUNITIES)
+				{
+					var effect = Db.Get().effects.TryGet(immuneToEffect);
+					if (effect != null)
+					{
+						effects.AddImmunity(effect, NAME);
+					}
+					if(effects.HasEffect(immuneToEffect))
+						effects.Remove(immuneToEffect);
+				}
 			}
 
 			go.Trigger((int)GameHashes.MinionSpawned, (object)go);

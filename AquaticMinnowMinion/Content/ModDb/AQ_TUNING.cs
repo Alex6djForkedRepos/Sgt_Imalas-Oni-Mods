@@ -4,12 +4,19 @@ using System.Text;
 using TUNING;
 using UtilLibs;
 using static AquaticMinnowMinion.ModAssets;
+using static STRINGS.DUPLICANTS.MODIFIERS;
 using static TUNING.DUPLICANTSTATS;
 
 namespace AquaticMinnowMinion.Content.ModDb
 {
 	internal class AQ_TUNING
 	{
+		public static string[] EFFECT_IMMUNITIES = [
+			"SoakingWet",
+			"WetFeet",
+			"RecentlySlippedTracker", //prevents them from slipping
+			];
+
 		///1.5 cycles for gills to dry out fully
 		public class GILL_MOISTURE
 		{
