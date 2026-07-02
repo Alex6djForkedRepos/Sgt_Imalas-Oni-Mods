@@ -112,10 +112,12 @@ namespace UtilLibs.BuildingPortUtils
 
 				var target2 = AccessTools.Method(typeof(SelectToolHoverTextCard), nameof(SelectToolHoverTextCard.UpdateHoverElements));
 				var target3 = AccessTools.Method(typeof(BuildToolHoverTextCard), nameof(SelectToolHoverTextCard.UpdateHoverElements));
+				///checks if theres sth valid to draw, if yes, sets the "addAny" bool to true, which will be checked in the EndDrawing prefix
 				harmony.Patch(target2, new HarmonyMethod(typeof(PortInfoDrawing), nameof(HoverTextConfiguration_UpdateHoverElements_Prefix)));
 				harmony.Patch(target3, new HarmonyMethod(typeof(PortInfoDrawing), nameof(HoverTextConfiguration_UpdateHoverElements_Prefix)));
 
 				var target4 = AccessTools.Method(typeof(HoverTextDrawer), nameof(HoverTextDrawer.EndDrawing));
+				///Draws port info box right before endDrawing is called and the bool "addAny" was set to true, sets it to false afterwards to not affect other drawers
 				harmony.Patch(target4, new HarmonyMethod(typeof(PortInfoDrawing), nameof(HoverTextDrawer_EndDrawing_Prefix)));
 			}
 
