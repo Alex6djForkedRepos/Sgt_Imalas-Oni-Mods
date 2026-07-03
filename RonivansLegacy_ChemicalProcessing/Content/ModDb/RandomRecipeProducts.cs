@@ -695,6 +695,9 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				.AddProduct(SimHashes.Granite, 50, 200, 1f / 3f)
 				.AddProduct(SimHashes.SandStone, 50, 200, 1f / 3f)
 				.AddProductConditional(chemproc, ModElements.Chloroschist_Solid, 50, 200, 1f / 3f)
+				.AddProductConditional(dlc5Owned, SimHashes.SiltStone, 50, 300, 1f / 2f )
+				.AddProductConditional(dlc5Owned, SimHashes.Corallium, 50, 300, 1f / 2f)
+				.AddProductConditional(dlc5Owned, SimHashes.Coquina, 25, 200, 1f / 3f)
 				.Multiplier(4)
 			);
 			//===: SMART DRILLBITS HARD STRATUM RANDOM RESULTS :======================================================
@@ -900,6 +903,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				.AddProduct(SimHashes.DirtyWater, 25, 100, 3f / 20f)
 				.AddProduct(SimHashes.SaltWater, 25, 100, 3f / 20f)
 				.AddProduct(SimHashes.Brine, 25, 100, 2f / 20f)
+				.AddProduct(SimHashes.MurkyBrine, 25, 100, 2f / 20f)
 				.Multiplier(3.33f)
 				);
 

@@ -623,10 +623,18 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 		public static void ExpellerPress_Seeds(string ID)
 		{
 			HashSet<Tag> seeds = new();
+			SgtLogger.l("Gathering Seeds for ExpellerPress recipe seeds->oil");
 			foreach (var seed in Assets.GetPrefabsWithTag(GameTags.CropSeed))
 			{
 				var prefabTag = seed.PrefabID();
-				//SgtLogger.l("Seed Tag: " + prefabTag);
+				SgtLogger.l("Land Seed Tag: " + prefabTag);
+				if (!PredefinedExpellerPressRecipes.ContainsKey(prefabTag))
+					seeds.Add(prefabTag);
+			}
+			foreach (var seed in Assets.GetPrefabsWithTag(GameTags.WaterSeed))
+			{
+				var prefabTag = seed.PrefabID();
+				SgtLogger.l("Water Seed Tag: " + prefabTag);
 				if (!PredefinedExpellerPressRecipes.ContainsKey(prefabTag))
 					seeds.Add(prefabTag);
 			}
