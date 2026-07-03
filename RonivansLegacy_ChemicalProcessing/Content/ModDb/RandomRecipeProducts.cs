@@ -279,7 +279,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				.AddProduct(SimHashes.Fertilizer, 10, 20, 2f / 9f)
 				);
 
-			///Siltstone mirrored from sandstone, with copper switched out for zinc, sulfur replaces fertilizer
+			///Siltstone mirrored from sandstone, with copper switched out for zinc, sulfur replaces fertilizer, add coquina
 			results.Add(SimHashes.SiltStone.CreateTag(),
 				new RecipeRandomResult(490, 20, 50)
 				.AddProduct(SimHashes.CrushedRock, 150, 310)
@@ -288,6 +288,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				.AddProduct(SimHashes.Electrum, 15, 30, 3f / 9f)
 				.AddProductConditional(chemproc, ModElements.Aurichalcite_Solid, 10, 30, 3f / 9f)
 				.AddProduct(SimHashes.Sulfur, 10, 20, 2f / 9f)
+				.AddProduct(SimHashes.Coquina, 20, 40, 3f / 9f)
 				);
 			//===: SEDIMENTARY ROCK RANDOM RESULTS :======================================================== < 500 kg >
 			//---[ Possible Results Elements: ]
@@ -688,15 +689,14 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 			//-------------------------------------------------------------------------------------------------------
 			results.Add(Mining_Drillbits_GuidanceDevice_ItemConfig.AquiferTag,
 			new RecipeRandomResult()
-				.MinRequiredProducts(3)
+				.MinRequiredProducts(4)
 				.AddProduct(SimHashes.Sand, 50, 200)
 				.AddProduct(SimHashes.Clay, 50, 200)
 				.AddProduct(SimHashes.SedimentaryRock, 50, 200, 1f / 3f)
 				.AddProduct(SimHashes.Granite, 50, 200, 1f / 3f)
-				.AddProduct(SimHashes.SandStone, 50, 200, 1f / 3f)
+				.AddProductConditional(dlc5Owned, SimHashes.SiltStone, 50, 300, 1f / 2f)
 				.AddProductConditional(chemproc, ModElements.Chloroschist_Solid, 50, 200, 1f / 3f)
-				.AddProductConditional(dlc5Owned, SimHashes.SiltStone, 50, 300, 1f / 2f )
-				.AddProductConditional(dlc5Owned, SimHashes.Corallium, 50, 300, 1f / 2f)
+				.AddProductConditional(dlc5Owned, SimHashes.Corallium, 100, 300, 1f / 2f)
 				.AddProductConditional(dlc5Owned, SimHashes.Coquina, 25, 200, 1f / 3f)
 				.Multiplier(4)
 			);
@@ -750,7 +750,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				.AddProduct(SimHashes.IgneousRock, 50, 200, 1f / 2f)
 				.AddProduct(SimHashes.Obsidian, 50, 200)
 				.AddProduct(SimHashes.Sulfur, 50, 200, 1f / 2f)
-				.AddProduct(SimHashes.Granite, 50, 200, 1f / 2f)
+				.AddProduct(SimHashes.Basalt, 50, 200, 1f / 2f)
 				.AddProduct(SimHashes.Fossil, 50, 200, 1f / 2f)
 				.AddProductConditional(chemproc, OilShale_Solid, 100, 300, 1)
 				.AddProduct(SimHashes.Galena, 50, 200, 1f / 2f)
