@@ -14,6 +14,9 @@ namespace PoisNotIncluded.Content.Scripts
 		[SerializeField]
 		public string[] AvailableAnimNames;
 
+		[SerializeField]
+		public KAnim.PlayMode Mode = KAnim.PlayMode.Loop;
+
 		[Serialize]
 		public string SelectedAnim = null;
 
@@ -35,13 +38,13 @@ namespace PoisNotIncluded.Content.Scripts
 		{
 			SelectedAnim = option.tag.ToString();
 
-			kbac.Play(SelectedAnim, KAnim.PlayMode.Loop);
+			kbac.Play(SelectedAnim, Mode);
 		}
 		public override void OnSpawn()
 		{
 			base.OnSpawn();
 			if(SelectedAnim != null) 
-				kbac.Play(SelectedAnim, KAnim.PlayMode.Loop);
+				kbac.Play(SelectedAnim, Mode);
 		}
 	}
 }

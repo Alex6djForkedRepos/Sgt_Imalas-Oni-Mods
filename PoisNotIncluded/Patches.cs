@@ -40,10 +40,11 @@ namespace PoisNotIncluded
 				,{MouldingTileConfig.ID  ,  GameStrings.PlanMenuSubcategory.Tiles  }
 				,{PropGravitasLabWallConfig.ID   ,GameStrings.PlanMenuSubcategory.Tiles  }
 				,{PropGravitasLabWindowConfig.ID   , GameStrings.PlanMenuSubcategory.Tiles  }
-				,{PropGravitasLabWindowHorizontalConfig.ID  ,GameStrings.PlanMenuSubcategory.Tiles }
+				,{PropGravitasLabWindowHorizontalConfig.ID ,GameStrings.PlanMenuSubcategory.Tiles }
 				,{FacilityBackWallWindowConfig.ID  ,GameStrings.PlanMenuSubcategory.Tiles }
 				//,{TemporalTearOpenerConfig.ID  ,GameStrings.PlanMenuSubcategory.Exploration } ///is added manually by dlc check below
 				,{MassiveHeatSinkConfig.ID  , StoryTraitsCategory }
+				,{PropBeachChairConfig.ID  , GameStrings.PlanMenuSubcategory.Recreation }
 			};
 			static HashSet<string> StoryTraitBuildings = [
 				GravitasCreatureManipulatorConfig.ID,// critter flux
@@ -124,6 +125,9 @@ namespace PoisNotIncluded
 			public static void Postfix(Db __instance)
 			{
 				PlanScreen.IconNameMap.Add(HashCache.Get().Add(POI_Category), "icon_category_lights");
+
+				InjectionMethods.AddBuildingToTechnology( GameStrings.Technology.Decor.EnvironmentalAppreciation, PropBeachChairConfig.ID);
+
 			}
 		}
 
@@ -158,6 +162,15 @@ namespace PoisNotIncluded
 				if (isSpacedOut)
 					RegisterNewBuilding("TemporalTearOpener", GameStrings.PlanMenuSubcategory.Exploration, BuildLocationRule.OnFloor, "temporal_tear_opener_kanim", "off", "STRINGS.BUILDINGS.PREFABS.TEMPORALTEAROPENER.NAME", "STRINGS.BUILDINGS.PREFABS.TEMPORALTEAROPENER.DESC", 3, 4, MATERIALS.ALL_METALS, BUILDINGS.CONSTRUCTION_MASS_KG.TIER4, decorName: true, altAnims: ["off", "on", "inert", "working_loop"]);
 
+
+				bool spawnVistas = false;
+				if (spawnVistas)
+				{
+					TryRegisterDynamicGravitasBuilding(VistaConfigs.BEACH_VISTA_ID, StoryTraitsCategory, BuildLocationRule.Anywhere, isEntitySpawner: true, materialOverride: TUNING.MATERIALS.RAW_MINERALS_OR_METALS, costOverride: [10000],debugOnly:true);
+					TryRegisterDynamicGravitasBuilding(VistaConfigs.REEF_VISTA_ID, StoryTraitsCategory, BuildLocationRule.Anywhere, isEntitySpawner: true, materialOverride: TUNING.MATERIALS.RAW_MINERALS_OR_METALS, costOverride: [8000], debugOnly: true);
+					TryRegisterDynamicGravitasBuilding(VistaConfigs.KELP_VISTA_ID, StoryTraitsCategory, BuildLocationRule.Anywhere, isEntitySpawner: true, materialOverride: TUNING.MATERIALS.RAW_MINERALS_OR_METALS, costOverride: [8000], debugOnly: true);
+					TryRegisterDynamicGravitasBuilding(VistaConfigs.ABYSS_VISTA_ID, StoryTraitsCategory, BuildLocationRule.Anywhere, isEntitySpawner: true, materialOverride: TUNING.MATERIALS.RAW_MINERALS_OR_METALS, costOverride: [8000], debugOnly: true);
+				}
 
 				TryRegisterDynamicGravitasBuilding("PropCeresPosterA", GameStrings.PlanMenuSubcategory.Decor);
 				TryRegisterDynamicGravitasBuilding("PropCeresPosterB", GameStrings.PlanMenuSubcategory.Decor);
@@ -263,8 +276,11 @@ namespace PoisNotIncluded
 				TryRegisterDynamicGravitasBuilding(GravitasToiletPaperHolderConfig.ID, GameStrings.PlanMenuSubcategory.Medical);
 				RegisterNewBuilding("GravitasToiletPOI", GameStrings.PlanMenuSubcategory.Medical, BuildLocationRule.OnFloor, "gravitas_toilet_kanim", "off", "STRINGS.BUILDINGS.PREFABS.GRAVITASBATHROOMSTALL.NAME", "STRINGS.BUILDINGS.PREFABS.GRAVITASBATHROOMSTALL.DESC", 2, 2, MATERIALS.RAW_METALS, BUILDINGS.CONSTRUCTION_MASS_KG.TIER0, decorName: true, altAnims: ["off", "working_loop"]);
 				RegisterNewBuilding("MassiveHeatSinkPOI", GameStrings.PlanMenuSubcategory.Exploration, BuildLocationRule.OnFloor, "massiveheatsink_kanim", "off", "STRINGS.BUILDINGS.PREFABS.MASSIVEHEATSINK.NAME", "STRINGS.BUILDINGS.PREFABS.MASSIVEHEATSINK.DESC", 4, 4, MATERIALS.RAW_METALS, BUILDINGS.CONSTRUCTION_MASS_KG.TIER4, decorName: true, altAnims: ["off", "on", "working_loop"]);
-				RegisterNewBuilding("GravestonePet", GameStrings.PlanMenuSubcategory.Medical, BuildLocationRule.OnFloor, "gravestone_pet_kanim", "open", "Pet Gravestone", "", 2, 3, TUNING.MATERIALS.RAW_MINERALS, [100], altAnims: ["open", "closed"]);
+				RegisterNewBuilding("GravestonePet", GameStrings.PlanMenuSubcategory.Medical, BuildLocationRule.OnFloor, "gravestone_pet_kanim", "open", "Pet Gravestone", "", 2, 3, TUNING.MATERIALS.RAW_MINERALS, [100], altAnims: ["open", "closed"], altMode: KAnim.PlayMode.Paused);
 
+				TryRegisterDynamicGravitasBuilding("POICeresTechUnlock", GameStrings.PlanMenuSubcategory.Exploration, BuildLocationRule.OnFloor, decorName: true, altAnims: ["off", "on"]);
+				TryRegisterDynamicGravitasBuilding(POIDlc4TechUnlockConfig.ID, GameStrings.PlanMenuSubcategory.Exploration, BuildLocationRule.OnFloor, decorName: true, altAnims: ["off", "on"]);
+				TryRegisterDynamicGravitasBuilding("POIDlc5TechUnlock", GameStrings.PlanMenuSubcategory.Exploration, BuildLocationRule.OnFloor, decorName: true, altAnims: ["off", "on"]);
 			}
 		}
 	}
