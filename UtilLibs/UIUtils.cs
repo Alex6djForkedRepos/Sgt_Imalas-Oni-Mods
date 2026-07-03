@@ -417,6 +417,7 @@ namespace UtilLibs
 			return number.ToString();
 		}
 		public static string EmboldenText(string text) => "<b>" + text + "</b>";
+		public static string ItalicText(string text) => "<i>" + text + "</i>";
 
 		public static string ColorText(string text, string hex)
 		{
@@ -502,6 +503,13 @@ namespace UtilLibs
 
 			knownSymbols[key] = symbol;
 			return symbol;
+		}
+
+		public static string StripAllFormatting(string title)
+		{
+			title = STRINGS.UI.StripLinkFormatting(STRINGS.UI.StripStyleFormatting(title));
+			title = STRINGS.UI.StripTagFormatting(title,"color");
+			return title;
 		}
 	}
 }
