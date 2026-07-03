@@ -125,6 +125,20 @@ msgstr ""
 "使用低级冷却液导致该精炼厂降低了精炼速度。  \n"
 "改用超级冷却剂将解决此问题。"
 
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.NAME
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.NAME"
+msgid "Thriving Growth (+{0})"
+msgstr "生长旺盛 (+{0})"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.TOOLTIP
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.TOOLTIP"
+msgid ""
+"With this much light, the algae in this building are truly thriving.\n"
+"The building currently produces an additional {0} more algae."
+msgstr ""
+"有了这么多光照，这座建筑中的藻类真的在繁盛生长。  \n"
+"目前，该建筑额外产生了{0}的藻类。"
+
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_LIGHTEFFICIENCY.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_LIGHTEFFICIENCY.NAME"
 msgid "Growth Efficiency: {0}"
@@ -135,11 +149,21 @@ msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGRO
 msgid ""
 "The algae growth in this building is currently at {0} efficiency.\n"
 "This is dependent on the light the building receives.\n"
-"Requires at minimum {1}."
+"Requires at minimum {1} averaged over all light receiving tiles to operate at full speed."
 msgstr ""
 "这座建筑中的藻类生长的效率目前的为 {0} 。\n"
 "效率取决于该建筑所接收到的光照强度。\n"
-"最低需要 {1} 。"
+"至少需要所有吸收光线的单元格平均达到{1}才能满速运行 。"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.NAME
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.NAME"
+msgid "Idle"
+msgstr ""
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.TOOLTIP
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.TOOLTIP"
+msgid "This building is not producing anything right now."
+msgstr "这座建筑目前没有任何生产。"
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_STORAGEFULL.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_STORAGEFULL.NAME"
@@ -681,12 +705,14 @@ msgstr "一种用于从原材料中提取油的机械装置。这些原材料在
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.EFFECT
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.EFFECT"
 msgid ""
-"Extract <link=\"LIQUIDVEGEOIL\">Vegetable Oil</link> from raw food ingredients. The amount of oil, and the solid waste in the form of "
+"Extracts <link=\"LIQUIDVEGEOIL\">Vegetable Oil</link> from raw food ingredients. The amount of oil, and the solid waste in the form of "
 "<link=\"SOLIDBIOMASS\">Compressed Biomass</link> depend of the ingredient choosen.\n"
-"Can be diluted with water to produce <link=\"PHYTOOIL\">Phyto Oil</link>"
+"It can also be configured to do <link=\"MILKPRESS\">Plant Pulverizer</link>Recipes.\n"
+"<link=\"LIQUIDVEGEOIL\">Vegetable Oil</link>Can be diluted with water to produce <link=\"PHYTOOIL\">Phyto Oil</link>"
 msgstr ""
 "从原始食材中提取<link=\"LIQUIDVEGEOIL\">植物油</link>。所提取的油量以及以<link=\"SOLIDBIOMASS\">压缩生物质</link>形式存在的固体废弃物的量"
 "取决于所选择的食材。\n"
+"配方也可以在<link=\"MILKPRESS\">植物粉碎机</link>中生产。\n"
 "可以用水稀释为<link=\"PHYTOOIL\">植物润滑油</link>。"
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.NAME

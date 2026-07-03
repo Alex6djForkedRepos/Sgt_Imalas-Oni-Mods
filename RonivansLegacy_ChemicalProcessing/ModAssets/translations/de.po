@@ -127,6 +127,20 @@ msgstr ""
 "musste.\n"
 "Ein Wechsel zu Superkühlmittel wird dieses Problem beheben."
 
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.NAME
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.NAME"
+msgid "Thriving Growth (+{0})"
+msgstr "Prächtiges Wachstum (+{0})"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.TOOLTIP
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_BONUSLIGHT.TOOLTIP"
+msgid ""
+"With this much light, the algae in this building are truly thriving.\n"
+"The building currently produces an additional {0} more algae."
+msgstr ""
+"Bei so viel Licht gedeihen die Algen in diesem Gebäude wirklich prächtig.\n"
+"Das Gebäude produziert derzeit zusätzlich {0} mehr Algen."
+
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_LIGHTEFFICIENCY.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGROWER_LIGHTEFFICIENCY.NAME"
 msgid "Growth Efficiency: {0}"
@@ -137,11 +151,21 @@ msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.ALGAEGRO
 msgid ""
 "The algae growth in this building is currently at {0} efficiency.\n"
 "This is dependent on the light the building receives.\n"
-"Requires at minimum {1}."
+"Requires at minimum {1} averaged over all light receiving tiles to operate at full speed."
 msgstr ""
 "Das Algenwachstum in diesem Gebäude hat derzeit eine Effizienz von {0}.\n"
 "Dies hängt von der Lichteinstrahlung auf das Gebäude ab.\n"
-"Erfordert mindestens {1}."
+"Erfordert mindestens durchschnittliche {1} für optimales Wachstum."
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.NAME
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.NAME"
+msgid "Idle"
+msgstr "Inaktiv"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.TOOLTIP
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_IDLE.TOOLTIP"
+msgid "This building is not producing anything right now."
+msgstr "Dieses Gebäude produziert momentan nicht."
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_STORAGEFULL.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDING.STATUSITEMS.CONVERTER_STORAGEFULL.NAME"
@@ -486,7 +510,7 @@ msgstr "<link=\"FRIDGELARGERED\">Roter Haushaltskühlschrank</link>"
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.AIO_FRIDGELARGE.FACADES.FRIDGELARGE_STICKERS.DESC
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.AIO_FRIDGELARGE.FACADES.FRIDGELARGE_STICKERS.DESC"
 msgid "A variant of the Household Fridge that has been plastered with a large variety of stickers"
-msgstr "Eine Variante des Haushaltskühlschranks, der mit einer Vielzahl von Aufklebern verziert wurde."
+msgstr "Eine Variante des Haushaltskühlschranks, der mit einer Vielzahl von Aufklebern verziert wurde"
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.AIO_FRIDGELARGE.FACADES.FRIDGELARGE_STICKERS.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.AIO_FRIDGELARGE.FACADES.FRIDGELARGE_STICKERS.NAME"
@@ -713,13 +737,15 @@ msgstr ""
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.EFFECT
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.EFFECT"
 msgid ""
-"Extract <link=\"LIQUIDVEGEOIL\">Vegetable Oil</link> from raw food ingredients. The amount of oil, and the solid waste in the form of "
+"Extracts <link=\"LIQUIDVEGEOIL\">Vegetable Oil</link> from raw food ingredients. The amount of oil, and the solid waste in the form of "
 "<link=\"SOLIDBIOMASS\">Compressed Biomass</link> depend of the ingredient choosen.\n"
-"Can be diluted with water to produce <link=\"PHYTOOIL\">Phyto Oil</link>"
+"It can also be configured to do <link=\"MILKPRESS\">Plant Pulverizer</link>Recipes.\n"
+"<link=\"LIQUIDVEGEOIL\">Vegetable Oil</link>Can be diluted with water to produce <link=\"PHYTOOIL\">Phyto Oil</link>"
 msgstr ""
 "Gewinnt <link=\"LIQUIDVEGEOIL\">Pflanzenöl</link> aus rohen Lebensmittelzutaten. Die Menge an Öl und festen Abfällen in Form von "
 "<link=\"SOLIDBIOMASS\">komprimierter Biomasse</link> hängen von den ausgewählten Zutaten ab.\n"
-"Pflanzenöl kann mit Wasser verdünnt werden, um <link=\"PHYTOOIL\">Phytoöl</link> herzustellen."
+"Es kann auch so konfiguriert werden, dass Rezepte des <link=\"MILKPRESS\">Pflanzen Pulverisators</link> hergestellt werden\n"
+"<link=\"LIQUIDVEGEOIL\">Pflanzenöl</link> kann mit Wasser verdünnt werden, um <link=\"PHYTOOIL\">Phytoöl</link> herzustellen."
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.NAME
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.BIOCHEMISTRY_EXPELLERPRESS.NAME"
@@ -1940,7 +1966,7 @@ msgstr "<link=\"CUSTOMSOLARPANEL\">Kompaktes Solarmodul</link>"
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.CUSTOMSOLIDGENERATOR.DESC
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.CUSTOMSOLIDGENERATOR.DESC"
 msgid "A small, custom Refined Carbon generator. This rather versatile generator has piped outputs."
-msgstr "Ein kleiner Kohlenstoff-basierter Generator. Dieser Generator verfügt über Rohrleitungen als Ausgänge"
+msgstr "Ein kleiner Kohlenstoff-basierter Generator. Dieser Generator verfügt über optionale Rohrleitungs-Ausgänge."
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.CUSTOMSOLIDGENERATOR.EFFECT
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.CUSTOMSOLIDGENERATOR.EFFECT"
@@ -2315,7 +2341,7 @@ msgstr "<link=\"HIGHTECHBIGFRIDGE\">Großer Hightech-Kühlschrank</link>"
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.HIGHTECHSMALLFRIDGE.DESC
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.HIGHTECHSMALLFRIDGE.DESC"
 msgid "A fancy fridge with a sci-fi design"
-msgstr "Ein schicker Kühlschrank in futuristischem Design."
+msgstr "Ein schicker Kühlschrank in futuristischem Design"
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.HIGHTECHSMALLFRIDGE.EFFECT
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.BUILDINGS.PREFABS.HIGHTECHSMALLFRIDGE.EFFECT"
@@ -4563,6 +4589,56 @@ msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO
 msgid "<link=\"AIOBIOPLASTICGASKET\">Bioplastic Gasket</link>"
 msgstr "<link=\"AIOBIOPLASTICGASKET\">Bioplastik-Dichtung</link>"
 
+#. RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_FIBERGLASSGASKET.DESC
+#, fuzzy
+#| msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_BIOPLASTICGASKET.DESC"
+#| msgid ""
+#| "A flexible <link=\"BIOPLASTIC\">Bioplastic</link> seal, made at the <link=\"CRAFTINGTABLE\">Crafting Station</link>.\n"
+#| "\n"
+#| "Prevents unwanted <link=\"ELEMENTSLIQUID\">Liquid</link> leakage."
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_FIBERGLASSGASKET.DESC"
+msgid ""
+"A robust <link=\"SOLIDFIBERGLASS\">Fiberglass</link> seal, made at the <link=\"CRAFTINGTABLE\">Crafting Station</link>.\n"
+"\n"
+"Prevents unwanted <link=\"ELEMENTSLIQUID\">Liquid</link> leakage."
+msgstr ""
+"Eine flexible <link=\"BIOPLASTIC\">Bioplastik</link>dichtung, hergestellt an der <link=\"CRAFTINGTABLE\">Bastelstation</link>.\n"
+"\n"
+"Verhindert unerwünschten <link=\"ELEMENTSLIQUID\">Flüssigkeits</link>verlust."
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_FIBERGLASSGASKET.NAME
+#, fuzzy
+#| msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ELEMENTS.SOLIDFIBERGLASS.NAME"
+#| msgid "<link=\"SOLIDFIBERGLASS\">Fiberglass</link>"
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_FIBERGLASSGASKET.NAME"
+msgid "<link=\"AIOFIBERGLASSGASKET\">Fiberglass Gasket</link>"
+msgstr "<link=\"SOLIDFIBERGLASS\">Fiberglas</link>"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_HARDPOLYPROPYLENEGASKET.DESC
+#, fuzzy
+#| msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_BIOPLASTICGASKET.DESC"
+#| msgid ""
+#| "A flexible <link=\"BIOPLASTIC\">Bioplastic</link> seal, made at the <link=\"CRAFTINGTABLE\">Crafting Station</link>.\n"
+#| "\n"
+#| "Prevents unwanted <link=\"ELEMENTSLIQUID\">Liquid</link> leakage."
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_HARDPOLYPROPYLENEGASKET.DESC"
+msgid ""
+"A robust <link=\"HARDPOLYPROPYLENE\">Plastium</link> seal, made at the <link=\"CRAFTINGTABLE\">Crafting Station</link>.\n"
+"\n"
+"Prevents unwanted <link=\"ELEMENTSLIQUID\">Liquid</link> leakage."
+msgstr ""
+"Eine flexible <link=\"BIOPLASTIC\">Bioplastik</link>dichtung, hergestellt an der <link=\"CRAFTINGTABLE\">Bastelstation</link>.\n"
+"\n"
+"Verhindert unerwünschten <link=\"ELEMENTSLIQUID\">Flüssigkeits</link>verlust."
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_HARDPOLYPROPYLENEGASKET.NAME
+#, fuzzy
+#| msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_BIOPLASTICGASKET.NAME"
+#| msgid "<link=\"AIOBIOPLASTICGASKET\">Bioplastic Gasket</link>"
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_HARDPOLYPROPYLENEGASKET.NAME"
+msgid "<link=\"AIOHARDPOLYPROPYLENEGASKET\">Plastium Gasket</link>"
+msgstr "<link=\"AIOBIOPLASTICGASKET\">Bioplastik-Dichtung</link>"
+
 #. RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_SIMPLEDRILLBIT_BASIC.DESC
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.ITEMS.INDUSTRIAL_PRODUCTS.AIO_SIMPLEDRILLBIT_BASIC.DESC"
 msgid "A set of drill bits made for simple mining operations."
@@ -5430,6 +5506,11 @@ msgstr "Pumpenreichweite:"
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.UI.BUILDINGEDITOR.HORIZONTALLAYOUT.ITEMINFO.SCROLLAREA.CONTENT.RANGESETTINGS_SWEEPER"
 msgid "Sweeper Range:"
 msgstr "Räumer-Reichweite:"
+
+#. RonivansLegacy_ChemicalProcessing.STRINGS.UI.BUILDINGEDITOR.HORIZONTALLAYOUT.ITEMINFO.SCROLLAREA.CONTENT.RESETBUTTON.TEXT
+msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.UI.BUILDINGEDITOR.HORIZONTALLAYOUT.ITEMINFO.SCROLLAREA.CONTENT.RESETBUTTON.TEXT"
+msgid "Reset To Default"
+msgstr ""
 
 #. RonivansLegacy_ChemicalProcessing.STRINGS.UI.BUILDINGEDITOR.HORIZONTALLAYOUT.ITEMINFO.SCROLLAREA.CONTENT.WATTAGESETTINGS
 msgctxt "RonivansLegacy_ChemicalProcessing.STRINGS.UI.BUILDINGEDITOR.HORIZONTALLAYOUT.ITEMINFO.SCROLLAREA.CONTENT.WATTAGESETTINGS"
