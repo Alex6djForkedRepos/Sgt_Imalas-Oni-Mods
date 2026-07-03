@@ -14,6 +14,36 @@ namespace DebugButton
 {
 	internal class Patches
 	{
+		static bool isAppleSilicon => System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
+		static bool triedInitTraverse = false;
+		static bool traverseSuccessful = false;
+		public static Traverse f_showImGui;
+
+		public static bool ShowImGui => traverseSuccessful && f_showImGui.GetValue<bool>();
+
+		static void InitTraverse()
+		{
+			if (triedInitTraverse)
+				return;
+			triedInitTraverse = true;
+
+			var devToolManager = AccessTools.TypeByName("DevToolManager");
+			try
+			{
+				if (devToolManager != null)
+				{
+					var instance = devToolManager.Field("Instance").GetValue(null);
+					f_showImGui = Traverse.Create(instance).Field("showImGui");
+				}
+			}
+			catch (Exception ex)
+			{
+				SgtLogger.warning("Could not init dev tools:\n"+ex.Message);
+			}
+			traverseSuccessful = f_showImGui != null;
+		}
+
 
 		public static DebugHandler _debugHandler;
 		[HarmonyPatch(typeof(TopLeftControlScreen))]
@@ -73,6 +103,7 @@ namespace DebugButton
 				}
 			}
 
+
 			public static void OnClickDevToolsToggle()
 			{
 				if (!DebugHandler.enabled)
@@ -82,7 +113,9 @@ namespace DebugButton
 				else
 				{
 					SgtLogger.l("Dev toggle clicked");
-					DevToolManager.Instance.showImGui = !DevToolManager.Instance.showImGui;
+
+					if (traverseSuccessful)
+						f_showImGui.SetValue(!f_showImGui.GetValue<bool>());
 				}
 				UpdateDebugToggleState();
 			}
@@ -158,10 +191,11 @@ namespace DebugButton
 
 			public static void Postfix(TopLeftControlScreen __instance)
 			{
-				var isArm = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
-				var isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-				var isAppleSilicon = isArm && isOSX;
+				//var isArm = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == Architecture.Arm64;
+				//var isOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+				//var isAppleSilicon = isOSX;
 
+				InitTraverse();
 				if (!isAppleSilicon)
 				{
 					var devToolsButton = Util.KInstantiateUI(__instance.sandboxToggle.gameObject, __instance.sandboxToggle.transform.parent.gameObject, true).transform;
@@ -170,11 +204,14 @@ namespace DebugButton
 					devToolsButton.Find("FG").GetComponent<Image>().sprite = Assets.GetSprite("action_repair");
 					devToolsButton.Find("Label").GetComponent<LocText>().text = STRINGS.UI.TOOLS.DEV_TOOLS.NAME;
 					devToolsButton.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 120f);
-					devToolsButton.TryGetComponent<MultiToggle>(out DevToolsButton); 
+					devToolsButton.TryGetComponent<MultiToggle>(out DevToolsButton);
 					devToolsButton.TryGetComponent<ToolTip>(out DevToolsButtonTooltip);
 					DevToolsButtonRefresher = devToolsButton.gameObject.AddOrGet<DevToolsButtonRefresher>();
 					DevToolsButton.onClick = (System.Action)Delegate.Combine(DevToolsButton.onClick, new System.Action(OnClickDevToolsToggle));
 				}
+				else
+					SgtLogger.l("IOS version detected, skipping dev tools button");
+
 				var debugTimeButton = Util.KInstantiateUI(__instance.sandboxToggle.gameObject, __instance.sandboxToggle.transform.parent.gameObject, true).transform;
 				//UIUtils.ListAllChildrenWithComponents(debugButton);
 				debugTimeButton.SetSiblingIndex(__instance.sandboxToggle.transform.GetSiblingIndex() + 1);

@@ -25,7 +25,7 @@ namespace DebugButton
 			{
 				toolTip.SetSimpleTooltip(STRINGS.UI.TOOLS.DEV_TOOLS.TOOLTIP_TOGGLE);
 
-				if (DevToolManager.Instance.showImGui)
+				if (Patches.ShowImGui)
 				{
 					toggle.ChangeState(2);
 				}
