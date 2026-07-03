@@ -82,6 +82,7 @@ namespace _SgtsModUpdater.Model.ModsJsonData
 			var modsJson = new ModsJson();
 			modsJson.version = this.version;
 			modsJson.mods = this.mods.Select(mw => mw.UnWrap()).ToList();
+			modsJson.mod_load_in_progress = false;
 			return modsJson;
 		}
 
