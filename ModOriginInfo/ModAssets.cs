@@ -32,6 +32,8 @@ namespace ModOriginInfo
 		static bool IsModdedInternal(Tag tag, out string modId) => ModdedContentPrefabIdToModId.TryGetValue(tag, out modId);
 		static Dictionary<Tag, string> ModdedContentPrefabIdToModId = [];
 		static HashSet<Tag> ModdedBuildings = [];
+		static Dictionary<Assembly, string> AssemblyToModIdMap = [];
+		public static bool IsBuilding(Tag tag) => ModdedBuildings.Contains(tag);
 
 		internal static void RegisterBuildingDef(IBuildingConfig cfg, BuildingDef def)
 		{
@@ -73,7 +75,6 @@ namespace ModOriginInfo
 				ModdedContentPrefabIdToModId[prefabId.PrefabTag] = modID;
 			}
 		}
-		static Dictionary<Assembly, string> AssemblyToModIdMap = [];
 
 		internal static void MapAssembliesToMods()
 		{

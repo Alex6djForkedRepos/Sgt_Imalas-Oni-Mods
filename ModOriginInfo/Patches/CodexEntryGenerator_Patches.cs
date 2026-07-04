@@ -29,7 +29,7 @@ namespace ModOriginInfo.Patches
 		{
 			public static void Prefix(Tag tag, List<ContentContainer> containers)
 			{
-				if (ModAssets.IsModded(tag, out _))
+				if (!ModAssets.IsBuilding(tag) && ModAssets.IsModded(tag, out _))
 				{
 					string modOrigin = ModAssets.GetModNameIfValid(tag, 0);
 					if (modOrigin.Any() && containers.Any())
