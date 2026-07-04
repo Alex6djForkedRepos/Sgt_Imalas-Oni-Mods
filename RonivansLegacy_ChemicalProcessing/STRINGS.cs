@@ -193,7 +193,7 @@ namespace RonivansLegacy_ChemicalProcessing
 							FormatAsLink("Vegetable Oil", "LIQUIDVEGEOIL"),
 							" from raw food ingredients. The amount of oil, and the solid waste in the form of ",
 							FormatAsLink("Compressed Biomass", "SOLIDBIOMASS"),
-							" depend of the ingredient choosen.\nIt can also be configured to do ",FormatAsLink("Plant Pulverizer", "MILKPRESS"),"Recipes.\n",FormatAsLink("Vegetable Oil", "LIQUIDVEGEOIL"),"Can be diluted with water to produce ",global::STRINGS.ELEMENTS.PHYTOOIL.NAME
+							" depend of the ingredient choosen.\nIt can also be configured to do ",FormatAsLink("Plant Pulverizer", "MILKPRESS")," Recipes.\n",FormatAsLink("Vegetable Oil", "LIQUIDVEGEOIL"),"Can be diluted with water to produce ",global::STRINGS.ELEMENTS.PHYTOOIL.NAME
 						]);
 				}
 				public class BIOCHEMISTRY_BIODIESELREFINERY
