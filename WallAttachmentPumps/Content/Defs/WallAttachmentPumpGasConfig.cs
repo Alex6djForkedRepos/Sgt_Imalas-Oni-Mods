@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using TUNING;
 using UnityEngine;
+using UtilLibs;
 using WallAttachmentPumps.Content.Scripts;
 
 namespace WallAttachmentPumps.Content.Defs
@@ -33,6 +34,7 @@ namespace WallAttachmentPumps.Content.Defs
 			buildingDef.UtilityOutputOffset = new CellOffset(0, 0);
 			buildingDef.LogicInputPorts = LogicOperationalController.CreateSingleInputPortList(new CellOffset(0, 0));
 			GeneratedBuildings.RegisterWithOverlay(OverlayScreen.GasVentIDs, ID);
+			SoundUtils.CopySoundsToAnim("wap_gas_kanim", "pumpgas_kanim");
 			return buildingDef;
 		}
 

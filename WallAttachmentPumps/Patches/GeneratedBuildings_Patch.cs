@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UtilLibs;
 using WallAttachmentPumps.Content.Defs;
+using static STRINGS.RESEARCH.TECHS;
 
 namespace WallAttachmentPumps.Patches
 {
@@ -20,8 +21,8 @@ namespace WallAttachmentPumps.Patches
 				InjectionMethods.AddBuildingToPlanScreenBehindNext(GameStrings.PlanMenuCategory.Ventilation, WallAttachmentPumpGasConfig.ID,  GasPumpConfig.ID);
 				InjectionMethods.AddBuildingToPlanScreenBehindNext(GameStrings.PlanMenuCategory.Plumbing, WallAttachmentPumpLiquidConfig.ID,  LiquidPumpConfig.ID);
 
-				//InjectionMethods.AddBuildingToTechnology( GameStrings.Technology.Decor.FineArt, FountainConfig.ID);
-				//InjectionMethods.AddBuildingToTechnology(GameStrings.Technology.Power.FossilFuels, FloorLightConfig.ID);
+				InjectionMethods.AddBuildingToTechnology( GameStrings.Technology.Power.ValveMiniaturization, WallAttachmentPumpGasConfig.ID);
+				InjectionMethods.AddBuildingToTechnology(GameStrings.Technology.Power.ValveMiniaturization, WallAttachmentPumpLiquidConfig.ID);
 			}
 		}
 	}

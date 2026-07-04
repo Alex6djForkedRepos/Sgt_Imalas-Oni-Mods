@@ -22,8 +22,8 @@
 
 	<!-- Mod Info -->
 	<PropertyGroup>
-		<ModName>WallAttachmentPumps</ModName>
-		<ModDescription></ModDescription>
+		<ModName>Wall Attachment Pumps</ModName>
+		<ModDescription>Adds Pumps that attach to a wall and pump liquids and gases from the other side of it</ModDescription>
 		<MinimumSupportedBuild>$(TargetGameVersion)</MinimumSupportedBuild>
 		<APIVersion>2</APIVersion>
 	</PropertyGroup>
@@ -35,9 +35,5 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\UtilLibs\UtilLibs.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="ModAssets\anim\wap_anims\wap_gas\" />
 	</ItemGroup>
 </Project>
