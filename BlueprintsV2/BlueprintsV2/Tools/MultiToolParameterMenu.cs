@@ -14,10 +14,12 @@ namespace BlueprintsV2.Tools
 	public class MultiToolParameterMenu : KMonoBehaviour
 	{
 		public delegate void SyncChanged(bool synced);
+		public delegate void ParamsChanged(Dictionary<string, ToolParameterMenu.ToggleState> changed);
 
 		public static MultiToolParameterMenu Instance;
 
 		public event SyncChanged OnSyncChanged;
+		public event ParamsChanged OnParamsChanged;
 
 		private readonly Dictionary<string, GameObject> widgets = new Dictionary<string, GameObject>();
 		private GameObject content;
@@ -25,6 +27,8 @@ namespace BlueprintsV2.Tools
 		private Dictionary<string, ToolParameterMenu.ToggleState> parameters;
 
 		private MultiToggle syncMultiToggle;
+
+		HashedString LastOverlay;
 
 		public override void OnPrefabInit()
 		{
@@ -127,6 +131,12 @@ namespace BlueprintsV2.Tools
 			content.SetActive(false);
 		}
 
+
+		public void OnOverlaySwitched(HashedString overlay)
+		{
+			LastOverlay = overlay;
+		}
+
 		public void PopulateMenu(Dictionary<string, ToolParameterMenu.ToggleState> inputParameters)
 		{
 			ClearMenu();
@@ -202,6 +212,8 @@ namespace BlueprintsV2.Tools
 			{
 				parameters[key] = toggleState;
 			}
+			if (parameters.ContainsKey(BlueprintCreationFilterKeys.Collect_Natural_Elements_ID))
+				parameters[BlueprintCreationFilterKeys.Collect_Natural_Elements_ID] = ToolParameterMenu.ToggleState.Off;
 
 			OnChange();
 		}
@@ -217,31 +229,31 @@ namespace BlueprintsV2.Tools
 		}
 		public bool AllowedOverlay(HashedString viewMode)
 		{
-			if (viewMode == OverlayModes.Power.ID)
+			if (LastOverlay == viewMode && viewMode == OverlayModes.Power.ID)
 			{
 				return AllowedLayer(ObjectLayer.Wire);
 			}
 
-			else if (viewMode == OverlayModes.LiquidConduits.ID)
+			else if (LastOverlay == viewMode && viewMode == OverlayModes.LiquidConduits.ID)
 			{
 				return AllowedLayer(ObjectLayer.LiquidConduit);
 			}
 
-			else if (viewMode == OverlayModes.GasConduits.ID)
+			else if (LastOverlay == viewMode && viewMode == OverlayModes.GasConduits.ID)
 			{
 				return AllowedLayer(ObjectLayer.GasConduit);
 			}
 
-			else if (viewMode == OverlayModes.SolidConveyor.ID)
+			else if (LastOverlay == viewMode && viewMode == OverlayModes.SolidConveyor.ID)
 			{
 				return AllowedLayer(ObjectLayer.SolidConduit);
 			}
 
-			else if (viewMode == OverlayModes.Logic.ID)
+			else if (LastOverlay == viewMode && viewMode == OverlayModes.Logic.ID)
 			{
 				return AllowedLayer(ObjectLayer.LogicGate);
 			}
-			else if (viewMode == OverlayModes.TileMode.ID)
+			else if (LastOverlay == viewMode && viewMode == OverlayModes.TileMode.ID)
 			{
 				return AllowedLayer(ModAssets.BlueprintNotesLayer);
 			}
@@ -343,6 +355,7 @@ namespace BlueprintsV2.Tools
 						continue;
 				}
 			}
+			OnParamsChanged?.Invoke(new Dictionary<string, ToolParameterMenu.ToggleState>(parameters));
 			RefreshSecondaryMenu();
 		}
 		void RefreshSecondaryMenu()

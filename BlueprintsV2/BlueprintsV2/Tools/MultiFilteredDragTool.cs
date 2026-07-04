@@ -1,6 +1,7 @@
 ﻿using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration;
 using System.Collections.Generic;
 using System.Linq;
+using UtilLibs;
 
 namespace BlueprintsV2.Tools
 {
@@ -10,15 +11,17 @@ namespace BlueprintsV2.Tools
 		public virtual bool OverlaySynced { get; set; }
 
 		private Dictionary<string, ToolParameterMenu.ToggleState> cachedParameters;
+		private Dictionary<string, ToolParameterMenu.ToggleState> persistentParameters;
 		private bool isSynced;
 
 		public override void OnActivateTool()
 		{
 			base.OnActivateTool();
 
-			MultiToolParameterMenu.Instance.PopulateMenu(DefaultParameters);
+			MultiToolParameterMenu.Instance.PopulateMenu(persistentParameters != null && persistentParameters.Any() ? persistentParameters : DefaultParameters);
 			MultiToolParameterMenu.Instance.SetOverlaySync(OverlaySynced);
 			MultiToolParameterMenu.Instance.OnSyncChanged += OnSyncChanged;
+			MultiToolParameterMenu.Instance.OnParamsChanged += StorePersistentParamChange;
 			MultiToolParameterMenu.Instance.ShowMenu();
 
 			OverlayScreen.Instance.OnOverlayChanged += OnOverlayChanged;
@@ -27,14 +30,18 @@ namespace BlueprintsV2.Tools
 
 		public override void OnDeactivateTool(InterfaceTool newTool)
 		{
+			MultiToolParameterMenu.Instance.OnParamsChanged -= StorePersistentParamChange;
 			base.OnDeactivateTool(newTool);
-
-			cachedParameters = null;
 			OverlayScreen.Instance.OnOverlayChanged -= OnOverlayChanged;
 
 			MultiToolParameterMenu.Instance.HideMenu();
 			MultiToolParameterMenu.Instance.ClearMenu();
 			MultiToolParameterMenu.Instance.OnSyncChanged -= OnSyncChanged;
+		}
+		void StorePersistentParamChange(Dictionary<string, ToolParameterMenu.ToggleState> changedValues)
+		{
+			SgtLogger.l("FILTER MENU PARAMS CHANGED");
+			persistentParameters = changedValues;
 		}
 
 		public virtual void OnSyncChanged(bool synced)
@@ -49,6 +56,7 @@ namespace BlueprintsV2.Tools
 
 		public virtual void OnOverlayChanged(HashedString overlay)
 		{
+			MultiToolParameterMenu.Instance.OnOverlaySwitched(OverlayModes.None.ID);
 			if (OverlaySynced)
 			{
 				if (overlay == null)
@@ -100,6 +108,7 @@ namespace BlueprintsV2.Tools
 						SetSynced(true);
 						MultiToolParameterMenu.Instance.PopulateMenu(parameters);
 					}
+					MultiToolParameterMenu.Instance.OnOverlaySwitched(overlay);
 				}
 			}
 		}
@@ -118,15 +127,18 @@ namespace BlueprintsV2.Tools
 
 			else
 			{
-				if (cachedParameters == null)
-				{
-					MultiToolParameterMenu.Instance.PopulateMenu(DefaultParameters);
-				}
-
-				else
+				if (cachedParameters != null)
 				{
 					MultiToolParameterMenu.Instance.PopulateMenu(cachedParameters);
 					cachedParameters = null;
+				}
+				else if (persistentParameters != null)
+				{
+					MultiToolParameterMenu.Instance.PopulateMenu(persistentParameters);
+				}
+				else
+				{
+					MultiToolParameterMenu.Instance.PopulateMenu(DefaultParameters);
 				}
 			}
 
