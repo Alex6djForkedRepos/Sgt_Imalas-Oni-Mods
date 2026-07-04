@@ -29,8 +29,9 @@ namespace ModOriginInfo
 		public static bool IsModded(KPrefabID id) => id != null && IsModdedInternal(id.PrefabTag, out _);
 		public static bool IsModded(string id, out string modId) => IsModdedInternal(id, out modId);
 		public static bool IsModded(Tag id, out string modId) => IsModdedInternal(id, out modId);
-		static bool IsModdedInternal(Tag tag, out string modId) => ModdedPrefabs.TryGetValue(tag, out modId);
-		static Dictionary<Tag, string> ModdedPrefabs = [];
+		static bool IsModdedInternal(Tag tag, out string modId) => ModdedContentPrefabIdToModId.TryGetValue(tag, out modId);
+		static Dictionary<Tag, string> ModdedContentPrefabIdToModId = [];
+		static HashSet<Tag> ModdedBuildings = [];
 
 		internal static void RegisterBuildingDef(IBuildingConfig cfg, BuildingDef def)
 		{
@@ -38,22 +39,40 @@ namespace ModOriginInfo
 
 			if (AssemblyToModIdMap.TryGetValue(defType.Assembly, out string modID))
 			{
-				ModdedPrefabs[def.PrefabID] = modID;
+				ModdedContentPrefabIdToModId[def.PrefabID] = modID;
+				ModdedBuildings.Add(def.PrefabID);
 				//SgtLogger.l("Modded Building: " + def.PrefabID + " from " + modID);
 			}
 			//else
 			//	SgtLogger.l("Vanilla Building: "+def.PrefabID);
 		}
 
-		internal static void RegisterEntity(IEntityConfig def, GameObject prefab)
+		internal static void RegisterRecipe(Assembly assembly, ComplexRecipe recipe)
 		{
+			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
+			{
+				SgtLogger.l(modID + " mod recipe: " + recipe.id);
+				ModdedContentPrefabIdToModId[recipe.id] = modID;
+				if(recipe.recipeCategoryID != null)
+					ModdedContentPrefabIdToModId[recipe.recipeCategoryID] = modID;
 
+			}
 		}
-		internal static void RegisterMultiEntity(IMultiEntityConfig def, GameObject prefab)
+		internal static void RegisterEntity(IEntityConfig def, KPrefabID prefabId)
 		{
-
+			RegisterEntity(def.GetType(), prefabId);
 		}
-
+		internal static void RegisterMultiEntity(IMultiEntityConfig def, KPrefabID prefabId)
+		{
+			RegisterEntity(def.GetType(), prefabId);	
+		}
+		static void RegisterEntity(Type defType, KPrefabID prefabId)
+		{
+			if (AssemblyToModIdMap.TryGetValue(defType.Assembly, out string modID))
+			{
+				ModdedContentPrefabIdToModId[prefabId.PrefabTag] = modID;
+			}
+		}
 		static Dictionary<Assembly, string> AssemblyToModIdMap = [];
 
 		internal static void MapAssembliesToMods()
@@ -103,14 +122,23 @@ namespace ModOriginInfo
 				modIdToNamesMap[modId] = modName;
 			}
 
-			return new string('\n', newLineCount) + UIUtils.EmboldenText(string.Format("{0}\n{1}", Text, UIUtils.ColorText(modName, colorOverride.Value)));
+			return new string('\n', newLineCount) + UIUtils.EmboldenText(string.Format("{0}\n{1}", ModdedBuildings.Contains(tag) ? TextBuilding : TextEntity, UIUtils.ColorText(modName, colorOverride.Value)));
 		}
 
-		static readonly string Text = new TranslatableTextBuilder("Modded Building, added by:")
+		static readonly string TextBuilding = new TranslatableTextBuilder("Modded Building, added by:")
 				.Add("zh", "模组建筑，添加自：")
 				.Add("de", "Mod-Gebäude, hinzugefügt von:")
 				.Add("fr", "Bâtiment du mod, ajouté par :")
-				.Add("kr", "모드 건물, 추가자:")
+				.Add("kr", "MOD 건물, 추가자:")
+				.Add("ru", "Добавлено следующим модом: ")
+				.Translate();
+
+
+		static readonly string TextEntity = new TranslatableTextBuilder("Modded Content, added by:")
+				.Add("zh", "模组内容，添加自：")
+				.Add("de", "Mod-Content, hinzugefügt von:")
+				.Add("fr", "Contenu du mod, ajouté par :")
+				.Add("kr", "MOD 엔티티, 추가자: ")
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
 

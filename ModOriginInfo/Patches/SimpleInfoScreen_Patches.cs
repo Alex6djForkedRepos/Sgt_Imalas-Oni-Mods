@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UtilLibs;
 
 namespace ModOriginInfo.Patches
 {
@@ -16,9 +17,11 @@ namespace ModOriginInfo.Patches
 		{
 			public static void Prefix(SimpleInfoScreen __instance, CollapsibleDetailContentPanel targetPanel, GameObject targetEntity)
 			{
-				if(targetEntity.TryGetComponent<KPrefabID>(out var kprefabid) && ModAssets.IsModded(kprefabid))
+				if (targetEntity == null)
+					return;
+				if (targetEntity.TryGetComponent<KPrefabID>(out var kprefabid) && ModAssets.IsModded(kprefabid))
 				{
-					ModnameDesc = ModAssets.GetModNameIfValid(kprefabid, 0);
+					ModnameDesc = ModAssets.GetModNameIfValid(kprefabid, 1);
 				}
 			}
 		}
