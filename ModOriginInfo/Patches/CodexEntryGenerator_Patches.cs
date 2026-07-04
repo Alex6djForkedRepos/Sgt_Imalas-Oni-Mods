@@ -18,7 +18,11 @@ namespace ModOriginInfo.Patches
 				string modOrigin = ModAssets.GetModNameIfValid(def, 0);
 				if (modOrigin.Any() && containers.Any())
 				{
-					containers.Last().content.Add(new CodexText(modOrigin));
+					containers.Add(new ContentContainer(new List<ICodexWidget>
+						{
+							new CodexSpacer(),
+							new CodexText(modOrigin)
+						}, ContentContainer.ContentLayout.Vertical));
 				}
 			}
 		}
@@ -34,7 +38,11 @@ namespace ModOriginInfo.Patches
 					string modOrigin = ModAssets.GetModNameIfValid(tag, 0);
 					if (modOrigin.Any() && containers.Any())
 					{
-						containers.Last().content.Add(new CodexText(modOrigin));
+						containers.Add(new ContentContainer(new List<ICodexWidget>
+						{
+							new CodexSpacer(),
+							new CodexText(modOrigin)
+						}, ContentContainer.ContentLayout.Vertical));
 					}
 				}
 			}

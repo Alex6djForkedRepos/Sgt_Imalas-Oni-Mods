@@ -32,6 +32,7 @@ namespace ModOriginInfo
 		static bool IsModdedInternal(Tag tag, out string modId) => ModdedContentPrefabIdToModId.TryGetValue(tag, out modId);
 		static Dictionary<Tag, string> ModdedContentPrefabIdToModId = [];
 		static HashSet<Tag> ModdedBuildings = [];
+		static HashSet<Tag> ModdedRecipes = [];
 		static Dictionary<Assembly, string> AssemblyToModIdMap = [];
 		public static bool IsBuilding(Tag tag) => ModdedBuildings.Contains(tag);
 
@@ -55,9 +56,12 @@ namespace ModOriginInfo
 			{
 				SgtLogger.l(modID + " mod recipe: " + recipe.id);
 				ModdedContentPrefabIdToModId[recipe.id] = modID;
-				if(recipe.recipeCategoryID != null)
+				ModdedRecipes.Add(recipe.id);
+				if (recipe.recipeCategoryID != null)
+				{
 					ModdedContentPrefabIdToModId[recipe.recipeCategoryID] = modID;
-
+					ModdedRecipes.Add(recipe.recipeCategoryID);
+				}
 			}
 		}
 		internal static void RegisterEntity(IEntityConfig def, KPrefabID prefabId)
@@ -66,7 +70,7 @@ namespace ModOriginInfo
 		}
 		internal static void RegisterMultiEntity(IMultiEntityConfig def, KPrefabID prefabId)
 		{
-			RegisterEntity(def.GetType(), prefabId);	
+			RegisterEntity(def.GetType(), prefabId);
 		}
 		static void RegisterEntity(Type defType, KPrefabID prefabId)
 		{
@@ -85,7 +89,14 @@ namespace ModOriginInfo
 
 				foreach (var dll in mod.loaded_mod_data.dlls)
 				{
-					AssemblyToModIdMap.Add(dll, mod.staticID);
+					if(!AssemblyToModIdMap.ContainsKey(dll))
+					{
+						AssemblyToModIdMap.Add(dll, mod.staticID);
+					}
+					else if (dll.FullName.Contains("PLib"))
+					{
+						SgtLogger.warning("the mod " + mod.title + " did not implement pLib properly as instructed and left the dll dangling in the mod folder instead of il-merging it.");
+					}
 				}
 			}
 		}
@@ -123,7 +134,12 @@ namespace ModOriginInfo
 				modIdToNamesMap[modId] = modName;
 			}
 
-			return new string('\n', newLineCount) + UIUtils.EmboldenText(string.Format("{0}\n{1}", ModdedBuildings.Contains(tag) ? TextBuilding : TextEntity, UIUtils.ColorText(modName, colorOverride.Value)));
+			string selectedInfoPrefix = TextEntity;
+			if (ModdedBuildings.Contains(tag))
+				selectedInfoPrefix = TextBuilding;
+			else if (ModdedRecipes.Contains(tag))
+				selectedInfoPrefix = TextRecipe;
+			return new string('\n', newLineCount) + UIUtils.EmboldenText(string.Format("{0}\n{1}", selectedInfoPrefix, UIUtils.ColorText(modName, colorOverride.Value)));
 		}
 
 		static readonly string TextBuilding = new TranslatableTextBuilder("Modded Building, added by:")
@@ -134,12 +150,19 @@ namespace ModOriginInfo
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
 
-
 		static readonly string TextEntity = new TranslatableTextBuilder("Modded Content, added by:")
 				.Add("zh", "模组内容，添加自：")
 				.Add("de", "Mod-Content, hinzugefügt von:")
 				.Add("fr", "Contenu du mod, ajouté par :")
 				.Add("kr", "MOD 엔티티, 추가자: ")
+				.Add("ru", "Добавлено следующим модом: ")
+				.Translate();
+
+		static readonly string TextRecipe = new TranslatableTextBuilder("Modded Recipe, added by:")
+				.Add("zh", "模组食谱容，添加自：")
+				.Add("de", "Mod-Rezept, hinzugefügt von:")
+				.Add("fr", "Recette du mod, ajouté par :")
+				.Add("kr", "MOD 레시피, 추가자:")
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
 
