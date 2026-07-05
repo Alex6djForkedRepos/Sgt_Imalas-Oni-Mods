@@ -14,7 +14,7 @@ namespace MassMoveTo
 
 		[Option("STRINGS.UI.MASSMOVETOOL_MULTITARGET.TITLE", "STRINGS.UI.MASSMOVETOOL_MULTITARGET.TOOLTIP")]
 		[JsonProperty]
-		public bool MultiDeliveryTargets { get; set; } = true;
+		public bool MultiDeliveryTargets { get; set; } = false;
 
 		public static bool UseMultiDelivery => Config.Instance.MultiDeliveryTargets && !ModIntegration_ChainTool.ChainToolActive;
 	}

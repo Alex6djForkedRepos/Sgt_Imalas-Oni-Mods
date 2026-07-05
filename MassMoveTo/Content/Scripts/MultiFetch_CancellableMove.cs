@@ -76,15 +76,16 @@ namespace MassMoveTo.Content.Scripts
 
 		internal void MultiChore_OnChoreEnd(Chore chore)
 		{
-			SgtLogger.l("onChoreEnd " + chore);
-			if (!MultiFetch_Chores_ReverseLookup.TryGetValue(chore, out var movable))
+			//SgtLogger.l("onChoreEnd " + chore);
+			if (!MultiFetch_Chores_ReverseLookup.TryGetValue(chore, out var movableRef))
 			{
 				SgtLogger.error("Couldn't find chore in reverse lookup. This shouldn't happen.");
 				return;
 			}
-			SgtLogger.l(chore + " onChoreEnd, completed?: "+ chore.isComplete);
+			//SgtLogger.l(chore + " onChoreEnd, completed?: "+ chore.isComplete);
 
-			MultiFetch_Chores.Remove(movable);
+			movables.Remove(movableRef);
+			MultiFetch_Chores.Remove(movableRef);
 			MultiFetch_Chores_ReverseLookup.Remove(chore);
 
 			if (!HasAnyMoveChoresToInit())
@@ -105,7 +106,7 @@ namespace MassMoveTo.Content.Scripts
 
 		internal void MultiChore_OnCancel(Movable cancel_movable = null)
 		{
-			SgtLogger.l("OnCancel " + cancel_movable);
+			//SgtLogger.l("OnCancel " + cancel_movable);
 			for (int num = movables.Count - 1; num >= 0; num--)
 			{
 				Ref<Movable> @ref = movables[num];
@@ -144,6 +145,9 @@ namespace MassMoveTo.Content.Scripts
 		internal void MultiChore_SetMovable(Movable movable)
 		{
 			if (MultiFetch_Chores.Keys.Any(movRev => movRev.Get() == movable))
+				return;
+
+			if (movable == null)
 				return;
 
 			var newMovableRef = new Ref<Movable>(movable);
