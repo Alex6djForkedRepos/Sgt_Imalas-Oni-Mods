@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace UtilLibs.BuildingPortUtils
 {
-	internal class SharedConduitUtils
+	public static class SharedConduitUtils
 	{
 
 

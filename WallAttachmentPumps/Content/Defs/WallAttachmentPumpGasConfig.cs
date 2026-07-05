@@ -5,6 +5,7 @@ using System.Text;
 using TUNING;
 using UnityEngine;
 using UtilLibs;
+using UtilLibs.BuildingPortUtils;
 using WallAttachmentPumps.Content.Scripts;
 
 namespace WallAttachmentPumps.Content.Defs
@@ -45,17 +46,21 @@ namespace WallAttachmentPumps.Content.Defs
 			go.AddOrGet<LoopingSounds>();
 			go.AddOrGet<EnergyConsumer>();
 
+			//normal pump has 0.5x conduit capacity
+			float conduitCapacity = SharedConduitUtils.GetDefaultConduitCapacity(ConduitType.Gas) / 2f;
+
 			var pumpOffset = new CellOffset(0, -2);
 			go.AddOrGet<RotatablePump>().PumpOffset = pumpOffset;
-			go.AddOrGet<Storage>().capacityKg = 0.5f;
+			go.AddOrGet<Storage>().capacityKg = conduitCapacity;
 			go.AddTag(GameTags.CorrosionProof);
 
 			ElementConsumer elementConsumer = go.AddOrGet<ElementConsumer>();
 			elementConsumer.configuration = ElementConsumer.Configuration.AllGas;
-			elementConsumer.consumptionRate = 0.25f;
+			elementConsumer.consumptionRate = conduitCapacity / 2f;
 			elementConsumer.storeOnConsume = true;
 			elementConsumer.showInStatusPanel = false;
 			elementConsumer.consumptionRadius = (byte)2;
+			elementConsumer.sampleCellOffset = pumpOffset.ToVector3();
 
 			ConduitDispenser conduitDispenser = go.AddOrGet<ConduitDispenser>();
 			conduitDispenser.conduitType = ConduitType.Gas;
