@@ -17,21 +17,21 @@ namespace _3GuBsVisualFixesNTweaks.Scripts
 			base.OnPrefabInit();
 			Subscribe((int)GameHashes.VentAnimatingChanged, UpdateTint);
 		}
-
+		public override void OnSpawn()
+		{
+			kbac.SetSymbolVisiblity("leak_ceiling_bloom", false);
+		}
 		public override void OnCleanUp()
 		{
 			base.OnCleanUp();
 			Unsubscribe((int)GameHashes.VentAnimatingChanged, UpdateTint);
 		}
-
 		void UpdateTint(object data)
 		{
-			if (data == null || data is not Boxed<Color32> boxedTintColor)
+			if (data == null || data is not Element element)
 				return;
 
-			
-
-			kbac.SetSymbolTint("tint", boxedTintColor.value);
+			GameUtil.TintLiquidSymbolOnBuilding("leak_ceiling", kbac, element);
 		}
 	}
 }
