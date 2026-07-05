@@ -145,7 +145,7 @@ namespace ModOriginInfo
 		static readonly string TextBuilding = new TranslatableTextBuilder("Modded Building, added by:")
 				.Add("zh", "模组建筑，添加自：")
 				.Add("de", "Mod-Gebäude, hinzugefügt von:")
-				.Add("fr", "Bâtiment du mod, ajouté par :")
+				.Add("fr", "Équipement Moddé, ajouté par:")
 				.Add("kr", "MOD 건물, 추가자:")
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
@@ -153,7 +153,7 @@ namespace ModOriginInfo
 		static readonly string TextEntity = new TranslatableTextBuilder("Modded Content, added by:")
 				.Add("zh", "模组内容，添加自：")
 				.Add("de", "Mod-Content, hinzugefügt von:")
-				.Add("fr", "Contenu du mod, ajouté par :")
+				.Add("fr", "Contenu Moddé, ajouté par:")
 				.Add("kr", "MOD 엔티티, 추가자: ")
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
@@ -161,7 +161,7 @@ namespace ModOriginInfo
 		static readonly string TextRecipe = new TranslatableTextBuilder("Modded Recipe, added by:")
 				.Add("zh", "模组食谱容，添加自：")
 				.Add("de", "Mod-Rezept, hinzugefügt von:")
-				.Add("fr", "Recette du mod, ajouté par :")
+				.Add("fr", "Recette Moddée, ajouté par:")
 				.Add("kr", "MOD 레시피, 추가자:")
 				.Add("ru", "Добавлено следующим модом: ")
 				.Translate();
