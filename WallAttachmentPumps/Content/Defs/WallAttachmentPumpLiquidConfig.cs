@@ -28,7 +28,7 @@ namespace WallAttachmentPumps.Content.Defs
 			buildingDef.ExhaustKilowattsWhenActive = 0.0f;
 			buildingDef.SelfHeatKilowattsWhenActive = 1f;
 			buildingDef.OutputConduitType = ConduitType.Liquid;
-			buildingDef.Floodable = true;
+			buildingDef.Floodable = false;
 			buildingDef.ViewMode = OverlayModes.LiquidConduits.ID;
 			buildingDef.AudioCategory = "Metal";
 			buildingDef.PowerInputOffset = new CellOffset(0, 0);
@@ -51,7 +51,9 @@ namespace WallAttachmentPumps.Content.Defs
 
 			var pumpOffset = new CellOffset(0, -2);
 			go.AddOrGet<RotatablePump>().PumpOffset = pumpOffset;
-			go.AddOrGet<Storage>().capacityKg = conduitCapacity;
+			var storage = go.AddOrGet<Storage>();
+			storage.capacityKg = conduitCapacity;
+			storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
 			go.AddTag(GameTags.CorrosionProof);
 
 			ElementConsumer elementConsumer = go.AddOrGet<ElementConsumer>();
@@ -65,7 +67,7 @@ namespace WallAttachmentPumps.Content.Defs
 			ConduitDispenser conduitDispenser = go.AddOrGet<ConduitDispenser>();
 			conduitDispenser.conduitType = ConduitType.Liquid;
 			conduitDispenser.alwaysDispense = true;
-			conduitDispenser.elementFilter = (SimHashes[])null;
+			conduitDispenser.elementFilter = null;
 
 			go.AddOrGetDef<OperationalController.Def>();
 			go.GetComponent<KPrefabID>().AddTag(GameTags.OverlayBehindConduits);

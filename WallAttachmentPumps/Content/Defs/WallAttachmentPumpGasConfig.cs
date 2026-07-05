@@ -51,8 +51,9 @@ namespace WallAttachmentPumps.Content.Defs
 
 			var pumpOffset = new CellOffset(0, -2);
 			go.AddOrGet<RotatablePump>().PumpOffset = pumpOffset;
-			go.AddOrGet<Storage>().capacityKg = conduitCapacity;
-			go.AddTag(GameTags.CorrosionProof);
+			var storage = go.AddOrGet<Storage>();
+			storage.capacityKg = conduitCapacity;
+			storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
 
 			ElementConsumer elementConsumer = go.AddOrGet<ElementConsumer>();
 			elementConsumer.configuration = ElementConsumer.Configuration.AllGas;
