@@ -1,5 +1,6 @@
 ﻿using Beached_ModAPI;
 using Database;
+using Epic.OnlineServices.Lobby;
 using Klei.AI;
 using SetStartDupes.API_IO;
 using SetStartDupes.DuplicityEditing.ScreenComponents;
@@ -50,8 +51,7 @@ namespace SetStartDupes
 		Dictionary<SkillGroup, UI_InterestLogic> UI_InterestEntries = new();
 		Dictionary<Klei.AI.Attribute, NumberInput> UI_AttributeEntries = new();
 
-
-
+		NumberInput ExtraXPSkillPoints;
 
 		GameObject ListEntryButtonPrefab;
 		GameObject ListEntryButtonContainer;
@@ -68,6 +68,8 @@ namespace SetStartDupes
 		ToolTip TraitBalanceTooltipCMP;
 		string TraitBalanceTooltip;
 
+
+		GameObject ExtraSkillPointsContainer;
 
 		GameObject AttributeContainer;
 
@@ -121,8 +123,22 @@ namespace SetStartDupes
 			Debug.Assert(TraitContainer, "traitcontainer was null!");
 
 			AttributeContainer = InitContainer("AttributeContainer", global::STRINGS.UI.DETAILTABS.STATS.GROUPNAME_ATTRIBUTES);
+			UIUtils.FindAndDestroy(AttributeContainer.transform, "Title", true);
 			AttributeContainer.transform.SetSiblingIndex(InterestContainer.transform.GetSiblingIndex());
 			AttributeContainer.SetActive(Config.Instance.DirectAttributeEditing);
+
+
+			ExtraSkillPointsContainer = InitContainer("ExtraSkillPointsContainer", global::STRINGS.UI.SKILLS_SCREEN.POINTS_AVAILABLE);
+			ExtraSkillPointsContainer.transform.SetSiblingIndex(InterestContainer.transform.GetSiblingIndex());
+			ExtraSkillPointsContainer.SetActive(Config.Instance.ExtraSkillPoints);
+			UIUtils.FindAndDestroy(ExtraSkillPointsContainer.transform, "Title", true);
+
+			var entryTransform = Util.KInstantiateUI(NumberInputPrefab, ExtraSkillPointsContainer);
+			ExtraXPSkillPoints = entryTransform.AddOrGet<NumberInput>();
+			ExtraXPSkillPoints.Text = global::STRINGS.UI.SKILLS_SCREEN.SORT_BY_SKILL_AVAILABLE + ":";
+			ExtraXPSkillPoints.OnInputChanged += (text) => TryChangeBonusSkillPoints(text);
+			UIUtils.FindAndDestroy(ExtraXPSkillPoints.transform, "spacer", true);
+
 
 			OverjoyedContainer = InitContainer("OverjoyedContainer", string.Format(global::STRINGS.UI.CHARACTERCONTAINER_JOYTRAIT, string.Empty));
 			OverjoyedContainer.SetActive(!Config.Instance.NoJoyReactions);
@@ -133,7 +149,7 @@ namespace SetStartDupes
 			LifeGoalContainer = InitContainer("LifeGoalContainer", string.Format(Strings.Get("STRINGS.UI.CHARACTERCONTAINER_LIFEGOAL_TRAIT"), string.Empty));
 			LifeGoalContainer.SetActive(ModAssets.Beached_LifegoalsActive);
 
-			FavFoodContainer = InitContainer("LifeGoalContainer", "Favourite Food:");
+			FavFoodContainer = InitContainer("FavFoodContainer", "Favourite Food:");
 			FavFoodContainer.SetActive(ModAssets.FoodOverhaulActive && !IsBionicMinion());
 
 			if (InterestContainer.transform.gameObject.TryGetComponent<LayoutElement>(out LayoutElement layoutElement))
@@ -202,8 +218,6 @@ namespace SetStartDupes
 			SpacerPrefab = Util.KInstantiateUI(selectLabel.gameObject);
 			SpacerPrefab.AddOrGet<LayoutElement>().minHeight = 25;
 
-
-
 			InterestBonusHeaderGO = Util.KInstantiateUI(SpacerPrefab, InterestContainer, true);
 			InterestBonusHeaderGO.name = "InterestBonusPointInfoHeader";
 			InterestBonusHeader = InterestBonusHeaderGO.GetComponent<LocText>();
@@ -238,6 +252,30 @@ namespace SetStartDupes
 			TraitBalanceHeader = TraitBalanceHeaderGO.GetComponent<LocText>();
 			TraitBalanceTooltipCMP = UIUtils.AddSimpleTooltipToObject(TraitBalanceHeaderGO.gameObject, "tt");
 			RebuildUI();
+		}
+
+		public void TryChangeBonusSkillPoints(string numberInput)
+		{
+			int minAmount = MinimumRequiredSkillPoints();
+
+			if (!int.TryParse(numberInput, out int selectedAmount) || selectedAmount < minAmount)
+				ExtraXPSkillPoints.SetInputFieldValue(minAmount.ToString());
+
+			selectedAmount = Math.Max(minAmount, selectedAmount);
+			///the minimum amount is always applied by the game itself
+			ModAssets.SetExtraLevels(Stats, selectedAmount - minAmount);
+		}
+		public int MinimumRequiredSkillPoints()
+		{
+			if (Stats == null)
+				return 0;
+			if (Stats.Traits.Contains(Db.Get().traits.Get("AncientKnowledge")))
+				return 3;
+			///only for minnow, jorge and cryo dupes both have ancient knowledge:
+			if (ModAssets.EditingSingleDupe)
+				return 0;
+			///regular dupes:
+			return StartScreenMinion ? 0 : 1;
 		}
 
 
@@ -365,7 +403,7 @@ namespace SetStartDupes
 
 			InterestBonusTooltip = string.Empty;
 
-			InterestBonusTooltip = string.Format(STRINGS.UI.DUPESETTINGSSCREEN.TRAITBONUSPOOLTOOLTIP, Config.Instance.BalanceAddRemove ? AdditionalSkillPoints : "∞");
+			InterestBonusTooltip = string.Format(STRINGS.UI.DUPESETTINGSSCREEN.TRAITBONUSPOOLTOOLTIP, Config.Instance.BalanceAddRemove ? AdditionalAttributePoints : "∞");
 
 			if (!Config.Instance.BalanceAddRemove)
 				InterestBonusTooltip += "\n" + string.Format(global::STRINGS.UI.MODIFIER_ITEM_TEMPLATE, STRINGS.UI.DUPESETTINGSSCREEN.CONFIGBALANCINGDISABLED, UIUtils.ColorText("∞", UIUtils.number_green));
@@ -380,8 +418,8 @@ namespace SetStartDupes
 				}
 			}
 
-			if (ExternalModPoints != 0)
-				InterestBonusTooltip += "\n" + string.Format(global::STRINGS.UI.MODIFIER_ITEM_TEMPLATE, STRINGS.UI.DUPESETTINGSSCREEN.OTHERMODORIGINNAME, UIUtils.ColorNumber(ExternalModPoints));
+			if (ExternalModAttributePoints != 0)
+				InterestBonusTooltip += "\n" + string.Format(global::STRINGS.UI.MODIFIER_ITEM_TEMPLATE, STRINGS.UI.DUPESETTINGSSCREEN.OTHERMODORIGINNAME, UIUtils.ColorNumber(ExternalModAttributePoints));
 
 			interestBonusTooltipCMP.SetSimpleTooltip(InterestBonusTooltip);
 		}
@@ -566,6 +604,11 @@ namespace SetStartDupes
 
 			InterestContainer.SetActive(!isBionic);
 		}
+		void RebuildXPSkillPoints()
+		{
+			ExtraXPSkillPoints.SetInputFieldValue(additionalXPSkillPoints.ToString());
+		}
+
 		void RebuildAttributes()
 		{
 			if (ToEditMinionStats == null || !Config.Instance.DirectAttributeEditing)
@@ -742,11 +785,11 @@ namespace SetStartDupes
 			SgtLogger.l("Rebuilding UI");
 
 			RebuildTypeSpecifics();
+			RebuildXPSkillPoints();
 			RebuildAttributes();
 			RebuildInterests();
 			RebuildTraits();
 			RebuildInterestPointTooltip();
-
 			UpdateUI();
 		}
 
@@ -765,22 +808,26 @@ namespace SetStartDupes
 		public List<SkillGroup> ActiveInterests = new();
 
 		MinionStartingStats ToEditMinionStats = null;
+		bool _startScreenMinion = false;
+		public bool StartScreenMinion => _startScreenMinion;
+
 		public MinionStartingStats Stats => ToEditMinionStats;
 
 
 
+		int additionalXPSkillPoints = 0;
 
 		int FallBack = -1;
 
-		int additionalSkillPoints = 0;
-		int skillPointPool = 0;
-		public int SkillPointPool => skillPointPool;
-		public int AdditionalSkillPoints => additionalSkillPoints;
+		int additionalAttributePoints = 0;
+		int attributePointPool = 0;
+		public int SkillPointPool => attributePointPool;
+		public int AdditionalAttributePoints => additionalAttributePoints;
 
-		public int ExternalModPoints => _externalModPoints;
-		int _externalModPoints = 0;
+		public int ExternalModAttributePoints => _externalModAttributePoints;
+		int _externalModAttributePoints = 0;
 
-		public string PointPool => Config.Instance.BalanceAddRemove ? UIUtils.ColorNumber(skillPointPool) : UIUtils.ColorText("∞", UIUtils.number_green);
+		public string PointPool => Config.Instance.BalanceAddRemove ? UIUtils.ColorNumber(attributePointPool) : UIUtils.ColorText("∞", UIUtils.number_green);
 
 
 		public enum NextType
@@ -815,8 +862,13 @@ namespace SetStartDupes
 			RainbowFart, //rainbow fart from rainbow farts mod
 			FoodOverhaul_Favourite, //favourite food from FoodOverhaul mod
 		}
-		internal void SetReferenceStats(MinionStartingStats referencedStats)
+		internal void SetReferenceStats(CharacterContainer container)
 		{
+			if (container == null || container.Stats == null)
+				return;
+			var referencedStats = container.Stats;
+			if (container.controller != null)
+				_startScreenMinion = (container.controller is MinionSelectScreen);
 			if (ToEditMinionStats != referencedStats)
 			{
 				SgtLogger.l("Redoing Reference");
@@ -828,6 +880,7 @@ namespace SetStartDupes
 				ModAssets.DupeTraitManagers.Add(referencedStats, this);
 
 				FavFoodContainer.SetActive(ModAssets.FoodOverhaulActive && !IsBionicMinion());
+				additionalXPSkillPoints = MinimumRequiredSkillPoints();
 				RecalculateAll();
 			}
 		}
@@ -856,16 +909,16 @@ namespace SetStartDupes
 		public bool CalculateAdditionalSkillPointsTrueIfChanged()
 		{
 			var newValue = ModAssets.GetTraitBonus(ToEditMinionStats);
-			var oldValue = additionalSkillPoints;
+			var oldValue = additionalAttributePoints;
 
-			additionalSkillPoints = newValue;
+			additionalAttributePoints = newValue;
 			return newValue != oldValue;
 		}
 		public void ExternalModBonusPointCalculation()
 		{
 			SgtLogger.l("Initializing External Bonus Point Calculation for " + ToEditMinionStats.Name);
 
-			_externalModPoints = 0;
+			_externalModAttributePoints = 0;
 			int PointsPerInterest = ModAssets.MinimumPointsPerInterest(ToEditMinionStats);
 
 			SgtLogger.l("Minimum points per interest: " + PointsPerInterest);
@@ -895,34 +948,34 @@ namespace SetStartDupes
 				{
 					int pointsThatAttributeShouldHave = relevantAttributes[startingLevel.Key] * PointsPerInterest;
 
-					_externalModPoints += Math.Max(0, (startingLevel.Value - pointsThatAttributeShouldHave)); ///collecting all bonus points in that attribute
+					_externalModAttributePoints += Math.Max(0, (startingLevel.Value - pointsThatAttributeShouldHave)); ///collecting all bonus points in that attribute
 				}
 			}
-			SgtLogger.l("Total bonus gathered from starting levels " + _externalModPoints);
+			SgtLogger.l("Total bonus gathered from starting levels " + _externalModAttributePoints);
 			SgtLogger.l("Total trait bonus " + ModAssets.GetTraitBonus(ToEditMinionStats));
 			int TraitBonus = ModAssets.GetTraitBonus(ToEditMinionStats);
 
-			if (_externalModPoints > 0)
-				_externalModPoints -= TraitBonus;
+			if (_externalModAttributePoints > 0)
+				_externalModAttributePoints -= TraitBonus;
 
-			SgtLogger.l("Final Value: " + _externalModPoints);
+			SgtLogger.l("Final Value: " + _externalModAttributePoints);
 
 
-			if (_externalModPoints != 0)
+			if (_externalModAttributePoints != 0)
 			{
 				SgtLogger.l("Registering additional mod points");
-				ModAssets.OtherModBonusPoints.Add(ToEditMinionStats, _externalModPoints);
+				ModAssets.OtherModBonusPoints.Add(ToEditMinionStats, _externalModAttributePoints);
 
 			}
 		}
 
 		public void DeltaPointPool(int delta)
 		{
-			skillPointPool += delta;
+			attributePointPool += delta;
 		}
 		public void ResetPool()
 		{
-			skillPointPool = 0;
+			attributePointPool = 0;
 		}
 		public void SetFavouriteFood(Trait trait)
 		{
@@ -999,13 +1052,13 @@ namespace SetStartDupes
 						ToEditMinionStats.StartingLevels[attribute.Id]++;
 					}
 				}
-				skillPointPool--;
+				attributePointPool--;
 			}
 		}
 
 		public bool CanIncreaseInterest()
 		{
-			return skillPointPool > 0 || !Config.Instance.BalanceAddRemove;
+			return attributePointPool > 0 || !Config.Instance.BalanceAddRemove;
 		}
 		public bool CanReduceInterest(SkillGroup interest)
 		{
@@ -1037,7 +1090,7 @@ namespace SetStartDupes
 					ToEditMinionStats.StartingLevels[attribute.Id]--;
 				}
 			}
-			skillPointPool++;
+			attributePointPool++;
 		}
 
 
@@ -1142,8 +1195,8 @@ namespace SetStartDupes
 
 		public void RecalculateSkillPoints()
 		{
-			SgtLogger.l("Recalculating Skill Points, current amount to Ship: " + AdditionalSkillPoints);
-			int amountToShip = AdditionalSkillPoints;
+			SgtLogger.l("Recalculating Skill Points, current amount to Ship: " + AdditionalAttributePoints);
+			int amountToShip = AdditionalAttributePoints;
 
 			Dictionary<string, int> newVals = new Dictionary<string, int>();
 

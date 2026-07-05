@@ -1160,5 +1160,60 @@ namespace SetStartDupes
 		}
 
 		public static string UnlockIcon = "OpenLock";
+
+		static ConditionalWeakTable<MinionStartingStats, AdditionalMinionStartData> AdditionalSkillLevels = new();
+		internal static void PostProcessMinion(GameObject go, MinionStartingStats stats)
+		{
+			if (AdditionalSkillLevels.TryGetValue(stats, out var data) && go.TryGetComponent<MinionResume>(out var resume))
+			{
+				if (data.ExtraXP > 0)
+				{
+					resume.AddExperience(data.ExtraXP);
+				}
+				else if (data.ExtraLevels > 0)
+				{
+					for (int i = 0; i < data.ExtraLevels; i++)
+					{
+						resume.ForceAddSkillPoint();
+					}
+				}
+
+			}
+		}
+		public static bool TryGetExtraLevels(MinionStartingStats stats, out int value)
+		{
+			if (AdditionalSkillLevels.TryGetValue(stats, out var holder))
+			{
+				value = holder.ExtraLevels;
+				return true;
+			}
+			value = 0;
+			return false;
+		}
+
+		public static void SetExtraLevels(this MinionStartingStats stats, int levels)
+		{
+			if (!AdditionalSkillLevels.TryGetValue(stats, out var holder))
+			{
+				holder = new();
+				AdditionalSkillLevels.Add(stats, holder);
+			}
+			holder.ExtraLevels = levels;
+		}
+		public static void SetExtraXp(this MinionStartingStats stats, float xp)
+		{
+			if (!AdditionalSkillLevels.TryGetValue(stats, out var holder))
+			{
+				holder = new();
+				AdditionalSkillLevels.Add(stats, holder);
+			}
+			holder.ExtraXP = xp;
+		}
+
+		class AdditionalMinionStartData
+		{
+			public float ExtraXP = 0;
+			public int ExtraLevels = 0;
+		}
 	}
 }

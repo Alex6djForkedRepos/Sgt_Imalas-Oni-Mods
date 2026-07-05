@@ -279,7 +279,7 @@ namespace SetStartDupes
 				{
 					public static LocString A_GAMESTART = "Options for Game Start";
 					public static LocString B_PRINTINGPOD = "Options for Printing Pod";
-					public static LocString C_EXTRAS = "Options for Traits and Interests";
+					public static LocString C_EXTRAS = "Options for Traits and Interests Selection";
 					public static LocString D_SKINSETTINGS = "Skin Options";
 					public static LocString E_UTIL = "Extra Settings";
 				}
@@ -477,7 +477,7 @@ namespace SetStartDupes
 				public class NORMALTRAITSONBIONICS
 				{
 					public static LocString NAME = "Allow normal traits on Bionic Duplicants";
-					public static LocString TOOLTIP = "When active, allows adding regular traits to bionic duplicants.";
+					public static LocString TOOLTIP = "When active, allows adding regular traits to bionic duplicants.\nWarning: adding certain traits to bionics can cause crashes (e.g. small bladder due to the pee-amount missing for bionics).";
 				}
 				public class NOJOYREACTION
 				{
@@ -491,8 +491,8 @@ namespace SetStartDupes
 				}
 				public class REROLLCRYOPODANDJORGE
 				{
-					public static LocString NAME = "Hermit/Cryopod Modification";
-					public static LocString TOOLTIP = "Allows modifying of the Hermit and Cryopod Duplicants.\n\"Ancient Knowledge\"-Trait no longer takes the slot of a positive trait during generation of these duplicants.";
+					public static LocString NAME = "Hermit/Minnow/Cryopod Modification";
+					public static LocString TOOLTIP = "Allows modifying of the Hermit, Minnow and Cryopod Duplicants.\n\"Ancient Knowledge\"-Trait takes the slot of a positive trait during generation of these duplicants.";
 				}
 				public class HERMITSKIN
 				{
@@ -518,6 +518,11 @@ namespace SetStartDupes
 				{
 					public static LocString NAME = "XP Multiplier Attributes";
 					public static LocString TOOLTIP = "Multiply the XP gains that duplicants individual attributes.";
+				}
+				public class EXTRA_SKILL_POINTS
+				{
+					public static LocString NAME = "Extra starting skill points";
+					public static LocString TOOLTIP = "Add extra skill points to new duplicant via a selection in the modification window.\nRequires printing pod duplicant modification to be active to add extra skillpoints to printing pod duplicants.";
 				}
 			}
 			public class DUPESKILLSPOPUP

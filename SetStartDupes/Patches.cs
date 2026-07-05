@@ -220,7 +220,7 @@ namespace SetStartDupes
 
 					if (__instance.transform.Find("ModifyDupeStats")?.gameObject.TryGetComponent<DupeTraitManager>(out DupeTraitManager mng) ?? false)
 					{
-						mng.SetReferenceStats(__instance.stats);
+						mng.SetReferenceStats(__instance);
 					}
 					else
 					{
@@ -2055,7 +2055,7 @@ namespace SetStartDupes
 				}
 				if (mngt.gameObject.TryGetComponent<DupeTraitManager>(out var mng))
 				{
-					mng.SetReferenceStats(__instance.Stats);
+					mng.SetReferenceStats(__instance);
 				}
 				else
 				{
@@ -2148,7 +2148,7 @@ namespace SetStartDupes
 				}
 				if (mngt.gameObject.TryGetComponent<DupeTraitManager>(out DupeTraitManager mng))
 				{
-					mng.SetReferenceStats(__instance.stats);
+					mng.SetReferenceStats(__instance);
 				}
 				else
 					SgtLogger.warning("dupe mng was null!");

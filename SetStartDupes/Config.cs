@@ -63,7 +63,7 @@ namespace SetStartDupes
 		public bool ModifyDuringGame_CarePackage { get; set; } = true;
 
 		[Option("STRINGS.UI.DSS_OPTIONS.SORTEDCAREPACKAGES.NAME", "STRINGS.UI.DSS_OPTIONS.SORTEDCAREPACKAGES.TOOLTIP", "STRINGS.UI.DSS_OPTIONS.CATEGORIES.B_PRINTINGPOD")]
-		public bool CarePackageEntriesSorted { get; set; } = true;	
+		public bool CarePackageEntriesSorted { get; set; } = true;
 
 		[Option("STRINGS.UI.DSS_OPTIONS.CAREPACKAGEMULTIPLIER.NAME", "STRINGS.UI.DSS_OPTIONS.CAREPACKAGEMULTIPLIER.TOOLTIP", "STRINGS.UI.DSS_OPTIONS.CATEGORIES.B_PRINTINGPOD")]
 		[JsonProperty]
@@ -122,10 +122,10 @@ namespace SetStartDupes
 		{
 			var config = Config.Instance;
 
-			if(config.CarePackagesOnlyMode == CarePackageLimiterMode.None)
+			if (config.CarePackagesOnlyMode == CarePackageLimiterMode.None)
 				return false;
 
-			if(config.CarePackagesOnlyMode == CarePackageLimiterMode.DupeCount)
+			if (config.CarePackagesOnlyMode == CarePackageLimiterMode.DupeCount)
 				return Components.LiveMinionIdentities.Count >= config.CarePackagesOnlyDupeCap;
 
 			int bedCount = Components.NormalBeds.GlobalCount;
@@ -137,12 +137,12 @@ namespace SetStartDupes
 
 			if (config.CarePackagesOnlyMode == CarePackageLimiterMode.NumberOfBeds_SharingIsCaring)
 			{
-				if(Mod.SharingIsCaringInstalled)
+				if (Mod.SharingIsCaringInstalled)
 					return Components.LiveMinionIdentities.Count >= bedCount * scheduleCount;
 				else
 					return Components.LiveMinionIdentities.Count >= bedCount;
 			}
-			if(config.CarePackagesOnlyMode == CarePackageLimiterMode.PrinterCheckbox)
+			if (config.CarePackagesOnlyMode == CarePackageLimiterMode.PrinterCheckbox)
 			{
 				return PrintingPodCheckboxToggle.PrintOnlyCarePackages;
 			}
@@ -166,7 +166,7 @@ namespace SetStartDupes
 
 		public enum CarePackageLimiterMode
 		{
-			[Option("STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.NONE.NAME","STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.NONE.TOOLTIP")]
+			[Option("STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.NONE.NAME", "STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.NONE.TOOLTIP")]
 			None = 0,
 			[Option("STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.DUPECOUNT.NAME", "STRINGS.UI.DSS_OPTIONS.CAREPACKAGESONLY.DUPECOUNT.TOOLTIP")]
 			DupeCount = 1,
@@ -257,6 +257,11 @@ namespace SetStartDupes
 		[JsonProperty]
 		[Limit(0.01f, 20f)]
 		public float LevelingXPMultiplier_Skills { get; set; } = 1f;
+
+		[Option("STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.NAME", "STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.TOOLTIP", "STRINGS.UI.DSS_OPTIONS.CATEGORIES.C_EXTRAS")]
+		[JsonProperty]
+		public bool ExtraSkillPoints { get; set; } = false;
+
 
 
 		public Config()
