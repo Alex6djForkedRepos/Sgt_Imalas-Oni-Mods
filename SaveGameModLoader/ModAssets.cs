@@ -147,6 +147,19 @@ namespace SaveGameModLoader
 			return AcceptedByFilter(mod.label.title) || AcceptedByFilter(mod.label.id) || AcceptedByFilter(mod.staticID);
 		}
 
+		public static bool TryGetModAuthor(KMod.Mod mod, out string authorName)
+		{
+			authorName = null;
+			if (mod == null)
+				return false;
+
+			if (!SteamInfoQuery.FetchedModData.TryGetValue(mod.label.id, out var queryInfo))
+				return false;
+
+			authorName = queryInfo.authorName;
+			return authorName.Any();
+		}
+
 
 		public static bool ModAuthorFilter(string filterText, KMod.Mod mod)
 		{
@@ -267,6 +280,7 @@ namespace SaveGameModLoader
 
 		internal static void FlagBrokenMods(IReadOnlyList<KMod.Mod> mods)
 		{
+			BrokenModInstallations.Clear();
 			foreach (var mod in mods)
 			{
 				var directory = mod.label.install_path;

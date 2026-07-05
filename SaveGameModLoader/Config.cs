@@ -37,6 +37,10 @@ namespace SaveGameModLoader
 		[JsonProperty]
 		public bool UseSteamOverlay { get; set; } = true;
 
+		[Option("STRINGS.MPM_CONFIG.MODAUTHORINFO.NAME", "STRINGS.MPM_CONFIG.MODAUTHORINFO.TOOLTIP")]
+		[JsonProperty]
+		public bool ShowAuthorNamesAlways { get; set; } = false;
+
 		public Config()
 		{
 			ModProfileFolder = FileSystem.Normalize(Path.Combine(Path.Combine(KMod.Manager.GetDirectory(), "config"), "[ModSync]StoredModConfigs"));

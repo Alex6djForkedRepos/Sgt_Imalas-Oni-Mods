@@ -11,6 +11,7 @@ using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -23,6 +24,7 @@ using UtilLibs.UIcmp;
 using YamlDotNet;
 using static ModsScreen;
 using static SaveGameModLoader.ModAssets;
+using static SaveGameModLoader.STRINGS.UI.FRONTEND;
 using static SaveGameModLoader.STRINGS.UI.FRONTEND.MODTAGS;
 
 namespace SaveGameModLoader
@@ -167,17 +169,45 @@ namespace SaveGameModLoader
 		//[HarmonyPriority(Priority.HigherThanNormal)]
 		public static class ModsScreen_BuildDisplay_Patch_Pin_Button
 		{
+			private static readonly RectOffset BUTTON_MARGIN = new RectOffset(3, 3, 3, 3);
+			private static readonly Vector2 ICON_SIZE = new Vector2(20.0f, 20.0f);
+			const string
+				PinButtonImageBg = "MPM_PinButtonBg",
+				PinButton = "MPM_PinButton",
+				FolderButton = "MPM_FolderButton",
+				BgImage = "MPM_BackgroundImage",
+				ManageButtonImage = "MPM_ManageBtnImage",
+				ManageButtonLayoutElement = "MPM_ManageBtnGO",
+				PinTransform = "MPM_PinTransform",
+				tagBgnTransform = "MPM_tagBgnTransform",
+				tagBgn = "MPM_tagBgn",
+				rightClickBtn = "MPM_rightclickbutton",
+				tagBgnImg = "MPM_tagBgnImage",
+				tagBgnText = "MPM_FlagText",
+				pin_tooltip = "MPM_pin_tooltip"
+				;
+
+			private static string Spam => Encoding.UTF8.GetString(Convert.FromBase64String("YnkgQE9ueQ=="));
+
+			static ColorStyleSetting blue = null;
+			static ColorStyleSetting yellow = null;
+
+			static Color
+				normal = UIUtils.rgb(62, 67, 87),
+				pinnedBg = UIUtils.Darken(normal, 15),
+				incompatibleBg = UIUtils.rgb(26, 28, 33),
+				pinnedActive = UIUtils.Lighten(Color.red, 50),
+				pinnedInactive = Color.white,
+				HasTags = UIUtils.Lighten(Color.blue, 50),
+				HasNoTags = Color.white;
+
 			public static void ExecutePatch(Harmony harmony)
 			{
 				var m_TargetMethod = AccessTools.Method("ModsScreen, Assembly-CSharp:BuildDisplay");
 				var m_Prefix = AccessTools.Method(typeof(ModsScreen_BuildDisplay_Patch_Pin_Button), "Prefix");
 				var m_Postfix = AccessTools.Method(typeof(ModsScreen_BuildDisplay_Patch_Pin_Button), "Postfix");
-				harmony.Patch(m_TargetMethod, new HarmonyMethod(m_Prefix, Priority.HigherThanNormal), new HarmonyMethod(m_Postfix, Priority.LowerThanNormal), null);
+				harmony.Patch(m_TargetMethod, new HarmonyMethod(m_Prefix, Priority.HigherThanNormal), new HarmonyMethod(m_Postfix, Priority.Low));
 			}
-
-
-			static ColorStyleSetting blue = null;
-			static ColorStyleSetting yellow = null;
 			/// <summary>
 			/// Applied after BuildDisplay runs.
 			/// </summary>
@@ -185,7 +215,11 @@ namespace SaveGameModLoader
 
 			internal static void Prefix(ModsScreen __instance)
 			{
-				//__instance.canBackoutWithRightClick = false;
+				InitializeUIComponents(__instance);
+			}
+
+			static void InitializeUIComponents(ModsScreen __instance)
+			{
 				var transf = __instance.entryPrefab.transform;
 				if (blue == null)
 				{
@@ -243,19 +277,23 @@ namespace SaveGameModLoader
 					ElementReference er_tagBgTransf = new() { behaviour = flatTransform.transform, Name = tagBgnTransform };
 
 
-					var btn = Util.KInstantiateUI(FilterPatches._buttonPrefabStripped, __instance.entryPrefab, true);
-					btn.name = "PinBtn";
-					var tr = btn.transform;
-					//tr.SetSiblingIndex(2);
+					var pinButtonGO = Util.KInstantiateUI(FilterPatches._buttonPrefabStripped, __instance.entryPrefab, true);
+					pinButtonGO.name = "PinBtn";
+					var pin_tt = UIUtils.AddSimpleTooltipToObject(pinButtonGO, "");
 
+					var tr = pinButtonGO.transform;
+					//tr.SetSiblingIndex(2);
 					if (!tr.Find("GameObject").TryGetComponent<Image>(out var img))
 						SgtLogger.warning("button image failed!");
 					ElementReference buttonImageBg = new() { behaviour = img, Name = PinButtonImageBg };
 					if (!transf.Find("BG").TryGetComponent<Image>(out var bgImg))
 						SgtLogger.warning("Bg image failed!");
 					ElementReference backgroundImage = new() { behaviour = bgImg, Name = BgImage };
-					if (!btn.TryGetComponent<KButton>(out var button))
+					if (!pinButtonGO.TryGetComponent<KButton>(out var pinBUtton))
 						SgtLogger.warning("button failed!");
+					else
+						pinBUtton.ClearOnClick();
+
 
 					if (!hr.GetReference<KButton>("ManageButton").TryGetComponent<KImage>(out var mngButtonImg))
 						SgtLogger.warning("manage button failed!");
@@ -264,12 +302,11 @@ namespace SaveGameModLoader
 						SgtLogger.warning("manage button lo failed!");
 					lo.minWidth = 90;//100 is default;
 
-					button.ClearOnClick();
 
 					ElementReference managebtnLo = new() { behaviour = lo, Name = ManageButtonLayoutElement };
 					ElementReference managebtnImage = new() { behaviour = mngButtonImg, Name = ManageButtonImage };
 
-					ElementReference pinButton = new() { behaviour = button, Name = PinButton };
+					ElementReference pinButtonRef = new() { behaviour = pinBUtton, Name = PinButton };
 					ElementReference pinButtonTransform = new() { behaviour = tr, Name = PinTransform };
 
 					var folderBtnGo = Util.KInstantiateUI(FilterPatches._buttonPrefabRegular, __instance.entryPrefab, true);
@@ -284,12 +321,20 @@ namespace SaveGameModLoader
 					folderBtn.isInteractable = true;
 					folderBtn.transform.SetSiblingIndex(folderBtn.transform.GetSiblingIndex() - 1);
 
+
+					//LocText versionText = hr.GetReference<LocText>("Version");
+					//var modAuthorText = Util.KInstantiateUI< LocText>(versionText.gameObject,__instance.entryPrefab, true);
+					//modAuthorText.alignment = TMPro.TextAlignmentOptions.Left;
+					//modAuthorText.transform.SetSiblingIndex(hr.GetReference("Title").transform.GetSiblingIndex() + 1);
+					//modAuthorText.gameObject.SetActive(false);
+
+
 					ElementReference[] refs = new ElementReference[]
 					{
 						er_rightclickBt,
 						buttonImageBg,
 						backgroundImage,
-						pinButton,
+						pinButtonRef,
 						managebtnImage,
 						pinButtonTransform,
 						er_tagBgTransf,
@@ -297,34 +342,25 @@ namespace SaveGameModLoader
 						er_flagimg,
 						er_flagtt,
 						managebtnLo,
-						new(){behaviour = folderBtn,Name = FolderButton}
+						//new ElementReference(){behaviour = modAuthorText, Name = authorText},
+						new(){behaviour = folderBtn,Name = FolderButton},
+						new (){behaviour = pin_tt, Name = pin_tooltip}
 					};
 
 					hr.references = hr.references.AddRangeToArray(refs);
 				}
 			}
-			const string
-				PinButtonImageBg = "MPM_PinButtonBg",
-				PinButton = "MPM_PinButton",
-				FolderButton = "MPM_FolderButton",
-				BgImage = "MPM_BackgroundImage",
-				ManageButtonImage = "MPM_ManageBtnImage",
-				ManageButtonLayoutElement = "MPM_ManageBtnGO",
-				PinTransform = "MPM_PinTransform",
-				tagBgnTransform = "MPM_tagBgnTransform",
-				tagBgn = "MPM_tagBgn",
-				rightClickBtn = "MPM_rightclickbutton",
-				tagBgnImg = "MPM_tagBgnImage",
-				tagBgnText = "MPM_FlagText"
-				;
 
-			private static readonly RectOffset BUTTON_MARGIN = new RectOffset(3, 3, 3, 3);
-			private static readonly Vector2 ICON_SIZE = new Vector2(20.0f, 20.0f);
+
 
 			internal static void Postfix(ModsScreen __instance, List<DisplayedMod> ___displayedMods)
 			{
+				ModDisplayMap.Clear();
+
 				var allMods = Global.Instance.modManager.mods;
 				var modStateConfig = MPM_Config.Instance;
+				bool displayAuthor = modStateConfig.ModSortOrder == MPM_Config.OrderBy.ModAuthor ||Config.Instance.ShowAuthorNamesAlways;
+
 				//new Dialog_EditFilterTags(mod.label.defaultStaticID, () => __instance.RebuildDisplay("pinned mod changed")).CreateAndShow(null);
 				foreach (var displayedMod in ___displayedMods)
 				{
@@ -333,6 +369,8 @@ namespace SaveGameModLoader
 
 					var mod = allMods[displayedMod.mod_index];
 					string staticModId = mod.label.defaultStaticID;
+
+					ModDisplayMap[mod] = displayedMod;
 
 					int currentIndex = displayedMod.mod_index;
 					if (transf.TryGetComponent<HierarchyReferences>(out var hier))
@@ -351,7 +389,6 @@ namespace SaveGameModLoader
 							titleText += STRINGS.UI.FRONTEND.EMPTY_MOD_FOLDER.TITLE;
 							title.text = titleText;
 						}
-
 						if (mod.IsLocal)
 						{
 							var modButtonBg = hier.GetReference<KImage>(ManageButtonImage);
@@ -387,7 +424,11 @@ namespace SaveGameModLoader
 
 							var pinButtonBg = hier.GetReference<Image>(BgImage);
 							pinButtonBg.color = pinnedBg;
+							hier.GetReference<ToolTip>(pin_tooltip).SetSimpleTooltip(MOD_ENTRY_TOOLTIPS.PIN_UNPIN);
 						}
+						else
+							hier.GetReference<ToolTip>(pin_tooltip).SetSimpleTooltip(MOD_ENTRY_TOOLTIPS.PIN_PIN);
+
 						if (modStateConfig.ModHasAnyTags(staticModId))
 						{
 							string tooltip = modStateConfig.GetModTagConfigUIString(staticModId);
@@ -399,6 +440,16 @@ namespace SaveGameModLoader
 							var img = hier.GetReference<Image>(tagBgnImg);
 							img.color = HasTags;
 						}
+						else
+							hier.GetReference<ToolTip>(tagBgnText).SetSimpleTooltip(TAGEDITWINDOW.NOTAGS);
+
+
+						if (displayAuthor && ModAssets.TryGetModAuthor(mod, out string authorName))
+						{
+							var versionLabel = hier.GetReference<LocText>("Version");
+							versionLabel.text = authorName + " - " + versionLabel.text;
+						}
+
 
 						hier.GetReference<KButton>(tagBgn).onClick += () => Dialog_EditFilterTags.ShowFilterDialog(mod.label.defaultStaticID, () => __instance.RebuildDisplay("pinned mod changed"));
 						hier.GetReference<Transform>(PinTransform).SetSiblingIndex(2);
@@ -431,6 +482,9 @@ namespace SaveGameModLoader
 						}
 					}
 				}
+
+				SortModsVisually();
+
 				if (FilterButtons.Instance != null)
 				{
 					FilterButtons.Instance.RefreshUIState(false);
@@ -440,15 +494,116 @@ namespace SaveGameModLoader
 					FilterToggleButtons.Instance.RefreshUIState(false);
 				}
 			}
-			private static readonly string Spam = Encoding.UTF8.GetString(Convert.FromBase64String("YnkgQE9ueQ=="));
-			static Color
-				normal = UIUtils.rgb(62, 67, 87),
-				pinnedBg = UIUtils.Darken(normal, 15),
-				incompatibleBg = UIUtils.rgb(26, 28, 33),
-				pinnedActive = UIUtils.Lighten(Color.red, 50),
-				pinnedInactive = Color.white,
-				HasTags = UIUtils.Lighten(Color.blue, 50),
-				HasNoTags = Color.white;
+
+			static Dictionary<KMod.Mod, DisplayedMod> ModDisplayMap = [];
+			static List<KMod.Mod> modsSortable = new List<KMod.Mod>();
+
+			static void SortModsVisually()
+			{
+				if (MPM_Config.Instance.ModSortOrder == MPM_Config.OrderBy.ModOrdering)
+					return;
+
+				modsSortable.Clear();
+				modsSortable.AddRange(Global.Instance.modManager.mods);
+
+				switch (MPM_Config.Instance.ModSortOrder)
+				{
+					case MPM_Config.OrderBy.ModName:
+						modsSortable.Sort(Comparison_Name);
+						break;
+					case MPM_Config.OrderBy.ModAuthor:
+						modsSortable.Sort(Comparison_Author);
+						break;
+					case MPM_Config.OrderBy.LastUpdated:
+						modsSortable.Sort(Comparison_LastUpdate);
+						break;
+				}
+
+				for (int i = modsSortable.Count - 1; i >= 0; --i)
+				{
+					var mod = modsSortable[i];
+					if (ModDisplayMap.TryGetValue(mod, out DisplayedMod displayedMod))
+						displayedMod.rect_transform.SetAsFirstSibling();
+				}
+			}
+			static int Comparison_LastUpdate(KMod.Mod first, KMod.Mod second)
+			{
+				int pin = ComparePinned(first, second);
+				if (pin != 0)
+					return pin;
+
+				string folderFirst = first.file_source.GetRoot();
+				string folderSecond = second.file_source.GetRoot();
+
+				SgtLogger.l(folderSecond);
+
+				var firstDirInfo = new DirectoryInfo(folderFirst);
+				var secondDirInfo = new DirectoryInfo(folderSecond);
+				bool firstDirExists = firstDirInfo.Exists;
+				bool secondDirExists = secondDirInfo.Exists;
+				if (!firstDirExists)
+					return 1;
+				else
+				if (!secondDirExists)
+					return -1;
+				else 
+				if (!firstDirExists && !secondDirExists)
+					return 0;
+				return -firstDirInfo.LastWriteTimeUtc.CompareTo(secondDirInfo.LastWriteTimeUtc);
+			}
+
+			static int Comparison_Name(KMod.Mod first, KMod.Mod second)
+			{
+				int pin = ComparePinned(first, second);
+				if (pin != 0)
+					return pin;
+				return CompareModsName(first, second);
+			}
+
+			static int Comparison_Author(KMod.Mod first, KMod.Mod second)
+			{
+				int pin = ComparePinned(first, second);
+				if (pin != 0)
+					return pin;
+				int author = CompareModsAuthor(first, second);
+				if (author != 0)
+					return author;
+				return CompareModsName(first, second);
+			}
+
+			static int ComparePinned(KMod.Mod first, KMod.Mod second)
+			{
+				bool pinnedFirst = MPM_Config.Instance.ModPinned(first.label.defaultStaticID);
+				bool pinnedSecond = MPM_Config.Instance.ModPinned(second.label.defaultStaticID);
+
+				if (pinnedFirst && !pinnedSecond)
+					return -1;
+				else if (pinnedSecond && !pinnedFirst)
+					return 1;
+				return 0;
+			}
+
+			static int CompareModsName(KMod.Mod first, KMod.Mod second)
+			{
+				string titleFirst = UIUtils.StripAllFormatting(first.title);
+				string titleSecond = UIUtils.StripAllFormatting(second.title);
+
+				return titleFirst.CompareTo(titleSecond);
+			}
+			static int CompareModsAuthor(KMod.Mod first, KMod.Mod second)
+			{
+				bool hasAuthorFirst = ModAssets.TryGetModAuthor(first, out string authorFirst);
+				bool hasAuthorSecond = ModAssets.TryGetModAuthor(second, out string authorSecond);
+
+				if (hasAuthorFirst && !hasAuthorSecond)
+					return -1;
+				if (!hasAuthorFirst && hasAuthorSecond)
+					return 1;
+				if (!hasAuthorFirst && !hasAuthorSecond)
+					return 0;
+
+				return authorFirst.CompareTo(authorSecond);
+			}
 		}
 
 		[HarmonyPatch(typeof(KMod.Manager), nameof(KMod.Manager.NotifyDialog))]
@@ -458,7 +613,6 @@ namespace SaveGameModLoader
 			{
 				if (title == global::STRINGS.UI.FRONTEND.MOD_DIALOGS.SAVE_GAME_MODS_DIFFER.TITLE && __instance.events.Count > 0)
 				{
-
 					var eventList = __instance.events.OrderBy(entry => entry.mod.title).Distinct().ToList();
 
 					HashSet<string> changedModIDs = new();
@@ -614,6 +768,28 @@ namespace SaveGameModLoader
 		[HarmonyPatch(typeof(ModsScreen), "OnActivate")]
 		public static class ModsScreen_AddModListButton
 		{
+			const float additionalWidth = 122;
+			public static void Prefix(ModsScreen __instance)
+			{
+				//__instance.entryParent.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, __instance.entryParent.rectTransform(+= additionalWidth;
+				var modPrefabRect = __instance.entryParent.rectTransform();
+				modPrefabRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, modPrefabRect.rect.width + additionalWidth);
+				var panel = __instance.transform.Find("Panel").rectTransform();
+
+				var totalWindowWidth = panel.rectTransform().rect.width;
+				totalWindowWidth += additionalWidth;
+				panel.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, totalWindowWidth);
+
+				var totalWindowHeight = __instance.rectTransform().rect.height;
+				float goldenHeigh = totalWindowHeight / 1.309f;
+				float paddingSize = (totalWindowHeight - goldenHeigh) / 2f;
+				panel.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, paddingSize, goldenHeigh);
+
+				var entryPrefab = __instance.entryPrefab.rectTransform();
+				entryPrefab.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, entryPrefab.rect.width + additionalWidth);
+			}
+
+
 			public static void Postfix(ModsScreen __instance)
 			{
 
@@ -639,15 +815,6 @@ namespace SaveGameModLoader
 				///Add Modlist Button
 				var workShopButton = __instance.transform.Find("Panel/DetailsView/WorkshopButton");
 				var DetailsView = __instance.transform.Find("Panel/DetailsView").gameObject;
-
-
-
-				var panel = __instance.transform.Find("Panel").rectTransform();
-
-				var totalWindowHeight = __instance.rectTransform().rect.height;
-				float goldenHeigh = totalWindowHeight / 1.309f;
-				float paddingSize = (totalWindowHeight - goldenHeigh) / 2f;
-				panel.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, paddingSize, goldenHeigh);
 
 
 				if (__instance.gameObject.name == "SYNCSCREEN")
@@ -930,10 +1097,10 @@ namespace SaveGameModLoader
 			}
 		}
 
-		///// <summary>
-		///// Since the Mod patches the load method, it will recieve blame on ANY load crash.
-		///// This Patch keeps it enabled on a crash, so you dont need to reenable it for syncing,
-		///// </summary>
+		/// <summary>
+		/// Since the Mod patches the load method, it will recieve blame on ANY load crash.
+		/// This Patch keeps it enabled on a crash, so you dont need to reenable it for syncing,
+		/// </summary>
 		[HarmonyPatch(typeof(KMod.Mod))]
 		[HarmonyPatch(nameof(KMod.Mod.SetCrashed))]
 		public static class DontDisableModOnCrash

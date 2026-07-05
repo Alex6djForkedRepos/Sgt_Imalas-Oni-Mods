@@ -626,8 +626,18 @@ namespace SaveGameModLoader
 		{
 			Modlists.Clear();
 			//MissingMods.Clear();
-			var files = new DirectoryInfo(ModAssets.ModPath).GetFiles();
 
+			if(!System.IO.Directory.Exists(ModAssets.ModPath))
+			{
+				SgtLogger.error("File Access to documents folder is locked, MPM cannot function properly!");
+				if (ModAssets.ModPath.Contains("OneDrive"))
+				{
+					SgtLogger.error("OneDrive is locking up files, unlink it from your documents folder!");
+				}
+				return;
+			}
+
+			var files = new DirectoryInfo(ModAssets.ModPath).GetFiles();
 
 			foreach (FileInfo modlist in files)
 			{

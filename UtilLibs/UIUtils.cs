@@ -137,7 +137,7 @@ namespace UtilLibs
 				tt.WrapWidth = wrapWidth;
 				tt.SizingSetting = ToolTip.ToolTipSizeSetting.MaxWidthWrapContent;
 			}
-			ToolTipScreen.Instance.SetToolTip(tt);
+			ToolTipScreen.Instance?.SetToolTip(tt);
 			tt.SetSimpleTooltip(tooltip);
 			return tt;
 		}
