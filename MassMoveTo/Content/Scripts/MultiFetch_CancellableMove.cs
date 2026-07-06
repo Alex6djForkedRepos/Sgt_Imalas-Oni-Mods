@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 using UtilLibs;
@@ -13,11 +14,11 @@ namespace MassMoveTo.Content.Scripts
 		[MyCmpGet] Prioritizable prioritizable;
 		[MyCmpGet] KPrefabID kPrefabId;
 
-		Dictionary<Ref<Movable>, MultiFetch_MovePickupableChore> MultiFetch_Chores = [];
-		Dictionary<Chore, Ref<Movable>> MultiFetch_Chores_ReverseLookup = [];
+		ConditionalWeakTable <Movable, MultiFetch_MovePickupableChore> MultiFetch_Chores = [];
+		ConditionalWeakTable<Chore, Movable> MultiFetch_Chores_ReverseLookup = [];
 
 
-		List<int> handles = [];
+		readonly List<int> _handles = [];
 		public override void OnSpawn()
 		{
 			//we redo the logic of this here for multi chores
@@ -37,8 +38,8 @@ namespace MassMoveTo.Content.Scripts
 				InitNewChores();
 			}
 
-			handles.Add(Subscribe((int)GameHashes.RefreshUserMenu, OnRefreshUserMenu));
-			handles.Add(Subscribe((int)GameHashes.Cancel, OnCancel));
+			_handles.Add(Subscribe((int)GameHashes.RefreshUserMenu, OnRefreshUserMenu));
+			_handles.Add(Subscribe((int)GameHashes.Cancel, OnCancel));
 			kPrefabId.AddTag(GameTags.HasChores);
 			int cell = Grid.PosToCell(this);
 			Grid.Objects[cell, (int)ObjectLayer.MovePlacer] = this.gameObject;
@@ -48,7 +49,7 @@ namespace MassMoveTo.Content.Scripts
 		{
 			//base.OnCleanUp();
 
-			foreach (var handle in handles)
+			foreach (int handle in _handles)
 				Unsubscribe(handle);
 
 			int cell = Grid.PosToCell(this);
@@ -61,17 +62,17 @@ namespace MassMoveTo.Content.Scripts
 			ValidateMovables();
 			return movables.Any();
 		}		
-		void InitMoveChore(Ref<Movable> movable)
+		void InitMoveChore(Movable movable)
 		{
-			if (MultiFetch_Chores.ContainsKey(movable))
+			if (MultiFetch_Chores.TryGetValue(movable, out _))
 			{
 				//SgtLogger.error(movable.Get() + " already has a chore. This shouldn't happen.");
 				return;
 			}
 
-			var chore = new MultiFetch_MovePickupableChore(this, movable.Get().gameObject, new Action<Chore>(this.MultiChore_OnChoreEnd));
-			MultiFetch_Chores[movable] = chore;
-			MultiFetch_Chores_ReverseLookup[chore] = movable;
+			var chore = new MultiFetch_MovePickupableChore(this, movable.gameObject, new Action<Chore>(this.MultiChore_OnChoreEnd));
+			MultiFetch_Chores.Add(movable, chore);
+			MultiFetch_Chores_ReverseLookup.Add(chore, movable);
 		}
 
 		internal void MultiChore_OnChoreEnd(Chore chore)
@@ -84,7 +85,8 @@ namespace MassMoveTo.Content.Scripts
 			}
 			//SgtLogger.l(chore + " onChoreEnd, completed?: "+ chore.isComplete);
 
-			movables.Remove(movableRef);
+			//do not remove or this will break deliveries consisting of multiple items!
+			//movables.Remove(movableRef);
 			MultiFetch_Chores.Remove(movableRef);
 			MultiFetch_Chores_ReverseLookup.Remove(chore);
 
@@ -100,7 +102,7 @@ namespace MassMoveTo.Content.Scripts
 		{
 			foreach (var movable in movables)
 			{
-				InitMoveChore(movable);
+				InitMoveChore(movable.Get());
 			}
 		}
 
@@ -126,7 +128,7 @@ namespace MassMoveTo.Content.Scripts
 			for (int i = allChores.Length - 1; i >= 0; i--)
 			{
 				var kvp = allChores[i];
-				if (cancel_movable == null || kvp.Key.Get() == cancel_movable)
+				if (cancel_movable == null || kvp.Key == cancel_movable)
 				{
 					kvp.Value.Cancel("CancelMove");
 				}
@@ -135,7 +137,6 @@ namespace MassMoveTo.Content.Scripts
 					hasActiveChore = true;
 				}
 			}
-
 			if (!hasActiveChore && !movables.Any())
 			{
 				Util.KDestroyGameObject(base.gameObject);
@@ -144,7 +145,7 @@ namespace MassMoveTo.Content.Scripts
 
 		internal void MultiChore_SetMovable(Movable movable)
 		{
-			if (MultiFetch_Chores.Keys.Any(movRev => movRev.Get() == movable))
+			if (MultiFetch_Chores.Any(movRev => movRev.Key == movable))
 				return;
 
 			if (movable == null)
@@ -152,7 +153,7 @@ namespace MassMoveTo.Content.Scripts
 
 			var newMovableRef = new Ref<Movable>(movable);
 			movables.Add(newMovableRef);
-			InitMoveChore(newMovableRef);
+			InitMoveChore(movable);
 		}
 		public void MultiChore_RemoveMovable(Movable moved)
 		{
@@ -162,11 +163,12 @@ namespace MassMoveTo.Content.Scripts
 		internal void CheckIfShouldSelfDestruct()
 		{
 			//SgtLogger.l("Remaining chores: " + MultiFetch_Chores.Count + ", remaining movables: " + movables.Count);
-			if (!HasAnyMoveChoresToInit())
+			if (HasAnyMoveChoresToInit())
 			{
-				Util.KDestroyGameObject(this.gameObject);
 				return;
 			}
+			Util.KDestroyGameObject(this.gameObject);
+			return;
 		}
 	}
 }

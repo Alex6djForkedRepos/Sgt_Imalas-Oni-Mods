@@ -120,7 +120,8 @@ namespace MassMoveTo
 			{
 				if (movable != null
 					&& movable.gameObject != null
-					&& !movable.IsMarkedForMove)
+					&& !movable.IsMarkedForMove
+					&& Grid.PosToCell(movable) != targetCell)
 				{
 					//if (Config.UseMultiDelivery)
 					//{
