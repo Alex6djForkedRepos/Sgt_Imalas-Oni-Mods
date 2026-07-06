@@ -21,10 +21,13 @@ namespace Starmap_Shenanigans
     internal class Yggdrasil
     {
         public static bool shouldIncreaseGrid = false;
-        public static bool UpdateProgress(StringKey stringKeyRoot, float completePercent, WorldGenProgressStages.Stages stage)
+
+        public static bool UpdateProgress(StringKey stringKeyRoot, float completePercent,
+            WorldGenProgressStages.Stages stage)
         {
             return true;
         }
+
         public static void OnError(OfflineWorldGen.ErrorInfo errorInfo)
         {
             Debug.LogError($"Yggdrasil: WorldGen Error: {errorInfo.errorDesc} - {errorInfo.exception.Message}");
@@ -35,23 +38,25 @@ namespace Starmap_Shenanigans
         //these keys happen to be the same as the world filepaths such as "expansion1::worlds/NiobiumMoonlet"
         public static void CreateAsteroid(string worldCacheKey, AxialI axialI, int seed = -1)
         {
-
             if (!SpeedControlScreen.Instance.IsPaused)
                 SpeedControlScreen.Instance.Pause();
-            
-            var world = SettingsCache.worlds.worldCache[worldCacheKey];              
-            var worldGen = new WorldGen(world.filePath, null, null, false);            
+
+            var world = SettingsCache.worlds.worldCache[worldCacheKey];
+            var worldGen = new WorldGen(world.filePath, null, null, false);
             var worldSize = world.worldsize;
 
 
-            var gridSize = BestFit.GetGridOffset(ClusterManager.Instance.WorldContainers, worldSize, out Vector2I worldOffset);
+            var gridSize = BestFit.GetGridOffset(ClusterManager.Instance.WorldContainers, worldSize,
+                out Vector2I worldOffset);
             if (gridSize.y > Grid.HeightInCells)
             {
                 Debug.LogWarning("Yggdrasil: Not enough space to create world.\nIncrease Grid on next load.");
                 shouldIncreaseGrid = true;
                 return;
             }
-            SimMessages.SimDataResizeGridAndInitializeVacuumCells(gridSize, worldSize.x, worldSize.y, worldOffset.x, worldOffset.y);
+
+            SimMessages.SimDataResizeGridAndInitializeVacuumCells(gridSize, worldSize.x, worldSize.y, worldOffset.x,
+                worldOffset.y);
 
             var worldId = ClusterManager.Instance.GetNextWorldId();
             GameObject gameObject = Util.KInstantiate(Assets.GetPrefab((Tag)"Asteroid"));
@@ -62,9 +67,9 @@ namespace Starmap_Shenanigans
             worldContainer.worldSize = worldSize;
             worldContainer.isDiscovered = true;
             worldContainer.isModuleInterior = false;
-            worldContainer.m_seasonIds = new List<string>();//world.seasons; probably need to start gameplay events manually for meteor showers to work, left blank for now
+            worldContainer.m_seasonIds =
+                new List<string>(); //world.seasons; probably need to start gameplay events manually for meteor showers to work, left blank for now
             worldContainer.worldDescription = world.description;
-
 
 
             gameObject.GetComponent<AsteroidGridEntity>().m_name = worldContainer.GetRandomName();
@@ -87,7 +92,6 @@ namespace Starmap_Shenanigans
             gameObject.SetActive(true);
             ClusterManager.Instance.BoxingTrigger((int)GameHashes.WorldAdded, worldId);
 
-            
 
             if (world.filePath == "expansion1::worlds/StrangeAsteroidKleiFest2023Cluster")
                 seed = 7;
@@ -97,11 +101,10 @@ namespace Starmap_Shenanigans
 
 
             List<WorldTrait> placedStoryTraits = new List<WorldTrait>();
-            
-            WorldgenSimData simData = new WorldgenSimData();
-            
-            RenderOnline(worldGen, ref simData, ref placedStoryTraits, worldId);//in lieu of worldGen.RenderOffline
 
+            WorldgenSimData simData = new WorldgenSimData();
+
+            RenderOnline(worldGen, ref simData, ref placedStoryTraits, worldId); //in lieu of worldGen.RenderOffline
 
 
             var newOverworldCells = new List<OverworldCell>();
@@ -113,19 +116,22 @@ namespace Starmap_Shenanigans
                 {
                     newVerts.Add(new Vector2(vertex.x + worldOffset.x, vertex.y + worldOffset.y));
                 }
+
                 Polygon newPoly = new Polygon(newVerts);
-                var newOverworldCell = new OverworldCell(SettingsCache.GetCachedSubWorld(overworldCell.node.type).zoneType, overworldCell);
+                var newOverworldCell =
+                    new OverworldCell(SettingsCache.GetCachedSubWorld(overworldCell.node.type).zoneType, overworldCell);
                 newOverworldCell.poly = newPoly;
                 SaveLoader.Instance.clusterDetailSave.overworldCells.Add(newOverworldCell);
                 newOverworldCells.Add(newOverworldCell);
             }
 
-            for (int i = 0; i < cells.Length; i++)
+            for (int i = 0; i < simData.cells.Length; i++)
             {
                 int cell = GetCellFromSubGridCell(i, worldSize.x, worldOffset);
-                var simCell = cells[i];
-                var diseaseCell = dc[i];
-                SimMessages.ModifyCell(cell, simCell.elementIdx, simCell.temperature, simCell.mass, diseaseCell.diseaseIdx, diseaseCell.elementCount, SimMessages.ReplaceType.Replace);
+                var simCell = simData.cells[i];
+                var diseaseCell = simData.diseaseCells[i];
+                SimMessages.ModifyCell(cell, simCell.elementIdx, simCell.temperature, simCell.mass,
+                    diseaseCell.diseaseIdx, diseaseCell.elementCount, SimMessages.ReplaceType.Replace);
 
                 foreach (var overworldCell in newOverworldCells)
                 {
@@ -142,7 +148,9 @@ namespace Starmap_Shenanigans
 
             foreach (var poiSpawner in worldGen.POISpawners)
             {
-                TemplateLoader.Stamp(poiSpawner.container, new Vector2(worldOffset.x + poiSpawner.position.x, worldOffset.y + poiSpawner.position.y), () => { });
+                TemplateLoader.Stamp(poiSpawner.container,
+                    new Vector2(worldOffset.x + poiSpawner.position.x, worldOffset.y + poiSpawner.position.y),
+                    () => { });
             }
 
             foreach (var terrainCell in worldGen.data.terrainCells)
@@ -159,36 +167,42 @@ namespace Starmap_Shenanigans
                         GameScheduler.Instance.ScheduleNextFrame("SpawnMob", (object obj) =>
                         {
                             var spawnedMob = (GameObject)obj;
-                            spawnedMob.SetActive(true);                            
+                            spawnedMob.SetActive(true);
                         }, go);
                     }
                 }
             }
+
             //step to next frame to spawn all mobs
             SpeedControlScreen.Instance.DebugStepFrame();
-
         }
 
         // WorldGen.RenderOffline assumes the grid size is equal to the world size, so we have to temporarily resize the grid
-        internal static void RenderOnline(WorldGen worldGen, ref WorldgenSimData worldgenSimData, ref List<WorldTrait> placedStoryTraits, int worldId)
+        internal static void RenderOnline(WorldGen worldGen, ref WorldgenSimData worldgenSimData,
+            ref List<WorldTrait> placedStoryTraits, int worldId)
         {
             var gridBackup = new Vector2I(Grid.WidthInCells, Grid.HeightInCells);
             var worldSize = worldGen.GetSize();
             Grid.WidthInCells = worldSize.x;
             Grid.HeightInCells = worldSize.y;
             Grid.CellCount = worldSize.x * worldSize.y;
-        
+
             HashSet<int> borderCells = new HashSet<int>();
             worldGen.POIBounds = new List<RectInt>();
             worldGen.WriteOverWorldNoise(worldGen.successCallbackFn);
-            worldGen.RenderToMap(worldGen.successCallbackFn, ref worldgenSimData, ref borderCells, ref worldGen.POIBounds);
+            worldGen.RenderToMap(worldGen.successCallbackFn, ref worldgenSimData, ref borderCells,
+                ref worldGen.POIBounds);
             foreach (int key in borderCells)
             {
-                cells[key].SetValues(WorldGen.unobtaniumElement, ElementLoader.elements);
+                worldgenSimData.cells[key].SetValues(WorldGen.unobtaniumElement, ElementLoader.elements);
                 worldGen.claimedPOICells[key] = 1;
             }
-            worldGen.POISpawners = TemplateSpawning.DetermineTemplatesForWorld(worldGen.Settings, worldGen.data.terrainCells, worldGen.myRandom, ref worldGen.POIBounds, worldGen.isRunningDebugGen, ref placedStoryTraits, worldGen.successCallbackFn);
-            worldGen.SpawnMobsAndTemplates(worldId, ref worldgenSimData, new HashSet<int>(worldGen.claimedPOICells.Keys));
+
+            worldGen.POISpawners = TemplateSpawning.DetermineTemplatesForWorld(worldGen.Settings,
+                worldGen.data.terrainCells, worldGen.myRandom, ref worldGen.POIBounds, worldGen.isRunningDebugGen,
+                ref placedStoryTraits, worldGen.successCallbackFn);
+            worldGen.SpawnMobsAndTemplates(worldId, ref worldgenSimData,
+                new HashSet<int>(worldGen.claimedPOICells.Keys));
 
 
             Grid.WidthInCells = gridBackup.x;
@@ -204,6 +218,7 @@ namespace Starmap_Shenanigans
             int y = worldOffset.y + subGridY;
             return Grid.XYToCell(x, y);
         }
+
         internal static Vector2 GetPOSFromSubGridCell(int subGridCell, int subGridWidth, Vector2I worldOffset)
         {
             int subGridX = subGridCell % subGridWidth;
