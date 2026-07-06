@@ -282,6 +282,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoodLampsPlus", "MoodLampsP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModOriginInfo", "ModOriginInfo\ModOriginInfo.csproj", "{59377656-F92D-4E5B-A739-8633303B25AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MugConversionRecipes", "MugConversionRecipes\MugConversionRecipes.csproj", "{52B6C5B8-F93A-43D1-BFDE-54AFB616A5F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -780,6 +782,10 @@ Global
 		{59377656-F92D-4E5B-A739-8633303B25AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59377656-F92D-4E5B-A739-8633303B25AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59377656-F92D-4E5B-A739-8633303B25AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52B6C5B8-F93A-43D1-BFDE-54AFB616A5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52B6C5B8-F93A-43D1-BFDE-54AFB616A5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52B6C5B8-F93A-43D1-BFDE-54AFB616A5F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52B6C5B8-F93A-43D1-BFDE-54AFB616A5F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
