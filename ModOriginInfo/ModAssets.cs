@@ -54,7 +54,7 @@ namespace ModOriginInfo
 		{
 			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
 			{
-				SgtLogger.l(modID + " mod recipe: " + recipe.id);
+				//SgtLogger.l(modID + " mod recipe: " + recipe.id);
 				ModdedContentPrefabIdToModId[recipe.id] = modID;
 				ModdedRecipes.Add(recipe.id);
 				if (recipe.recipeCategoryID != null)
@@ -93,7 +93,7 @@ namespace ModOriginInfo
 					{
 						AssemblyToModIdMap.Add(dll, mod.staticID);
 					}
-					else if (dll.FullName.Contains("PLib"))
+					if (dll.FullName.Contains("PLib"))
 					{
 						SgtLogger.warning("the mod " + mod.title + " did not implement pLib properly as instructed and left the dll dangling in the mod folder instead of il-merging it.");
 					}
@@ -147,7 +147,7 @@ namespace ModOriginInfo
 				.Add("de", "Mod-Gebäude, hinzugefügt von:")
 				.Add("fr", "Équipement Moddé, ajouté par:")
 				.Add("kr", "MOD 건물, 추가자:")
-				.Add("ru", "Добавлено следующим модом: ")
+				.Add("ru", "Здание добавлено:")
 				.Translate();
 
 		static readonly string TextEntity = new TranslatableTextBuilder("Modded Content, added by:")
@@ -155,7 +155,7 @@ namespace ModOriginInfo
 				.Add("de", "Mod-Content, hinzugefügt von:")
 				.Add("fr", "Contenu Moddé, ajouté par:")
 				.Add("kr", "MOD 엔티티, 추가자: ")
-				.Add("ru", "Добавлено следующим модом: ")
+				.Add("ru", "Контент добавлен:")
 				.Translate();
 
 		static readonly string TextRecipe = new TranslatableTextBuilder("Modded Recipe, added by:")
@@ -163,7 +163,7 @@ namespace ModOriginInfo
 				.Add("de", "Mod-Rezept, hinzugefügt von:")
 				.Add("fr", "Recette Moddée, ajouté par:")
 				.Add("kr", "MOD 레시피, 추가자:")
-				.Add("ru", "Добавлено следующим модом: ")
+				.Add("ru", "Рецепт добавлен:")
 				.Translate();
 
 	}
