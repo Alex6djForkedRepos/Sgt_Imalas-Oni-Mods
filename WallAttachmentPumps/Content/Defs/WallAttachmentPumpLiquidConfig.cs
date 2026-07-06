@@ -54,7 +54,10 @@ namespace WallAttachmentPumps.Content.Defs
 			var storage = go.AddOrGet<Storage>();
 			storage.capacityKg = conduitCapacity;
 			storage.SetDefaultStoredItemModifiers(Storage.StandardSealedStorage);
-			go.AddTag(GameTags.CorrosionProof);
+			var prefab = go.GetComponent<KPrefabID>();
+			prefab.AddTag(GameTags.CorrosionProof);
+			prefab.AddTag(RoomConstraints.ConstraintTags.IndustrialMachinery);
+			prefab.AddTag("VFNT_PlacementVisualizerExcluded");
 
 			ElementConsumer elementConsumer = go.AddOrGet<ElementConsumer>();
 			elementConsumer.configuration = ElementConsumer.Configuration.AllLiquid;

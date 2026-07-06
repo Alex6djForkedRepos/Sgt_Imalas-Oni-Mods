@@ -42,7 +42,10 @@ namespace WallAttachmentPumps.Content.Defs
 		public override void DoPostConfigureComplete(GameObject go)
 		{
 			go.AddOrGet<LogicOperationalController>();
-			go.GetComponent<KPrefabID>().AddTag(RoomConstraints.ConstraintTags.IndustrialMachinery);
+			var prefab = go.GetComponent<KPrefabID>();
+			prefab.AddTag(GameTags.CorrosionProof);
+			prefab.AddTag(RoomConstraints.ConstraintTags.IndustrialMachinery);
+			prefab.AddTag("VFNT_PlacementVisualizerExcluded");
 			go.AddOrGet<LoopingSounds>();
 			go.AddOrGet<EnergyConsumer>();
 
