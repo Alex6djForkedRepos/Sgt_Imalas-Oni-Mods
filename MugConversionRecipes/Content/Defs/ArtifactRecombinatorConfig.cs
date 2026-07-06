@@ -25,7 +25,7 @@ namespace MugConversionRecipes.Content.Defs
 			EffectorValues noise = tieR6;
 			BuildingDef buildingDef = BuildingTemplates.CreateBuildingDef(ID, 3, 3, "fabricator_generic_kanim", 100, 300f, tieR5, allMetals, 2400f, BuildLocationRule.OnFloor, tieR2, noise);
 			buildingDef.RequiresPowerInput = true;
-			buildingDef.EnergyConsumptionWhenActive = 200f;
+			buildingDef.EnergyConsumptionWhenActive = 960f;
 			buildingDef.SelfHeatKilowattsWhenActive = 32f;
 			buildingDef.ViewMode = OverlayModes.Power.ID;
 			buildingDef.AudioCategory = "HollowMetal";
