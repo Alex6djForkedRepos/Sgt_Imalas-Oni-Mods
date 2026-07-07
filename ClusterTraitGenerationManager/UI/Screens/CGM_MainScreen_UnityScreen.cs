@@ -1020,7 +1020,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 		}
 		void UpdateSO_POIGroup()
 		{
-			selectionHeaderLabel.SetText(ModAssets.Strings.ApplyCategoryTypeToString(string.Format(STRINGS.UI.CGM_MAINSCREENEXPORT.DETAILS.HEADER.LABEL, CurrentStarmapItem.DisplayName), SelectedCategory));
+			selectionHeaderLabel.SetText(ModAssets.ModStringHelper.ApplyCategoryTypeToString(string.Format(STRINGS.UI.CGM_MAINSCREENEXPORT.DETAILS.HEADER.LABEL, CurrentStarmapItem.DisplayName), SelectedCategory));
 			POIGroup_AllowDuplicates.SetOnFromCode(CurrentStarmapItem.placementPOI.canSpawnDuplicates);
 			POIGroup_AvoidClumping.SetOnFromCode(CurrentStarmapItem.placementPOI.avoidClumping);
 			POIGroup_Guarantee.SetOnFromCode(CurrentStarmapItem.placementPOI.guarantee);
@@ -1141,7 +1141,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 				{
 					selectionHeaderLabel.SetText(CurrentlySelectedItemData.LocationDescription());
 
-					StarmapItemEnabledText.SetText(ModAssets.Strings.ApplyCategoryTypeToString(STARMAPITEMENABLED.LABEL, SelectedCategory));
+					StarmapItemEnabledText.SetText(ModAssets.ModStringHelper.ApplyCategoryTypeToString(STARMAPITEMENABLED.LABEL, SelectedCategory));
 					StarmapItemEnabled.SetOn(IsPartOfCluster);
 
 					PlanetSizeWidth.SetInteractable(IsPartOfCluster && planetCategorySelected);
@@ -1315,7 +1315,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			StoryTraitGridContent.SetActive(SelectedCategory == StarmapItemCategory.StoryTraits);
 			ClusterItemsContent.SetActive(IsPlanetCategory(SelectedCategory));
 
-			galleryHeaderLabel.SetText(ModAssets.Strings.ApplyCategoryTypeToString(STRINGS.UI.CGM_MAINSCREENEXPORT.ITEMSELECTION.HEADER.LABEL, SelectedCategory));
+			galleryHeaderLabel.SetText(ModAssets.ModStringHelper.ApplyCategoryTypeToString(STRINGS.UI.CGM_MAINSCREENEXPORT.ITEMSELECTION.HEADER.LABEL, SelectedCategory));
 			if (IsPlanetCategory(SelectedCategory))
 			{
 				var activePlanets = GetActivePlanetsStarmapitems();
@@ -2715,7 +2715,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			CurrentlySelectedItemData = new SelectedStoryTrait(id, Strings.Get(storyTrait.name));
 
 
-			selectionHeaderLabel.SetText(ModAssets.Strings.ApplyCategoryTypeToString(string.Format(STRINGS.UI.CGM_MAINSCREENEXPORT.DETAILS.HEADER.LABEL, Strings.Get(storyTrait.name)), SelectedCategory));
+			selectionHeaderLabel.SetText(ModAssets.ModStringHelper.ApplyCategoryTypeToString(string.Format(STRINGS.UI.CGM_MAINSCREENEXPORT.DETAILS.HEADER.LABEL, Strings.Get(storyTrait.name)), SelectedCategory));
 			StoryTraitDesc.SetText(Strings.Get(storyTrait.description));
 			StoryTraitImage.sprite = Assets.GetSprite(storyTrait.icon.Replace("_icon", "_image"));
 			RefreshStoryTraitsUI();
@@ -3261,7 +3261,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 		{
 			GameObject categoryItem = Util.KInstantiateUI(PlanetoidCategoryPrefab, categoryListContent, true);
 
-			string categoryName = ModAssets.Strings.CategoryEnumToName(StarmapItemCategory); //CATEGORYENUM
+			string categoryName = ModAssets.ModStringHelper.CategoryEnumToName(StarmapItemCategory); //CATEGORYENUM
 
 			categoryItem.transform.Find("Label").GetComponent<LocText>().SetText(categoryName);
 			var item = categoryItem.AddOrGet<CategoryItem>();

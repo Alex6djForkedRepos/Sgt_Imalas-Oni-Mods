@@ -30,6 +30,7 @@ namespace ClusterTraitGenerationManager.GeyserExperiments
 
 			SgtLogger.l("AllGeysersCount: " + sortedGeysers.Count());
 			SgtLogger.l("GenericGeysersCount: " + ModAssets.AllGenericGeysers.Count);
+			ModAssets.AddGeyserLikes();
 		}
 	}
 	[HarmonyPatch(typeof(WorldGen), "GenerateOffline")]

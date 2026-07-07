@@ -345,7 +345,7 @@ namespace ClusterTraitGenerationManager
 			return TraitSprite;
 		}
 
-		public static class Strings
+		public static class ModStringHelper
 		{
 			public static string ApplyCategoryTypeToString(string input, StarmapItem item) => ApplyCategoryTypeToString(input, item.category);
 			public static string ApplyCategoryTypeToString(string input, StarmapItemCategory category)
@@ -480,10 +480,10 @@ namespace ClusterTraitGenerationManager
 
 			foreach (var entry in geyserList)
 			{
-				if(!blacklist.Contains(entry.id))
+				if (!blacklist.Contains(entry.id))
 					localList.Add(entry);
 			}
-			if(!localList.Any())
+			if (!localList.Any())
 			{
 				SgtLogger.warning("All geysers of type " + (geyserList.FirstOrDefault().isGenericGeyser == true ? "generic" : "non generic") + " are blacklisted, cannot replace geyser " + currentGeyser);
 				return currentGeyser;
@@ -546,6 +546,19 @@ namespace ClusterTraitGenerationManager
 			var path = System.IO.Path.Combine(IO_Utils.ModPath, name + ".json");
 			IO_Utils.DumpToFile(data, path);
 
+		}
+
+		internal static void AddGeyserLikes()
+		{
+			//Oil Well:
+			ModAssets.AllGeysers[OilWellConfig.ID] = new GeyserDataEntry(OilWellConfig.ID, global::STRINGS.CREATURES.SPECIES.OIL_WELL.NAME, global::STRINGS.CREATURES.SPECIES.OIL_WELL.DESC, "geyser_side_oil_kanim", false);
+			if (DlcManager.IsContentSubscribed(DlcManager.DLC5_ID))
+			{
+				//Tidal Spring:
+				ModAssets.AllGeysers[SmallReefGeyserConfig.ID] = new GeyserDataEntry(SmallReefGeyserConfig.ID, global::STRINGS.CREATURES.SPECIES.GEYSER.SMALLREEFGEYSER.NAME, global::STRINGS.CREATURES.SPECIES.GEYSER.SMALLREEFGEYSER.DESC, "geyser_reef_kanim", false);
+				//Thermal Gas Fissure
+				ModAssets.AllGeysers[UnderwaterVentConfig.ID] = new GeyserDataEntry(UnderwaterVentConfig.ID, global::STRINGS.CREATURES.SPECIES.GEYSER.UNDERWATERVENT.NAME, global::STRINGS.CREATURES.SPECIES.GEYSER.UNDERWATERVENT.DESC, "underwater_vent_kanim", false);
+			}
 		}
 
 		public static List<KeyValuePair<string, WorldTrait>> AllTraitsWithRandom
