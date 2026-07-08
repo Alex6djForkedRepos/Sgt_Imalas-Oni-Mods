@@ -254,29 +254,6 @@ namespace SetStartDupes
 			RebuildUI();
 		}
 
-		public void TryChangeBonusSkillPoints(string numberInput)
-		{
-			int minAmount = MinimumRequiredSkillPoints();
-
-			if (!int.TryParse(numberInput, out int selectedAmount) || selectedAmount < minAmount)
-				ExtraXPSkillPoints.SetInputFieldValue(minAmount.ToString());
-
-			selectedAmount = Math.Max(minAmount, selectedAmount);
-			///the minimum amount is always applied by the game itself
-			ModAssets.SetExtraLevels(Stats, selectedAmount - minAmount);
-		}
-		public int MinimumRequiredSkillPoints()
-		{
-			if (Stats == null)
-				return 0;
-			if (Stats.Traits.Contains(Db.Get().traits.Get("AncientKnowledge")))
-				return 3;
-			///only for minnow, jorge and cryo dupes both have ancient knowledge:
-			if (ModAssets.EditingSingleDupe)
-				return 0;
-			///regular dupes:
-			return StartScreenMinion ? 0 : 1;
-		}
 
 
 		GameObject AddInterestEditToggle(GameObject parent) //this started as something, not used
@@ -862,6 +839,31 @@ namespace SetStartDupes
 			RainbowFart, //rainbow fart from rainbow farts mod
 			FoodOverhaul_Favourite, //favourite food from FoodOverhaul mod
 		}
+
+
+		public void TryChangeBonusSkillPoints(string numberInput)
+		{
+			int minAmount = MinimumRequiredSkillPoints();
+
+			if (!int.TryParse(numberInput, out int selectedAmount) || selectedAmount < minAmount)
+				ExtraXPSkillPoints.SetInputFieldValue(minAmount.ToString());
+
+			selectedAmount = Math.Max(minAmount, selectedAmount);
+			///the minimum amount is always applied by the game itself
+			ModAssets.SetExtraLevels(Stats, selectedAmount - minAmount);
+		}
+		public int MinimumRequiredSkillPoints()
+		{
+			if (Stats == null)
+				return 0;
+			///Cryodupes, jorge, Minnow
+			if (Stats.Traits.Contains(Db.Get().traits.Get("AncientKnowledge")))
+				return 3;
+			///regular dupes:
+			return StartScreenMinion ? 0 : 1;
+		}
+
+
 		internal void SetReferenceStats(CharacterContainer container)
 		{
 			if (container == null || container.Stats == null)
@@ -1035,7 +1037,7 @@ namespace SetStartDupes
 
 			if (CalculateAdditionalSkillPointsTrueIfChanged())
 			{
-				RecalculateSkillPoints();
+				RecalculateAttributePoints();
 				ResetPool();
 			}
 		}
@@ -1139,7 +1141,7 @@ namespace SetStartDupes
 
 			if (rebalanceAfter)
 			{
-				RecalculateSkillPoints();
+				RecalculateAttributePoints();
 				Beached_RecalculateLifeGoal();
 			}
 
@@ -1185,7 +1187,7 @@ namespace SetStartDupes
 			}
 			if (rebalanceAfter)
 			{
-				RecalculateSkillPoints();
+				RecalculateAttributePoints();
 				Beached_RecalculateLifeGoal();
 			}
 			ResetPool();
@@ -1193,9 +1195,9 @@ namespace SetStartDupes
 			AddOrUpdateInterestUI(interest);
 		}
 
-		public void RecalculateSkillPoints()
+		public void RecalculateAttributePoints()
 		{
-			SgtLogger.l("Recalculating Skill Points, current amount to Ship: " + AdditionalAttributePoints);
+			SgtLogger.l("Recalculating atttribute bonus Points, current amount to Ship: " + AdditionalAttributePoints);
 			int amountToShip = AdditionalAttributePoints;
 
 			Dictionary<string, int> newVals = new Dictionary<string, int>();
@@ -1258,7 +1260,7 @@ namespace SetStartDupes
 				SgtLogger.l(newv.Value + "", newv.Key);
 				ToEditMinionStats.StartingLevels[newv.Key] = newv.Value;
 			}
-			SgtLogger.l("Skill Points recalculated");
+			SgtLogger.l("Attribute Points recalculated");
 
 			UpdateInterestLabels();
 		}

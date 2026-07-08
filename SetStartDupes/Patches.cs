@@ -108,6 +108,7 @@ namespace SetStartDupes
 		[HarmonyPatch(typeof(MinnowImperativePOIStates.Instance), nameof(MinnowImperativePOIStates.Instance.SpawnMinnow))]
 		public class MakeMinnowEditable
 		{
+
 			[HarmonyPrepare] public static bool Prepare() => Config.Instance.JorgeAndCryopodDupes;
 			public static void Postfix()
 			{
@@ -115,6 +116,7 @@ namespace SetStartDupes
 				if (ModAssets.EditingSingleDupe)
 				{
 					SgtLogger.l("Getting Minnow GameObject");
+					ModAssets.EditingSpecialDupeId = SPECIALDUPE_MINNOW;
 					ImmigrantScreen.InitializeImmigrantScreen(null);
 				}
 				else
@@ -159,6 +161,19 @@ namespace SetStartDupes
 		[HarmonyPatch(typeof(CharacterContainer), nameof(CharacterContainer.GenerateCharacter))]
 		public class OverwriteRngGeneration
 		{
+			public static void SpecialDupePrepareEditing(CharacterContainer instance)
+			{
+				switch (ModAssets.EditingSpecialDupeId)
+				{
+					case SPECIALDUPE_JORGE:
+						Trait chatty = Db.Get().traits.TryGet("Chatty");
+						if (chatty != null)
+						{
+							instance.stats.Traits.Add(chatty);
+						}
+						break;
+				}
+			}
 			public static bool Prefix(CharacterContainer __instance, KButton ___selectButton, string guaranteedAptitudeID)
 			{
 				if (ModAssets.EditingSingleDupe)
@@ -180,14 +195,8 @@ namespace SetStartDupes
 					{
 						__instance.stats = new MinionStartingStats(is_starter_minion: false, guaranteedAptitudeID, guaranteedTraitID: "AncientKnowledge");
 					}
-					if (EditingJorge)
-					{
-						Trait chatty = Db.Get().traits.TryGet("Chatty");
-						if (chatty != null)
-						{
-							__instance.stats.Traits.Add(chatty);
-						}
-					}
+					SpecialDupePrepareEditing(__instance);
+
 					__instance.stats.voiceIdx = ModApi.GetVoiceIdxOverrideForPersonality(__instance.stats.NameStringKey);
 					SgtLogger.l(__instance.stats.voiceIdx + " <- voiceidx");
 					//Trait ancientKnowledgeTrait = Db.Get().traits.TryGet("AncientKnowledge");
@@ -522,11 +531,30 @@ namespace SetStartDupes
 			}
 
 			//[HarmonyPriority(Priority.Low)]
+
+			public static void SpecialDupePostprocessEditing(MinionStartingStats stats)
+			{
+				switch (ModAssets.EditingSpecialDupeId)
+				{
+					case SPECIALDUPE_JORGE:
+						foreach (string key in GET_ALL_ATTRIBUTES())
+						{
+							stats.StartingLevels[key] += LonelyMinionConfig.BASE_ATTRIBUTE_LEVEL;
+						}
+						break;
+					case SPECIALDUPE_MINNOW:
+						foreach (string key in GET_ALL_ATTRIBUTES())
+						{
+							stats.StartingLevels[key] += (int)TUNING.TRAITS.MINNOW_SWIMMING_ATTRIBUTE_BONUS;
+						}
+						break;
+				}
+			}
 			public static bool Prefix(ImmigrantScreen __instance)
 			{
 				if (EditingSingleDupe)
 				{
-					MinionStartingStats DupeToDeliver = (MinionStartingStats)ModAssets.SingleCharacterContainer.stats;
+					MinionStartingStats DupeToDeliver = ModAssets.SingleCharacterContainer.stats;
 					SgtLogger.l(DupeToDeliver.personality.IdHash.ToString(), "resourceID");
 					SgtLogger.l(DupeToDeliver.Name + " <- cryopod dupe´fin");
 
@@ -549,13 +577,7 @@ namespace SetStartDupes
 							minionRes.AptitudeBySkillGroup.Clear();
 						}
 
-
-						if (EditingJorge)
-						{
-							foreach (string key in GET_ALL_ATTRIBUTES())
-								DupeToDeliver.StartingLevels[key] += 7;
-						}
-
+						SpecialDupePostprocessEditing(DupeToDeliver);
 
 						DupeToDeliver.Apply(SingleMinionGOforStatEditing);
 						///These symbols get overidden at dupe creation, as we are editing already spawned dupes, we have to remove the old overrides and add the new overrides
@@ -583,7 +605,7 @@ namespace SetStartDupes
 							SingleCharacterContainer = null;
 						}
 						SingleMinionGOforStatEditing = null;
-						EditingJorge = false;
+						EditingSpecialDupeId = string.Empty;
 					}
 
 
@@ -1013,7 +1035,7 @@ namespace SetStartDupes
 				{
 
 					ModAssets.EditingSingleDupe = true;
-					ModAssets.EditingJorge = true;
+					ModAssets.EditingSpecialDupeId = SPECIALDUPE_JORGE;
 					ImmigrantScreen.InitializeImmigrantScreen(null);
 				}
 			}
@@ -1645,7 +1667,7 @@ namespace SetStartDupes
 				{
 					GameObject removeSlotButton = Util.KInstantiateUI(__instance.reshuffleButton.gameObject, __instance.reshuffleButton.transform.parent.gameObject, true);
 					removeSlotButton.GetComponent<RerollDisabler>()?.SelfDestruct();
-					removeSlotButton.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top,  -84, 40f);
+					removeSlotButton.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Top, -84, 40f);
 					removeSlotButton.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 0, 80f);
 					var text = removeSlotButton.transform.Find("Text");
 					text.rectTransform().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 2, 76f);

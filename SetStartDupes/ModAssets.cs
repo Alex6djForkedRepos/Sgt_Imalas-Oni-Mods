@@ -25,6 +25,11 @@ namespace SetStartDupes
 {
 	public static class ModAssets
 	{
+		public const string SPECIALDUPE_MINNOW = "MINNOW";
+		public const string SPECIALDUPE_JORGE = "JORGE";
+
+
+
 		public static string ExtraCarePackageFileInfo;
 		public static string DisabledVanillaCarePackages;
 		public static string DupeTemplatePath;
@@ -32,7 +37,8 @@ namespace SetStartDupes
 		public static string DupeGroupTemplatePath;
 		public static string DupeTemplateName = "UnnamedDuplicantPreset";
 		public static bool EditingSingleDupe = false;
-		public static bool EditingJorge = false;
+		public static string EditingSpecialDupeId = string.Empty;
+
 
 		public static GameObject StartPrefab;
 
