@@ -1146,12 +1146,14 @@ namespace SetStartDupes
 				return;
 
 			container.permittedModels = new() { personality.model };
-			container.selectedModelIcon.sprite = Assets.GetSprite(MinionModelIcons[personality.model]);
+			var sprite = MinionModelIcons.TryGetValue(personality.model, out var spriteId) ? Assets.GetSprite(spriteId) : personality.GetMiniIcon(); 
+
+			container.selectedModelIcon.sprite = sprite;
 		}
 
 		static Dictionary<Tag, string> MinionModelIcons = new()
 		{
-			{ GameTags.Minions.Models.Standard,"ui_duplicant_minion_selection"},
+			{ GameTags.Minions.Models.Standard, "ui_duplicant_minion_selection"},
 			{ GameTags.Minions.Models.Bionic,"ui_duplicant_bionicminion_selection"},
 			{ GameTags.Any, "ui_duplicant_any_selection" },
 		};
