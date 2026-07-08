@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UtilLibs;
+using static GeyserConfigurator;
 
 namespace ModOriginInfo
 {
@@ -49,7 +50,26 @@ namespace ModOriginInfo
 			//else
 			//	SgtLogger.l("Vanilla Building: "+def.PrefabID);
 		}
+		internal static void RegisterElementId(Assembly assembly, string elementTag)
+		{
+			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
+			{
+				if (ModdedContentPrefabIdToModId.ContainsKey(elementTag))
+					return;
+				ModdedContentPrefabIdToModId[elementTag] = modID;
+			}
+		}
+		internal static void RegisterGeyser(Assembly assembly, GeyserType geyser)
+		{
+			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
+			{
+				string geyserId = "GeyserGeneric_"+geyser.id;
+				if (ModdedContentPrefabIdToModId.ContainsKey(geyserId))
+					return;
 
+				ModdedContentPrefabIdToModId[geyserId] = modID;
+			}
+		}
 		internal static void RegisterRecipe(Assembly assembly, ComplexRecipe recipe)
 		{
 			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
