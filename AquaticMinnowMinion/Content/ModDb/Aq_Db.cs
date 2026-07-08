@@ -19,6 +19,7 @@ namespace AquaticMinnowMinion.Content.ModDb
 			Aq_SkillPerks.Register(db.SkillPerks);
 			Aq_Skills.Register(db.Skills);
 			Aq_ChoreTypes.Register(db.ChoreTypes);
+			Aq_Traits.Register(db);
 		}
 	}
 }

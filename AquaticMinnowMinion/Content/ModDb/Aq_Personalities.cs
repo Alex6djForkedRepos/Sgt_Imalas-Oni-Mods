@@ -33,7 +33,7 @@ namespace AquaticMinnowMinion.Content.ModDb
 				minnowReference.stresstrait,
 				minnowReference.joyTrait,
 				minnowReference.stickerType,
-				null,// no freediver for u here, its built in
+				Aq_Traits.Aquatic_Freediver,// no normal freediver for u here, its built in
 				minnowReference.headShape,
 				minnowReference.mouth,
 				minnowReference.neck,
