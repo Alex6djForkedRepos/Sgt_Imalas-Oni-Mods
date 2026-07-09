@@ -859,6 +859,7 @@ namespace SetStartDupes
 		{
 			bool initializingUI = minionModel == null;
 			bool bionicMinion = minionModel == GameTags.Minions.Models.Bionic;
+			bool standardOrAquaticMinion = (minionModel == GameTags.Minions.Models.Standard) || (minionModel == "AquaticMinion");
 
 			if (type != NextType.allTraits)
 			{
@@ -893,12 +894,12 @@ namespace SetStartDupes
 				if (ModAssets.RainbowFartsActive)
 					returnValues.AddRange(TraitsByType[NextType.RainbowFart]);
 
-				if (minionModel == GameTags.Minions.Models.Bionic || initializingUI)
+				if (bionicMinion || initializingUI)
 				{
 					returnValues.AddRange(TraitsByType[NextType.bionic_boost]);
 					returnValues.AddRange(TraitsByType[NextType.bionic_bug]);
 				}
-				if (minionModel == GameTags.Minions.Models.Standard || initializingUI || Config.Instance.BionicNormalTraits)
+				if (standardOrAquaticMinion || initializingUI || Config.Instance.BionicNormalTraits)
 				{
 					returnValues.AddRange(TraitsByType[NextType.posTrait]);
 					returnValues.AddRange(TraitsByType[NextType.needTrait]);
