@@ -16,7 +16,6 @@ namespace AquaticMinnowMinion.Content.ModDb
 
 		public static void Register(Db __instance)
 		{
-			GeoTuner
 			DUPLICANTSTATS.CONGENITALTRAITS.Add(new TraitVal { id = Aquatic_Freediver});
 			var trait = __instance.CreateTrait(Aquatic_Freediver, global::STRINGS.DUPLICANTS.CONGENITALTRAITS.MINNOW.NAME, global::STRINGS.DUPLICANTS.CONGENITALTRAITS.MINNOW.DESC, null, true, null, true, true);
 			trait.OnAddTrait = AddAquaticMinnowTraitEffects;
