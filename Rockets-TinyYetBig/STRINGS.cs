@@ -1306,6 +1306,11 @@ namespace Rockets_TinyYetBig
 				public static LocString TITLE = "Compress Interiors & Remove Rocket Limit";
 				public static LocString TOOLTIP = "Removes the rocket limit of 16 and trims excessive space outside of the rocket walls in spacefarer interiors\nRequired for space stations.";
 			}
+			public class CEMTEREDINTERIORS
+			{
+				public static LocString TITLE = "Center Interiors";
+				public static LocString TOOLTIP = "Centers the rocket interior template in the rocket (it is offset by 1 otherwise)\nAlways active with Compressed Interiors.";
+			}
 			public class ENABLEADVWORLDSELECTOR
 			{
 				public static LocString TITLE = "Improved World Selector";
