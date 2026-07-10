@@ -1,8 +1,11 @@
 ﻿
 using BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
+using BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer;
 using BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers;
 using BlueprintsV2.ModAPI;
 using BlueprintsV2.Tools;
+using ONI_Together_API;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +13,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UtilLibs;
+using static BlueprintsV2.BlueprintData.BlueprintState;
 using static STRINGS.BUILDINGS.PREFABS;
 using static STRINGS.DUPLICANTS.MODIFIERS;
 using static STRINGS.UI.SANDBOXTOOLS.SETTINGS;
@@ -27,6 +31,7 @@ namespace BlueprintsV2.Visualizers
 		public PlanScreen.RequirementsState RequirementsState { get; protected set; }
 
 		protected int cell;
+		public int CurrentCell => cell;
 
 		protected readonly BuildingConfig buildingConfig;
 
@@ -37,9 +42,13 @@ namespace BlueprintsV2.Visualizers
 		public bool FlippedH { get; protected set; }
 
 		public string BuildingID => BuildingDef.PrefabID;
+		protected ulong _playerId = BlueprintState.PlayerId_DefaultTilePreviews;
+		protected KBatchedAnimController kbac;
+		protected bool hasKbac = false;
 
-		public BuildingVisual(BuildingConfig buildingConfig, int cell)
+		public BuildingVisual(BuildingConfig buildingConfig, int cell, ulong playerId)
 		{
+			this._playerId = playerId;
 			Offset = buildingConfig.Offset;
 			RotatedOrientation = buildingConfig.Orientation;
 			this.buildingConfig = buildingConfig;
@@ -65,14 +74,21 @@ namespace BlueprintsV2.Visualizers
 
 				batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
 				batchedAnimController.Play("place");
+				kbac = batchedAnimController;
 			}
 			else
 			{
 				Visualizer.SetLayerRecursively(LayerMask.NameToLayer("Place"));
 			}
+			hasKbac = kbac != null;
 			UpdateRequirementsState();
 		}
 
+		///relevant for rendering tiles in the multiplayer mod integration
+		public ulong GetPlayerId()
+		{
+			return _playerId;
+		}
 		public virtual bool IsPlaceable(int cellParam)
 		{
 			return ValidCell(cellParam) && HasTech() && AllowedInWorld();
@@ -127,33 +143,33 @@ namespace BlueprintsV2.Visualizers
 			return elements.ToArray();
 		}
 		#region replace experiment
-		private bool ViableReplacementCandidate(GameObject toReplace)
-		{
-			if (toReplace.TryGetComponent<BuildingComplete>(out var component))
-			{
-				return (component.Def.Replaceable && buildingConfig.BuildingDef.CanReplace(toReplace) && (component.Def != buildingConfig.BuildingDef || GetConstructionElements()[0] != component.GetComponent<PrimaryElement>().Element.tag));
-			}
-			return false;
-		}
+		//private bool ViableReplacementCandidate(GameObject toReplace)
+		//{
+		//	if (toReplace.TryGetComponent<BuildingComplete>(out var component))
+		//	{
+		//		return (component.Def.Replaceable && buildingConfig.BuildingDef.CanReplace(toReplace) && (component.Def != buildingConfig.BuildingDef || GetConstructionElements()[0] != component.GetComponent<PrimaryElement>().Element.tag));
+		//	}
+		//	return false;
+		//}
 
-		bool ReplacementLayerOccupied(int cellParam)
-		{
-			var def = buildingConfig.BuildingDef;
-			var objOnLayer = Grid.Objects[cellParam, (int)def.ReplacementLayer];
+		//bool ReplacementLayerOccupied(int cellParam)
+		//{
+		//	var def = buildingConfig.BuildingDef;
+		//	var objOnLayer = Grid.Objects[cellParam, (int)def.ReplacementLayer];
 
-			if (objOnLayer != null && objOnLayer != Visualizer)
-				return true;
-			if (def.EquivalentReplacementLayers != null)
-			{
-				foreach (ObjectLayer replacementLayer in def.EquivalentReplacementLayers)
-				{
-					objOnLayer = Grid.Objects[cellParam, (int)replacementLayer];
-					if (objOnLayer != null && objOnLayer != Visualizer)
-						return true;
-				}
-			}
-			return false;
-		}
+		//	if (objOnLayer != null && objOnLayer != Visualizer)
+		//		return true;
+		//	if (def.EquivalentReplacementLayers != null)
+		//	{
+		//		foreach (ObjectLayer replacementLayer in def.EquivalentReplacementLayers)
+		//		{
+		//			objOnLayer = Grid.Objects[cellParam, (int)replacementLayer];
+		//			if (objOnLayer != null && objOnLayer != Visualizer)
+		//				return true;
+		//		}
+		//	}
+		//	return false;
+		//}
 		#endregion
 		public virtual void ApplyBuildingData(GameObject building)
 		{
@@ -475,90 +491,91 @@ namespace BlueprintsV2.Visualizers
 
 			return false;
 		}
-		public virtual void ClearTilePreview(int cell)
-		{
-			var def = buildingConfig.BuildingDef;
+		//public virtual void ClearTilePreview(int cell)
+		//{
+		//	var def = buildingConfig.BuildingDef;
 
-			if (!Grid.IsValidBuildingCell(cell) || !def.IsTilePiece)
-				return;
-			GameObject tileLayerObject = Grid.Objects[cell, (int)def.TileLayer];
-			if (Visualizer == tileLayerObject)
-				Grid.Objects[cell, (int)def.TileLayer] = null;
-			if (!def.isKAnimTile)
-				return;
-			GameObject replacementLayerObject = null;
-			if (def.ReplacementLayer != ObjectLayer.NumLayers)
-				replacementLayerObject = Grid.Objects[cell, (int)def.ReplacementLayer];
-			if (tileLayerObject != null && !tileLayerObject.TryGetComponent<Constructable>(out _) || !(replacementLayerObject == null) && !replacementLayerObject != Visualizer)
-				return;
-			Grid.Objects[cell, (int)def.ReplacementLayer] = null;
-			World.Instance.blockTileRenderer.RemoveBlock(def, false, SimHashes.Void, cell);
-			World.Instance.blockTileRenderer.RemoveBlock(def, true, SimHashes.Void, cell);
-			TileVisualizer.RefreshCell(cell, def.TileLayer, def.ReplacementLayer);
-		}
+		//	if (!Grid.IsValidBuildingCell(cell) || !def.IsTilePiece)
+		//		return;
+		//	GameObject tileLayerObject = Grid.Objects[cell, (int)def.TileLayer];
+		//	if (Visualizer == tileLayerObject)
+		//		Grid.Objects[cell, (int)def.TileLayer] = null;
+		//	if (!def.isKAnimTile)
+		//		return;
+		//	GameObject replacementLayerObject = null;
+		//	if (def.ReplacementLayer != ObjectLayer.NumLayers)
+		//		replacementLayerObject = Grid.Objects[cell, (int)def.ReplacementLayer];
+		//	if (tileLayerObject != null && !tileLayerObject.TryGetComponent<Constructable>(out _) || !(replacementLayerObject == null) && !replacementLayerObject != Visualizer)
+		//		return;
+		//	Grid.Objects[cell, (int)def.ReplacementLayer] = null;
+			
+		//	CustomTileRenderer.RemoveTileBlock(GetPlayerId(), def, false, SimHashes.Void, cell);
+		//	CustomTileRenderer.RemoveTileBlock(GetPlayerId(), def, true, SimHashes.Void, cell);
+		//	CustomTileRenderer.RefreshCell(GetPlayerId(), cell, def.TileLayer, def.ReplacementLayer);
+		//}
 
 		/// <summary>
 		/// experiment to allow replace building over stuff based on regular build tool, not in use.
 		/// </summary>
 		/// <param name="cellParam"></param>
 		/// <returns></returns>
-		public virtual bool TryBuild(int cellParam)
-		{
-			ClearTilePreview(cellParam);
-			Vector3 posCbc = Grid.CellToPosCBC(cellParam, Grid.SceneLayer.Building);
-			GameObject builtItem = null;
-			var def = buildingConfig.BuildingDef;
-			var buildingOrientation = RotatedOrientation;
-			var selectedElements = GetConstructionElements();
-			var visualizer = Visualizer;
+		//public virtual bool TryBuild(int cellParam)
+		//{
+		//	ClearTilePreview(cellParam);
+		//	Vector3 posCbc = Grid.CellToPosCBC(cellParam, Grid.SceneLayer.Building);
+		//	GameObject builtItem = null;
+		//	var def = buildingConfig.BuildingDef;
+		//	var buildingOrientation = RotatedOrientation;
+		//	var selectedElements = GetConstructionElements();
+		//	var visualizer = Visualizer;
 
-			SgtLogger.l("Visualizer test");
-			SgtLogger.Assert("Visualizer was null", visualizer);
+		//	SgtLogger.l("Visualizer test");
+		//	SgtLogger.Assert("Visualizer was null", visualizer);
 
-			bool instantBuild = DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
+		//	bool instantBuild = DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
 
-			if (Grid.Objects[cellParam, (int)def.TileLayer] == Visualizer)
-				Grid.Objects[cellParam, (int)def.TileLayer] = null;
+		//	if (Grid.Objects[cellParam, (int)def.TileLayer] == Visualizer)
+		//		Grid.Objects[cellParam, (int)def.TileLayer] = null;
 
-			if (Grid.Objects[cellParam, (int)def.ObjectLayer] == Visualizer)
-				Grid.Objects[cellParam, (int)def.ObjectLayer] = null;
+		//	if (Grid.Objects[cellParam, (int)def.ObjectLayer] == Visualizer)
+		//		Grid.Objects[cellParam, (int)def.ObjectLayer] = null;
 
-			if (Grid.Objects[cellParam, (int)def.ReplacementLayer] == Visualizer)
-				Grid.Objects[cellParam, (int)def.ReplacementLayer] = null;
+		//	if (Grid.Objects[cellParam, (int)def.ReplacementLayer] == Visualizer)
+		//		Grid.Objects[cellParam, (int)def.ReplacementLayer] = null;
 
-			if (!instantBuild)
-			{
-				builtItem = def.TryPlace(visualizer, posCbc, buildingOrientation, selectedElements, null);
-			}
-			else if (def.IsValidBuildLocation(visualizer, posCbc, buildingOrientation) && def.IsValidPlaceLocation(visualizer, posCbc, buildingOrientation, out string _))
-			{
-				builtItem = def.Build(cell, buildingOrientation, null, selectedElements, ModAssets.GetSpawnTemperature(def, selectedElements), null, false, GameClock.Instance.GetTime());
-			}
+		//	if (!instantBuild)
+		//	{
+		//		builtItem = def.TryPlace(visualizer, posCbc, buildingOrientation, selectedElements, null);
+		//	}
+		//	else if (def.IsValidBuildLocation(visualizer, posCbc, buildingOrientation) && def.IsValidPlaceLocation(visualizer, posCbc, buildingOrientation, out string _))
+		//	{
+		//		builtItem = def.Build(cell, buildingOrientation, null, selectedElements, ModAssets.GetSpawnTemperature(def, selectedElements), null, false, GameClock.Instance.GetTime());
+		//	}
 
-			if (builtItem == null && def.ReplacementLayer != ObjectLayer.NumLayers)
-			{
-				GameObject replacementCandidate = def.GetReplacementCandidate(cell);
-				if (replacementCandidate != null && !def.IsReplacementLayerOccupied(cell))
-				{
-					BuildingComplete component = replacementCandidate.GetComponent<BuildingComplete>();
-					if (component != null && component.Def.Replaceable && def.CanReplace(replacementCandidate) && (component.Def != def
-								|| selectedElements[0] != replacementCandidate.GetComponent<PrimaryElement>().Element.tag))
-					{
-						if (!instantBuild)
-						{
-							builtItem = def.TryReplaceTile(visualizer, posCbc, buildingOrientation, selectedElements, null);
-							Grid.Objects[cell, (int)def.ReplacementLayer] = builtItem;
-						}
-						else if (def.IsValidBuildLocation(visualizer, posCbc, buildingOrientation, true) && def.IsValidPlaceLocation(visualizer, posCbc, buildingOrientation, true, out string _))
-							builtItem = InstantBuildReplace(cell, posCbc, replacementCandidate);
-					}
-				}
-			}
+		//	if (builtItem == null && def.ReplacementLayer != ObjectLayer.NumLayers)
+		//	{
+		//		GameObject replacementCandidate = def.GetReplacementCandidate(cell);
+		//		if (replacementCandidate != null && !def.IsReplacementLayerOccupied(cell))
+		//		{
+		//			BuildingComplete component = replacementCandidate.GetComponent<BuildingComplete>();
+		//			if (component != null && component.Def.Replaceable && def.CanReplace(replacementCandidate) && (component.Def != def
+		//						|| selectedElements[0] != replacementCandidate.GetComponent<PrimaryElement>().Element.tag))
+		//			{
+		//				if (!instantBuild)
+		//				{
+		//					builtItem = def.TryReplaceTile(visualizer, posCbc, buildingOrientation, selectedElements, null);
+		//					Grid.Objects[cell, (int)def.ReplacementLayer] = builtItem;
+		//				}
+		//				else if (def.IsValidBuildLocation(visualizer, posCbc, buildingOrientation, true) && def.IsValidPlaceLocation(visualizer, posCbc, buildingOrientation, true, out string _))
+		//					builtItem = InstantBuildReplace(cell, posCbc, replacementCandidate);
+		//			}
+		//		}
+		//	}
 
-			SgtLogger.Assert("builtItem", builtItem);
-			PostProcessBuild(instantBuild, posCbc, builtItem);
-			return builtItem != null;
-		}
+		//	SgtLogger.Assert("builtItem", builtItem);
+		//	PostProcessBuild(instantBuild, posCbc, builtItem);
+		//	return builtItem != null;
+		//}
 		private GameObject InstantBuildReplace(int cell, Vector3 pos, GameObject tile)
 		{
 			var def = buildingConfig.BuildingDef;
@@ -613,15 +630,16 @@ namespace BlueprintsV2.Visualizers
 		public virtual bool ValidCell(int cellParam)
 		{
 			var pos = Grid.CellToPos(cellParam);
-			if (Grid.IsValidCell(cellParam)
+			if (Grid.IsValidCellInWorld(cellParam, ClusterManager.Instance.activeWorldId)
 				&& Grid.IsVisible(cellParam))
 			{
 				bool IsValidPlaceLocation = buildingConfig.BuildingDef.IsValidPlaceLocation(Visualizer, cellParam, RotatedOrientation, out string failReason);
 				bool IgnorableFailReason =
-					failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_WALL
+					   failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_WALL
 					|| failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_CORNER
 					|| failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_CORNER_FLOOR
-					|| (failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_BACK_WALL_REQUIRED && BlueprintState.LayerOccupiedAt(ObjectLayer.Backwall, cellParam));
+					//allow "attach to backwall" buildings to be placed, but not replace already placed ones as that will place a non-cancelable visualizer
+					|| (failReason == global::STRINGS.UI.TOOLTIPS.HELP_BUILDLOCATION_BACK_WALL_REQUIRED && BlueprintState.LayerOccupiedAt(this, ObjectLayer.Backwall, cellParam) && !BlueprintState.LayerOccupiedAt(this, BuildingDef.ObjectLayer, cellParam));
 
 				//SgtLogger.l("Fail reason of " + buildingConfig.BuildingDef.name + ": " + faiReason);
 
@@ -642,8 +660,13 @@ namespace BlueprintsV2.Visualizers
 			RequirementsState = state;
 		}
 
+
 		public virtual Color GetVisualizerColor(int cellParam)
 		{
+			Color playerColor = default;
+			if (!LocalPlayerId(ref _playerId) && IsMultiplayerVisualizer(_playerId, ref playerColor))
+				return playerColor;
+
 			UpdateRequirementsState();
 			if (CanForceRebuild(cellParam))// && CanRebuildWithMaterial(cellParam, out _))
 			{
@@ -680,10 +703,10 @@ namespace BlueprintsV2.Visualizers
 		{
 			var def = buildingConfig.BuildingDef;
 			if (def.isKAnimTile)
-				return BlueprintState.All;
+				return BlueprintTransformationInfo.All;
 			else if (def.WidthInCells == 1 && def.HeightInCells == 1 &&
 				(def.ObjectLayer == ObjectLayer.Backwall || def.PermittedRotations == PermittedRotations.R360 || def.BuildLocationRule == BuildLocationRule.Anywhere || def.BuildLocationRule == BuildLocationRule.NotInTiles))
-				return BlueprintState.All;
+				return BlueprintTransformationInfo.All;
 			else if (def.WidthInCells % 2 == 1 || def.PermittedRotations == PermittedRotations.FlipH)
 				return PermittedRotations.FlipH;
 			else if (def.BuildingComplete.TryGetComponent<Door>(out _))
@@ -867,6 +890,15 @@ namespace BlueprintsV2.Visualizers
 
 
 			return allowedRotations;
+		}
+
+		public void DestroyVisualizer()
+		{
+			if (Visualizer.TryGetComponent<LogicPorts>(out var ports))
+			{
+				ports.DestroyVisualizers();
+			}
+			UnityEngine.Object.Destroy(Visualizer);
 		}
 	}
 }

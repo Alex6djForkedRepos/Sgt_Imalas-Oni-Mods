@@ -96,23 +96,24 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		public void RefreshButtonStates()
 		{
-			bool canRotate = BlueprintState.CanRotate;
+			var info = BlueprintState.GetCurrentTransformationInfo();
+			bool canRotate = info.CanRotate;
 
 			//CanRotate.SetInfoState(canRotate);
 			RotateL.SetInteractable(canRotate);
 			RotateR.SetInteractable(canRotate);
-			CanRotateL_TT.SetSimpleTooltip(canRotate ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.ROTATION_BLOCKED, BlueprintState.TransformationBlockedByBuildingName));
-			CanRotateR_TT.SetSimpleTooltip(canRotate ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.ROTATION_BLOCKED, BlueprintState.TransformationBlockedByBuildingName));
+			CanRotateL_TT.SetSimpleTooltip(canRotate ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.ROTATION_BLOCKED, info.TransformationBlockedByBuildingName));
+			CanRotateR_TT.SetSimpleTooltip(canRotate ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.ROTATION_BLOCKED, info.TransformationBlockedByBuildingName));
 
-			bool canFlipH = BlueprintState.CanFlipH;
+			bool canFlipH = info.CanFlipH;
 			//CanFlipH.SetInfoState(canFlipH);
 			FlipH.SetInteractable(canFlipH);
-			CanFlipH_TT.SetSimpleTooltip(canFlipH ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.FLIP_BLOCKED, BlueprintState.TransformationBlockedByBuildingName));
+			CanFlipH_TT.SetSimpleTooltip(canFlipH ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.FLIP_BLOCKED, info.TransformationBlockedByBuildingName));
 
-			bool canFlipV = BlueprintState.CanFlipV;
+			bool canFlipV = info.CanFlipV;
 			//CanFlipV.SetInfoState(canFlipV);
 			FlipV.SetInteractable(canFlipV);
-			CanFlipV_TT.SetSimpleTooltip(canFlipV ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.FLIP_BLOCKED, BlueprintState.TransformationBlockedByBuildingName));
+			CanFlipV_TT.SetSimpleTooltip(canFlipV ? string.Empty : string.Format(USEBLUEPRINTSTATECONTAINER.FLIP_BLOCKED, info.TransformationBlockedByBuildingName));
 			RefreshStateChangeBPs();
 		}
 		void RefreshStateChangeBPs()
@@ -241,23 +242,23 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		void HandleFlipH()
 		{
-			BlueprintState.FlipHorizontal();
+			BlueprintState.GetCurrentTransformationInfo().FlipHorizontal();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleFlipV()
 		{
 
-			BlueprintState.FlipVertical();
+			BlueprintState.GetCurrentTransformationInfo().FlipVertical();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleRotationR()
 		{
-			BlueprintState.TryRotateBlueprint();
+			BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleRotationL()
 		{
-			BlueprintState.TryRotateBlueprint(true);
+			BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint(true);
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 

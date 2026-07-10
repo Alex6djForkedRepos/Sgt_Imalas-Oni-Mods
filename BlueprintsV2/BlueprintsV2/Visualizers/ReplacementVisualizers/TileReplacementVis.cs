@@ -1,4 +1,5 @@
-﻿using Rendering;
+﻿using BlueprintsV2.Visualizers;
+using Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,30 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers
 		static Dictionary<BuildingDef, BlockTileRenderer.RenderInfo> _tileInfos = [];
 		static Dictionary<BuildingDef, Dictionary<int, Sprite>> _Tilesprites = [];
 		static Dictionary<BuildingDef, Dictionary<int, Vector4>> _tileMasks = [];
-		protected override void UpdateVisualState()
+		//protected override void UpdateVisualState()
+		//{
+		//	base.UpdateVisualState();
+		//	UpdateTileTextureNew(def);
+		//}
+		protected override void SeatVis()
 		{
-			base.UpdateVisualState();
-			UpdateTileTexture(def);
+			TileVisual.RegisterReplacementVis(cell, def);
+			base.SeatVis();
+		}
+		protected override void UnseatVis()
+		{
+			TileVisual.UnregisterReplacementVis(cell, def);
+			base.UnseatVis();
+		}
+		public override void OnCleanUp()
+		{
+			base.OnCleanUp();
 		}
 
+		protected override void DestroySelf()
+		{
+			base.DestroySelf();
+		} 
 		void UpdateTileTexture(BuildingDef def)
 		{
 			SgtLogger.Assert(tileSpriteRenderer, "tileSpriteRenderer");

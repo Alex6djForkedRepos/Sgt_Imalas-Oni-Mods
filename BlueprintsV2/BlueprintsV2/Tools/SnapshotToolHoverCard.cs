@@ -35,6 +35,7 @@ namespace BlueprintsV2.Tools
 
 			if (BlueprintState.ExtendedCardTooltips)
 			{
+				var stateInfo = BlueprintState.GetCurrentTransformationInfo();
 				drawer.DrawText(string.Format(STRINGS.UI.TOOLS.SNAPSHOT_TOOL.REUSELASTSNAPSHOT, UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsSnapshotReuseAction.GetKAction()) + "]")), Styles_Instruction.Standard);
 				drawer.NewLine();
 				if (UsingSnapshot)
@@ -53,13 +54,13 @@ namespace BlueprintsV2.Tools
 					drawer.DrawText(UIUtils.ColorText(string.Format(STRINGS.UI.TOOLS.USE_TOOL.ROTATE,
 						UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsRotate.GetKAction()) + "]"),
 						UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsRotateInverse.GetKAction()) + "]")),
-						BlueprintState.CanRotate ? Color.white : Color.grey), Styles_Instruction.Standard);
+						stateInfo.CanRotate ? Color.white : Color.grey), Styles_Instruction.Standard);
 
 					drawer.NewLine(20);
-					drawer.DrawText(string.Format(UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.FLIP, BlueprintState.CanFlipH|| BlueprintState.CanFlipV ? Color.white : Color.grey),
-						UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_H, BlueprintState.CanFlipH ? Color.white : Color.grey),
+					drawer.DrawText(string.Format(UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.FLIP, stateInfo.CanFlipH|| stateInfo.CanFlipV ? Color.white : Color.grey),
+						UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_H, stateInfo.CanFlipH ? Color.white : Color.grey),
 						UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction()) + "]"),
-						UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_V, BlueprintState.CanFlipV ? Color.white : Color.grey),
+						UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_V, stateInfo.CanFlipV ? Color.white : Color.grey),
 						UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsFlipVertical.GetKAction()) + "]")
 						), Styles_Instruction.Standard);
 

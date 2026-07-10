@@ -8,11 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static BlueprintsV2.BlueprintData.BlueprintState;
 
 namespace BlueprintsV2.BlueprintsV2.Visualizers
 {
 	internal class TextNoteVisual : IVisual
 	{
+		public ulong GetPlayerId() => playerId;
+		private ulong playerId = PlayerId_DefaultTilePreviews;
+
 		public GameObject Visualizer { get; private set; }
 		public Vector2I Offset { get; private set; }
 
@@ -23,8 +27,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 		string Title, Text;
 		Color Tint;
 
-		public TextNoteVisual(int cell, Vector2I offset, string title, string text, Color tint)
+		public TextNoteVisual(ulong playerId, int cell, Vector2I offset, string title, string text, Color tint)
 		{
+			this.playerId = playerId;
 			Visualizer = GameUtil.KInstantiate(Assets.GetPrefab(TextNoteConfig.ID), Grid.CellToPosCBC(cell, Grid.SceneLayer.FXFront), Grid.SceneLayer.FXFront, "BlueprintModLiquidIndicatorVisual");
 			Visualizer.SetActive(IsPlaceable(cell));
 			Offset = offset;
@@ -47,6 +52,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 			Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, Grid.SceneLayer.FXFront));
 			Visualizer.SetActive(IsPlaceable(cellParam));
 		}
+
+
+
 		public void ForceRedraw() { }
 
 		public bool TryUse(int cellParam)
@@ -78,7 +86,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 			return false;
 		}
 
-		public PermittedRotations GetAllowedRotations() => BlueprintState.All;
+		public PermittedRotations GetAllowedRotations() => BlueprintTransformationInfo.All;
 		public void ApplyRotation(Orientation rotation, bool flipped, bool flippedY)
 		{
 			//digging doesnt get rotated
@@ -88,5 +96,6 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 		{
 			//no tinting
 		}
+
 	}
 }

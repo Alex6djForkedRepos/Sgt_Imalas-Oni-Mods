@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using BlueprintsV2.BlueprintData;
+using UnityEngine;
 
 namespace BlueprintsV2.Visualizers
 {
@@ -21,5 +22,12 @@ namespace BlueprintsV2.Visualizers
 
 		PermittedRotations GetAllowedRotations();
 		void ApplyRotation(Orientation rotation, bool flippedX, bool flippedY);
+
+		void DestroyVisualizer()
+		{
+			UnityEngine.Object.Destroy(Visualizer);
+		}
+		///relevant for rendering tiles in the multiplayer mod integration
+		public ulong GetPlayerId();
 	}
 }

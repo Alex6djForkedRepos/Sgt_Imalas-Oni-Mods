@@ -11,8 +11,9 @@ using UnityEngine.UI;
 using UtilLibs;
 using UtilLibs.UIcmp;
 using static BlueprintsV2.STRINGS.UI.BLUEPRINTSELECTOR.BLUEPRINTINFO.STATS;
+using static Database.MonumentPartResource;
 
-namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
+namespace BlueprintsV2.BlueprintsV2.UnityUI
 {
 	internal class BlueprintPreviewScreen : FScreen
 	{
@@ -80,8 +81,8 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 			SgtLogger.l("Visualizing " + blueprint.FriendlyName + " with dimensions: " + dimensions);
 			//dimensions = new(dimensions.X+ 4, dimensions.Y+ 4);
 			Vis_TilePreview.ClearTileArray(dimensions);
-			float xOffset = (dimensions.X / 2f);
-			float yOffset = (dimensions.Y / 2f);
+			float xOffset = dimensions.X / 2f;
+			float yOffset = dimensions.Y / 2f;
 			dimensions = new(dimensions.X + 2, dimensions.Y + 2);
 			_rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, dimensions.X * 100f);
 			_rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, dimensions.Y * 100f);
@@ -99,7 +100,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 				if (building.BuildingDef == null)
 					continue;
 				var visType = ModAssets.GetVisualizerType(building.BuildingDef);
-				var entry = GameObject.Instantiate(BuildingEntry, transform);
+				var entry = Instantiate(BuildingEntry, transform);
 				entry.transform.localPosition = GetCellCenterPos(building.Offset, building.BuildingDef.SceneLayer); //new(building.Offset.X * 100f - xOffset, building.Offset.Y * 100f - yOffset);
 				entry.transform.localPosition -= centerOffset;
 				switch (visType)
@@ -120,7 +121,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 		{
 			foreach (var note in blueprint.WorldNotes)
 			{
-				var entry = GameObject.Instantiate(BuildingEntry, transform);
+				var entry = Instantiate(BuildingEntry, transform);
 				entry.transform.localPosition = GetCellCenterPos(note.Key, Grid.SceneLayer.FXFront); //new(building.Offset.X * 100f - xOffset, building.Offset.Y * 100f - yOffset);
 				entry.transform.localPosition -= centerOffset;
 
@@ -156,6 +157,26 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 
 				BPVisualizers.Add(entry);
 			}
+		}
+		public Vector3 DragStartPosition;
+
+		public override void OnBeginDrag(PointerEventData eventData)
+		{
+			transform.parent.TryGetComponent<ScrollRect>(out var scrollRect);
+			scrollRect.OnBeginDrag(eventData);
+			base.OnBeginDrag(eventData);
+		}
+		public override void OnDrag(PointerEventData eventData)
+		{
+			transform.parent.TryGetComponent<ScrollRect>(out var scrollRect);
+			scrollRect.OnDrag(eventData);
+			base.OnDrag(eventData);
+		}
+		public override void OnEndDrag(PointerEventData eventData)
+		{
+			transform.parent.TryGetComponent<ScrollRect>(out var scrollRect);
+			scrollRect.OnEndDrag(eventData);
+			base.OnEndDrag(eventData);
 		}
 
 		public void LoadBlueprintPreview(Blueprint blueprint)
@@ -209,13 +230,13 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 
 		public override void ScreenUpdate(bool topLevel)
 		{
-			this.m_currentZoomScale = Mathf.Lerp(this.m_currentZoomScale, this.m_targetZoomScale, Mathf.Min(4f * Time.unscaledDeltaTime, 1f));
+			m_currentZoomScale = Mathf.Lerp(m_currentZoomScale, m_targetZoomScale, Mathf.Min(4f * Time.unscaledDeltaTime, 1f));
 			Vector2 mousePos = (Vector2)KInputManager.GetMousePos();
 			Vector3 vector3_1 = _rectTransform.InverseTransformPoint((Vector3)mousePos);
-			_rectTransform.localScale = new Vector3(this.m_currentZoomScale, this.m_currentZoomScale, 1f);
+			_rectTransform.localScale = new Vector3(m_currentZoomScale, m_currentZoomScale, 1f);
 			Vector3 vector3_2 = _rectTransform.InverseTransformPoint((Vector3)mousePos);
 			RectTransform content = _rectTransform;
-			content.localPosition = content.localPosition + (vector3_2 - vector3_1) * this.m_currentZoomScale;
+			content.localPosition = content.localPosition + (vector3_2 - vector3_1) * m_currentZoomScale;
 			//if (_currentlySimDragged != null) _currentlySimDragged.transform.SetPosition(mousePos);
 			//if (_currentlySimDraggedToolkit != null) _currentlySimDraggedToolkit.transform.SetPosition(mousePos);
 		}
@@ -234,7 +255,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components
 				var A = upperZoomBound;
 
 				//this.m_targetZoomScale = Mathf.Clamp(this.m_targetZoomScale + (!KInputManager.currentControllerIsGamepad ? UnityEngine.Input.mouseScrollDelta.y * 0.1f : (float)((e.IsAction(Action.ZoomIn) ? -0.003 : 0.003))), 0.15f, 2f);
-				this.m_targetZoomScale = A * Mathf.Exp(B * currentZoomStep);
+				m_targetZoomScale = A * Mathf.Exp(B * currentZoomStep);
 
 				//this.rectTransform().localScale = new Vector3(this.m_targetZoomScale, this.m_targetZoomScale, 1f);
 

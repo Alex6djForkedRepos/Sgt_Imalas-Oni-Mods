@@ -35,6 +35,8 @@ namespace BlueprintsV2.Tools
 			{
 				if (ModAssets.SelectedBlueprint != null)
 				{
+					var infoState = BlueprintState.GetCurrentTransformationInfo();
+
 					var selectedBp = ModAssets.SelectedBlueprint;
 					var folder = ModAssets.GetCurrentFolder();
 
@@ -49,13 +51,13 @@ namespace BlueprintsV2.Tools
 						drawer.DrawText(UIUtils.ColorText(string.Format(STRINGS.UI.TOOLS.USE_TOOL.ROTATE,
 							UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsRotate.GetKAction()) + "]"),
 							UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsRotateInverse.GetKAction()) + "]")),
-							BlueprintState.CanRotate ? Color.white : Color.grey), Styles_Instruction.Standard);
+							infoState.CanRotate ? Color.white : Color.grey), Styles_Instruction.Standard);
 
 						drawer.NewLine(20);
-						drawer.DrawText(string.Format(UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.FLIP, BlueprintState.CanFlipH || BlueprintState.CanFlipV ? Color.white : Color.grey),
-							UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_H, BlueprintState.CanFlipH ? Color.white : Color.grey),
+						drawer.DrawText(string.Format(UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.FLIP, infoState.CanFlipH || infoState.CanFlipV ? Color.white : Color.grey),
+							UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_H, infoState.CanFlipH ? Color.white : Color.grey),
 							UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction()) + "]"),
-							UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_V, BlueprintState.CanFlipV ? Color.white : Color.grey),
+							UIUtils.ColorText(STRINGS.UI.TOOLS.USE_TOOL.ORIENTATION_V, infoState.CanFlipV ? Color.white : Color.grey),
 							UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsFlipVertical.GetKAction()) + "]")
 							), Styles_Instruction.Standard);
 

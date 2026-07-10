@@ -8,13 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using static ResearchTypes;
-using static STRINGS.UI;
+using static BlueprintsV2.BlueprintData.BlueprintState;
 
 namespace BlueprintsV2.BlueprintsV2.Visualizers
 {
 	internal class ElementNoteVisual : IVisual
 	{
+		public ulong GetPlayerId() => playerId;
+		private ulong playerId = PlayerId_DefaultTilePreviews;
 		public GameObject Visualizer { get; private set; }
 		public Vector2I Offset { get; private set; }
 
@@ -29,8 +30,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 		{
 			return ElementNoteConfig.ID;
 		}
-		public ElementNoteVisual(int cell, Vector2I offset, SimHashes elementId, float amount, float temperature)
+		public ElementNoteVisual(ulong playerId, int cell, Vector2I offset, SimHashes elementId, float amount, float temperature)
 		{
+			this.playerId = playerId;
 			Visualizer = GameUtil.KInstantiate(Assets.GetPrefab(GetInfoPrefabId(elementId)), Grid.CellToPosCBC(cell, Grid.SceneLayer.FXFront), Grid.SceneLayer.FXFront, "BlueprintModLiquidIndicatorVisual");
 			Visualizer.SetActive(IsPlaceable(cell));
 			Offset = offset;
@@ -90,7 +92,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 			return false;
 		}
 
-		public PermittedRotations GetAllowedRotations() => BlueprintState.All;
+		public PermittedRotations GetAllowedRotations() => BlueprintTransformationInfo.All;
 		public void ApplyRotation(Orientation rotation, bool flipped, bool flippedY)
 		{
 			//digging doesnt get rotated

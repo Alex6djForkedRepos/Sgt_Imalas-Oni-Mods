@@ -196,7 +196,7 @@ namespace BlueprintsV2
 		}
 		public static StringBuilder sb = new StringBuilder();
 
-		private static bool TryImportBlueprintFromString(string bpString, out Blueprint bp)
+		internal static bool TryImportBlueprintFromString(string bpString, out Blueprint bp)
 		{
 			bp = null;
 			try

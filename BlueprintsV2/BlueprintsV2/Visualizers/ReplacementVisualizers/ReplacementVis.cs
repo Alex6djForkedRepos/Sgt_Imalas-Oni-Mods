@@ -132,19 +132,21 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers
 		}
 		public override void OnCleanUp()
 		{
+			DestroySelf();
 			foreach (var sub in subs)
 				Unsubscribe(sub);
 			if (check != null)
 				StopCoroutine(check);
-			UnseatVis();
 			base.OnCleanUp();
 		}
-		void DestroySelf()
+		protected virtual void DestroySelf()
 		{
+			if (markedForDeletion) return;
+			UnseatVis();
 			markedForDeletion = true;
 			UnityEngine.Object.Destroy(gameObject);
 		}
-		void UnseatVis()
+		protected virtual void UnseatVis()
 		{
 			foreach (var occupiedCell in occupiedCells)
 			{
@@ -157,7 +159,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers
 				GameScenePartitioner.Instance.Free(ref this.partitionerEntry);
 			}
 		}
-		void SeatVis()
+		protected virtual void SeatVis()
 		{
 			DetermineOccupiedCells();
 			foreach (var occupiedCell in occupiedCells)
@@ -440,7 +442,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers
 				}
 			}
 		}
-		public void OnCancel(object _)
+		public virtual void OnCancel(object _)
 		{
 			DestroySelf();
 		}

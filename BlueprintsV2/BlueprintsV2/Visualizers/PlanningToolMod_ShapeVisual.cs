@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static BlueprintsV2.BlueprintData.BlueprintState;
 using static ResearchTypes;
 using static STRINGS.UI;
 
@@ -17,6 +18,8 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 {
 	internal class PlanningToolMod_ShapeVisual : IVisual
 	{
+		public ulong GetPlayerId() => playerId;
+		private ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews;
 		public GameObject Visualizer { get; private set; }
 		public Vector2I Offset { get; private set; }
 
@@ -27,8 +30,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 		PlanColor Color;
 
 
-		public PlanningToolMod_ShapeVisual(int cell, Vector2I offset, PlanShape shape, PlanColor color)
+		public PlanningToolMod_ShapeVisual(ulong playerId, int cell, Vector2I offset, PlanShape shape, PlanColor color)
 		{
+			this.playerId = playerId;
 			Visualizer = GameUtil.KInstantiate(Assets.GetPrefab(PlanningToolShapePreviewConfig.ID), Grid.CellToPosCBC(cell, Grid.SceneLayer.FXFront), Grid.SceneLayer.FXFront, nameof(PlanningToolShapePreviewConfig) + shape);
 			Visualizer.SetActive(IsPlaceable(cell));
 			Offset = offset;
@@ -63,7 +67,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 			return false;
 		}
 
-		public PermittedRotations GetAllowedRotations() => BlueprintState.All;
+		public PermittedRotations GetAllowedRotations() => BlueprintTransformationInfo.All;
 		public void ApplyRotation(Orientation rotation, bool flipped, bool flippedY)
 		{
 			//digging doesnt get rotated

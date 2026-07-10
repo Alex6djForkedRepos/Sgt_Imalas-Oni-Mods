@@ -1,11 +1,14 @@
 ﻿
 using BlueprintsV2.BlueprintData;
 using UnityEngine;
+using static BlueprintsV2.BlueprintData.BlueprintState;
 
 namespace BlueprintsV2.Visualizers
 {
 	public sealed class DigVisual : IVisual
 	{
+		public ulong GetPlayerId() => playerId;
+		private ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews;
 		public GameObject Visualizer { get; private set; }
 		public Vector2I Offset { get; private set; }
 
@@ -13,8 +16,9 @@ namespace BlueprintsV2.Visualizers
 
 		public string BuildingID => null;
 
-		public DigVisual(int cell, Vector2I offset)
+		public DigVisual(ulong playerId, int cell, Vector2I offset)
 		{
+			this.playerId = playerId;
 			Visualizer = GameUtil.KInstantiate(DigTool.Instance.visualizer, Grid.CellToPosCBC(cell, DigTool.Instance.visualizerLayer), DigTool.Instance.visualizerLayer, "BlueprintModDigVisualizer");
 			Visualizer.SetActive(IsPlaceable(cell));
 			Offset = offset;
@@ -58,7 +62,7 @@ namespace BlueprintsV2.Visualizers
 			return false;
 		}
 
-		public PermittedRotations GetAllowedRotations() => BlueprintState.All;
+		public PermittedRotations GetAllowedRotations() => BlueprintTransformationInfo.All;
 		public void ApplyRotation(Orientation rotation, bool flipped, bool flippedY)
 		{
 			//digging doesnt get rotated

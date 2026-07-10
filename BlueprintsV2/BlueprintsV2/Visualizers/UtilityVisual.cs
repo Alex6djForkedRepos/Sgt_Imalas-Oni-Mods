@@ -2,6 +2,7 @@
 using BlueprintsV2.BlueprintData;
 using UnityEngine;
 using UtilLibs;
+using static LogicGateVisualizer;
 using static STRINGS.UI.SPACEARTIFACTS;
 
 namespace BlueprintsV2.Visualizers
@@ -10,7 +11,7 @@ namespace BlueprintsV2.Visualizers
 	public sealed class UtilityVisual : BuildingVisual
 	{
 
-		public UtilityVisual(BuildingConfig buildingConfig, int cell) : base(buildingConfig, cell)
+		public UtilityVisual(BuildingConfig buildingConfig, int cell, ulong playerId) : base(buildingConfig, cell, playerId)
 		{
 			if (Visualizer.TryGetComponent<KBatchedAnimController>(out var batchedAnimController))
 			{
@@ -33,7 +34,7 @@ namespace BlueprintsV2.Visualizers
 
 				batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
 			}
-			VisualsUtilities.SetVisualizerColor(cell, GetVisualizerColor(cell), Visualizer, buildingConfig);
+			RefreshColor();
 		}
 
 		public override void ApplyBuildingData(GameObject building)
@@ -63,15 +64,15 @@ namespace BlueprintsV2.Visualizers
 		{
 			if (cellParam != cell || forceRedraw)
 			{
-				Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, Grid.SceneLayer.Building));
-				VisualsUtilities.SetVisualizerColor(cellParam, GetVisualizerColor(cellParam), Visualizer, buildingConfig);
-
+				Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, Grid.SceneLayer.Building));				
 				cell = cellParam;
+				RefreshColor();
 			}
 		}
 		public override void RefreshColor()
 		{
-			VisualsUtilities.SetVisualizerColor(cell, GetVisualizerColor(cell), Visualizer, buildingConfig);
+			if(hasKbac)
+				kbac.TintColour = GetVisualizerColor(cell); kbac.TintColour = GetVisualizerColor(cell);
 		}
 	}
 }

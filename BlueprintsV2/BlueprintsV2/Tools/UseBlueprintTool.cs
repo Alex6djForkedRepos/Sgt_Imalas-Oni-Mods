@@ -130,7 +130,7 @@ namespace BlueprintsV2.Tools
 
 			if (hasFocus)
 			{
-				BlueprintState.UseBlueprint(Grid.PosToXY(cursorPos));
+				BlueprintState.UseBlueprint(BlueprintState.PlayerId_DefaultTilePreviews, Grid.PosToXY(cursorPos));
 			}
 		}
 
@@ -140,7 +140,7 @@ namespace BlueprintsV2.Tools
 
 			if (hasFocus)
 			{
-				BlueprintState.UpdateVisual(Grid.PosToXY(cursorPos));
+				BlueprintState.UpdateVisual(BlueprintState.PlayerId_DefaultTilePreviews, Grid.PosToXY(cursorPos));
 			}
 		}
 		void SetForceMaterialChange(bool enabled)
@@ -173,27 +173,27 @@ namespace BlueprintsV2.Tools
 
 				if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsSwapAnchorAction.GetKAction()))
 				{
-					BlueprintState.NextAnchorState();
+					BlueprintState.GetCurrentTransformationInfo().NextAnchorState();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(Action.RotateBuilding) || buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotate.GetKAction()))
 				{
-					BlueprintState.TryRotateBlueprint();
+					BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotateInverse.GetKAction()))
 				{
-					BlueprintState.TryRotateBlueprint(true);
+					BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint(true);
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction()))
 				{
-					BlueprintState.FlipHorizontal();
+					BlueprintState.GetCurrentTransformationInfo().FlipHorizontal();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipVertical.GetKAction()))
 				{
-					BlueprintState.FlipVertical();
+					BlueprintState.GetCurrentTransformationInfo().FlipVertical();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsSelectPrevious.GetKAction()))

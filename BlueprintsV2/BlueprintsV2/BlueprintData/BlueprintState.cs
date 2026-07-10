@@ -1,4 +1,5 @@
 ﻿using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration.EnumMirrors;
@@ -7,9 +8,12 @@ using BlueprintsV2.ModAPI;
 using BlueprintsV2.Tools;
 using BlueprintsV2.Visualizers;
 using Epic.OnlineServices.Sessions;
+using ONI_Together_API;
 using STRINGS;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UtilLibs;
 using static STRINGS.BUILDING.STATUSITEMS;
@@ -34,6 +38,20 @@ namespace BlueprintsV2.BlueprintData
 
 	public static class BlueprintState
 	{
+		static BlueprintState()
+		{
+			OccupiedCells[PlayerId_DefaultTilePreviews] = new();
+			foreach (ObjectLayer objectLayer in Enum.GetValues(typeof(ObjectLayer)))
+				OccupiedCells[PlayerId_DefaultTilePreviews][objectLayer] = new();
+
+			FoundationVisuals[PlayerId_DefaultTilePreviews] = new();
+			DependentVisuals[PlayerId_DefaultTilePreviews] = new();
+			CleanableVisuals[PlayerId_DefaultTilePreviews] = new();
+			ColoredCells[PlayerId_DefaultTilePreviews] = new();
+			NormalPlayer = PlayerBlueprintStateInfos[PlayerId_DefaultTilePreviews] = new();
+		}
+
+
 		public static void ToggleHotkeyTooltips() => ExtendedCardTooltips = !ExtendedCardTooltips;
 		public static bool ExtendedCardTooltips { get; private set; } = true;
 
@@ -48,11 +66,142 @@ namespace BlueprintsV2.BlueprintData
 		public static bool ApplyBlueprintSettings = true;
 		public static bool IsPlacingSnapshot { get; set; }
 
-		private static readonly List<IVisual> FoundationVisuals = new();
-		private static readonly List<IVisual> DependentVisuals = new();
-		private static readonly List<ICleanableVisual> CleanableVisuals = new();
+		private static readonly Dictionary<ulong, List<IVisual>> FoundationVisuals = new();
+		private static readonly Dictionary<ulong, List<IVisual>> DependentVisuals = new();
+		private static readonly Dictionary<ulong, List<ICleanableVisual>> CleanableVisuals = new();
 
-		public static readonly Dictionary<int, CellColorPayload> ColoredCells = new();
+		public static readonly Dictionary<ulong, Dictionary<ObjectLayer, Dictionary<int, BuildingVisual>>> OccupiedCells = new();
+
+		public static readonly Dictionary<ulong, Dictionary<int, CellColorPayload>> ColoredCells = new();
+
+		public static BlueprintTransformationInfo NormalPlayer = new();
+		static readonly Dictionary<ulong, Color> PlayerColorsCached = [];
+
+		#region MP_Integration
+
+		public const ulong PlayerId_DefaultTilePreviews = ulong.MinValue;
+		public const ulong PlayerId_ReplacementTiles = ulong.MaxValue;
+
+		//static readonly Dictionary<Blueprint, ulong> BlueprintPlayerIdMap = [];
+		static readonly Dictionary<ulong, BlueprintTransformationInfo> PlayerBlueprintStateInfos = [];
+
+		public static void AddCachesForPlayer(ulong id)
+		{
+			foreach (ObjectLayer objectLayer in Enum.GetValues(typeof(ObjectLayer)))
+				OccupiedCells[id][objectLayer] = new();
+			FoundationVisuals[id] = new();
+			DependentVisuals[id] = new();
+			CleanableVisuals[id] = new();
+			ColoredCells[id] = new();
+			var info = new BlueprintTransformationInfo(id);
+			PlayerBlueprintStateInfos[id] = info;
+			if (SessionInfoAPI.TryGetPlayerColor(id, out var playerColor))
+				PlayerColorsCached[id] = playerColor;
+			else
+			{
+				SgtLogger.warning("Could not cache player color for " + id);
+				PlayerColorsCached[id] = UIUtils.GetRandomRainbowColor(true);
+			}
+		}
+		public static void RemoveCachesForPlayer(ulong id)
+		{
+			OccupiedCells.Remove(id);
+			FoundationVisuals.Remove(id);
+			DependentVisuals.Remove(id);
+			CleanableVisuals.Remove(id);
+			ColoredCells.Remove(id);
+			PlayerColorsCached.Remove(id);
+		}
+		public static BlueprintTransformationInfo GetCurrentTransformationInfo(ulong id = PlayerId_DefaultTilePreviews)
+		{
+			if (!PlayerBlueprintStateInfos.TryGetValue(id, out var info))
+				return NormalPlayer;
+			return info;
+		}
+
+		static bool ShouldFetchPlayerCursorPos(ulong playerId, out Vector3 otherPlayerCursorPos)
+		{
+			otherPlayerCursorPos = default;
+
+			if (LocalPlayerId(ref playerId))
+				return false;
+
+			if (!MP_Helpers.MPInstalledAndActive())
+				return false;
+
+			return SessionInfoAPI.TryGetPlayerCursorPos(playerId, out otherPlayerCursorPos);
+
+		}
+
+		public static bool LocalPlayerId(ref ulong playerId)
+		{
+			return (playerId == BlueprintState.PlayerId_DefaultTilePreviews || playerId == BlueprintState.PlayerId_ReplacementTiles || playerId == SessionInfoAPI.LocalUserID);
+		}
+		public static bool IsMultiplayerVisualizer(ulong _playerId, ref Color playerColor)
+		{
+			if (LocalPlayerId(ref _playerId))
+				return false;
+			if (PlayerColorsCached.TryGetValue(_playerId, out playerColor))
+				return true;
+			return false;
+		}
+
+		//static bool BlueprintToPlayerMap(Blueprint bp, out ulong playerId)
+		//{
+		//	playerId = default;
+		//	if (!MP_Helpers.MPInstalledAndActive())
+		//		return false;
+
+		//	return (BlueprintPlayerIdMap.TryGetValue(bp, out playerId) && playerId != SessionInfoAPI.LocalUserID);
+		//}
+
+		/// <summary>
+		/// only called by packets
+		/// </summary>
+		/// <param name="playerId"></param>
+		public static void SetDisplayBlueprintForPlayer(Blueprint bp, ulong playerId)
+		{
+			if (LocalPlayerId(ref playerId))
+				return;
+
+			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+				return;
+
+			//BlueprintPlayerIdMap[bp] = playerId;
+			ClearVisuals(playerId);
+			VisualizeBlueprint(playerId, new((int)playerCursorPos.x, (int)playerCursorPos.y), bp);
+		}
+		/// <summary>
+		/// only called by packets
+		/// </summary>
+		/// <param name="playerId"></param>
+		public static void ClearDisplayBlueprintForPlayer(ulong playerId)
+		{
+			if (LocalPlayerId(ref playerId))
+				return;
+
+			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+				return;
+
+			ClearVisuals(playerId);
+		}
+		/// <summary>
+		/// only called by packets
+		/// </summary>
+		/// <param name="playerId"></param>
+		public static void MoveDisplayBlueprintForPlayer(ulong playerId)
+		{
+			if (LocalPlayerId(ref playerId))
+				return;
+
+			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+				return;
+
+			UpdateVisual(playerId, new Vector2I((int)playerCursorPos.x, (int)playerCursorPos.y), false);
+		}
+
+
+		#endregion
 
 		#region UseCreate
 		public static Blueprint CreateBlueprint(Vector2I topLeft, Vector2I bottomRight, MultiToolParameterMenu filter = null, bool createsSnapshot = false)
@@ -96,11 +245,11 @@ namespace BlueprintsV2.BlueprintData
 							// allow MoveThisHere hauling points
 							//note: until the hauling point mod fixes its return null go in the create prefix skip, this cannot be handled.
 							//https://github.com/DoctorFeelGoodMD/OxygenNotIncluded-Mods/blob/2822baf00bdf76f10c73a270a5dfb2528c356a83/source/MoveThisHere/MoveThisHere_Patch.cs#L89 <- this patch needs to set __result, until then the hauling point cannot be saved as it loses its settings
-							//var haulingPoint = gameObject.GetComponent("DeconstructableHaulingPoint");
-							//if (!hasDeconstructable && haulingPoint != null)
-							//{
-							//	hasDeconstructable = true;
-							//}
+							var haulingPoint = gameObject.GetComponent("DeconstructableHaulingPoint");
+							if (!hasDeconstructable && haulingPoint != null)
+							{
+								hasDeconstructable = true;
+							}
 							//end
 
 							if (hasConstructable || hasDeconstructable)
@@ -209,8 +358,8 @@ namespace BlueprintsV2.BlueprintData
 				}
 			}
 			//empty blueprint that caught some gas/liquid pockets, clear to not spam quasi empty blueprints
-			if (!createsSnapshot && blueprint.BuildingConfigurations.Count == 0 && 
-				blueprint.WorldNotes.Count == 0 && blueprint.PlanningToolMod_PlanDataValues.Count == 0  && blueprint.DigLocations.Any())
+			if (!createsSnapshot && blueprint.BuildingConfigurations.Count == 0 &&
+				blueprint.WorldNotes.Count == 0 && blueprint.PlanningToolMod_PlanDataValues.Count == 0 && blueprint.DigLocations.Any())
 			{
 				blueprint.DigLocations.Clear();
 			}
@@ -218,28 +367,30 @@ namespace BlueprintsV2.BlueprintData
 			blueprint.CacheCost();
 			return blueprint;
 		}
-		public static void UseBlueprint(Vector2I origin, Blueprint snapshotBp = null)
+		public static void UseBlueprint(ulong playerId, Vector2I origin, Blueprint snapshotBp = null)
 		{
-			CleanDirtyVisuals();
-			StoreDimensions(snapshotBp);
-			FoundationVisuals.ForEach(foundationVisual =>
+			var transformData = GetCurrentTransformationInfo(playerId);
+
+			CleanDirtyVisuals(playerId);
+			transformData.StoreDimensions(snapshotBp);
+			FoundationVisuals[playerId].ForEach(foundationVisual =>
 			{
-				foundationVisual.TryUse(GetRotatedCell(origin, foundationVisual));
+				foundationVisual.TryUse(transformData.GetRotatedCell(origin, foundationVisual));
 			});
-			DependentVisuals.ForEach(dependentVisual =>
+			DependentVisuals[playerId].ForEach(dependentVisual =>
 			{
-				dependentVisual.TryUse(GetRotatedCell(origin, dependentVisual));
+				dependentVisual.TryUse(transformData.GetRotatedCell(origin, dependentVisual));
 			});
 		}
 		#endregion
 		#region Visualizers
 
-		public static void RefreshBlueprintVisualizers(Blueprint snapshot = null)
+		public static void RefreshBlueprintVisualizers(ulong playerId = PlayerId_DefaultTilePreviews, Blueprint snapshot = null)
 		{
-			BlueprintState.UpdateVisual(lastBlueprintPos, true, snapshot);
+			BlueprintState.UpdateVisual(playerId, GetCurrentTransformationInfo(playerId).lastBlueprintPos, true, snapshot);
 		}
-
-		public static void VisualizeBlueprint(Vector2I topLeft, Blueprint blueprint)
+		public static void VisualizeBlueprint(Vector2I topLeft, Blueprint blueprint) => VisualizeBlueprint(PlayerId_DefaultTilePreviews, topLeft, blueprint);
+		public static void VisualizeBlueprint(ulong playerId, Vector2I topLeft, Blueprint blueprint)
 		{
 			if (blueprint == null)
 			{
@@ -247,7 +398,8 @@ namespace BlueprintsV2.BlueprintData
 			}
 
 			int errors = 0;
-			ClearVisuals();
+			ClearVisuals(playerId);
+			var transformData = GetCurrentTransformationInfo(playerId);
 
 			foreach (BuildingConfig buildingConfig in blueprint.BuildingConfigurations)
 			{
@@ -264,22 +416,22 @@ namespace BlueprintsV2.BlueprintData
 					switch (ModAssets.GetVisualizerType(buildingConfig.BuildingDef))
 					{
 						case VisualizerType.TILE:
-							AddVisual(new TileVisual(buildingConfig, cell), buildingConfig.BuildingDef);
+							AddVisual(new TileVisual(buildingConfig, cell, playerId), buildingConfig.BuildingDef);
 							break;
 						case VisualizerType.UTILITY:
-							AddVisual(new UtilityVisual(buildingConfig, cell), buildingConfig.BuildingDef);
+							AddVisual(new UtilityVisual(buildingConfig, cell, playerId), buildingConfig.BuildingDef);
 							break;
 						case VisualizerType.BUILDING:
 						default:
-							AddVisual(new BuildingVisual(buildingConfig, cell), buildingConfig.BuildingDef);
+							AddVisual(new BuildingVisual(buildingConfig, cell, playerId), buildingConfig.BuildingDef);
 							break;
-					}					
+					}
 				}
 			}
 
 			foreach (var digLocation in blueprint.DigLocations)
 			{
-				FoundationVisuals.Add(new DigVisual(Grid.XYToCell(topLeft.x + digLocation.x, topLeft.y + digLocation.y), digLocation));
+				FoundationVisuals[playerId].Add(new DigVisual(playerId, Grid.XYToCell(topLeft.x + digLocation.x, topLeft.y + digLocation.y), digLocation));
 			}
 
 			foreach (var elementIndicator in blueprint.WorldNotes)
@@ -291,10 +443,10 @@ namespace BlueprintsV2.BlueprintData
 					switch (note.Type)
 					{
 						case BlueprintNoteData.NoteType.Text:
-							FoundationVisuals.Add(new TextNoteVisual(Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.Title, note.Text, note.SymbolTint));
+							FoundationVisuals[playerId].Add(new TextNoteVisual(playerId, Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.Title, note.Text, note.SymbolTint));
 							break;
 						case BlueprintNoteData.NoteType.Element:
-							FoundationVisuals.Add(new ElementNoteVisual(Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.ElementId, note.ElementMass, note.ElementTemperature));
+							FoundationVisuals[playerId].Add(new ElementNoteVisual(playerId, Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.ElementId, note.ElementMass, note.ElementTemperature));
 							break;
 					}
 				}
@@ -302,7 +454,7 @@ namespace BlueprintsV2.BlueprintData
 			foreach (var shapePreview in blueprint.PlanningToolMod_PlanDataValues)
 			{
 				var shapeLocation = shapePreview.Key;
-				FoundationVisuals.Add(new PlanningToolMod_ShapeVisual(Grid.XYToCell(topLeft.x + shapeLocation.x, topLeft.y + shapeLocation.y), shapeLocation, shapePreview.Value.first, shapePreview.Value.second));
+				FoundationVisuals[playerId].Add(new PlanningToolMod_ShapeVisual(playerId, Grid.XYToCell(topLeft.x + shapeLocation.x, topLeft.y + shapeLocation.y), shapeLocation, shapePreview.Value.first, shapePreview.Value.second));
 			}
 
 			if (UseBlueprintTool.Instance.HoverCard != null)
@@ -310,334 +462,349 @@ namespace BlueprintsV2.BlueprintData
 				UseBlueprintTool.Instance.HoverCard.prefabErrorCount = errors;
 			}
 
-			CheckPermittedRotations();
+			transformData.CheckPermittedRotations();
 		}
 
 		private static void AddVisual(IVisual visual, BuildingDef buildingDef)
 		{
 			//SgtLogger.l(buildingDef.PrefabID + " -> adding visual of type: " + visual.GetType());
+			ulong owner = visual.GetPlayerId();
 			if (buildingDef.IsFoundation)
 			{
-				FoundationVisuals.Add(visual);
+				FoundationVisuals[owner].Add(visual);
 			}
 			else
 			{
-				DependentVisuals.Add(visual);
+				DependentVisuals[owner].Add(visual);
 			}
 
 			if (visual is ICleanableVisual)
 			{
-				CleanableVisuals.Add((ICleanableVisual)visual);
+				CleanableVisuals[owner].Add((ICleanableVisual)visual);
 			}
 		}
-		static Vector2I lastBlueprintPos, lastBlueprintDimensions;
 
-		static void StoreDimensions(Blueprint bp)
+
+		//static Dictionary<int, Dictionary<int, GameObject>> VisualizerTargets = [];
+
+		public static void UpdateVisual(ulong playerId, Vector2I origin, bool forcingRedraw = false, Blueprint snapshotBp = null)
 		{
-			if (bp == null)
-				bp = ModAssets.SelectedBlueprint;
-			if (bp == null)
-				return;
-			lastBlueprintDimensions = bp.Dimensions;
-		}
+			var transformData = GetCurrentTransformationInfo(playerId);
 
-		static Dictionary<int, Dictionary<int, GameObject>> VisualizerTargets = [];
+			transformData.lastBlueprintPos = origin;
+			CleanDirtyVisuals(playerId);
+			transformData.StoreDimensions(snapshotBp);
+			//VisualizerTargets.Clear();
+			ClearOccupiedCells(playerId);
 
-		public static void UpdateVisual(Vector2I origin, bool forcingRedraw = false, Blueprint snapshotBp = null)
-		{
-			lastBlueprintPos = origin;
-			CleanDirtyVisuals();
-			StoreDimensions(snapshotBp);
-			VisualizerTargets.Clear();
-
-			FoundationVisuals.ForEach(foundationVisual =>
+			FoundationVisuals[playerId].ForEach(foundationVisual =>
 			{
-				ApplyRotatedCellAndMove(origin, foundationVisual, forcingRedraw);
+				transformData.ApplyRotatedCellAndMove(origin, foundationVisual, forcingRedraw);
+				StoreOccupiedArea(playerId, foundationVisual);
 			});
-			DependentVisuals.ForEach(dependentVisual =>
+			DependentVisuals[playerId].ForEach(dependentVisual =>
 			{
-				ApplyRotatedCellAndMove(origin, dependentVisual, forcingRedraw);
+				transformData.ApplyRotatedCellAndMove(origin, dependentVisual, forcingRedraw);
+				StoreOccupiedArea(playerId, dependentVisual);
 			});
-			DependentVisuals.ForEach(dependentVisual =>
+			DependentVisuals[playerId].ForEach(dependentVisual =>
 			{
 				dependentVisual.RefreshColor();
 			});
 		}
 
 
-		public static void ClearVisuals()
+		public static void ClearVisuals(ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
 		{
-			CleanDirtyVisuals();
-			CleanableVisuals.Clear();
+			CleanDirtyVisuals(playerId);
 
-			FoundationVisuals.ForEach(foundationVisual => UnityEngine.Object.DestroyImmediate(foundationVisual.Visualizer));
-			FoundationVisuals.Clear();
+			var foundations = FoundationVisuals[playerId];
+			foundations.ForEach(foundationVis => foundationVis.DestroyVisualizer());
+			foundations.Clear();
 
-			DependentVisuals.ForEach(dependantVisual => UnityEngine.Object.DestroyImmediate(dependantVisual.Visualizer));
-			DependentVisuals.Clear();
-			ResetRotations();
+			var dependents = DependentVisuals[playerId];
+			dependents.ForEach(dependantVisual => dependantVisual.DestroyVisualizer());
+			dependents.Clear();
+			ClearOccupiedCells(playerId);
+			GetCurrentTransformationInfo(playerId).ResetRotations();
+		}
+		static void ClearOccupiedCells(ulong playerId)
+		{
+			foreach (var cellCollection in OccupiedCells[playerId].Values)
+				cellCollection.Clear();
+		}
+		static void StoreOccupiedArea(ulong playerId, IVisual visual)
+		{
+			if (visual is not BuildingVisual buildingVisual)
+				return;
+			if (!OccupiedCells[playerId].TryGetValue(buildingVisual.BuildingDef.ObjectLayer, out var cells))
+			{
+				SgtLogger.error("Unknown object layer: " + buildingVisual.BuildingDef.ObjectLayer);
+				return;
+			}
+
+
+			if (buildingVisual.BuildingDef.BuildingComplete.TryGetComponent<OccupyArea>(out var area))
+			{
+				foreach (var cellOffset in area.OccupiedCellsOffsets)
+					cells[Grid.OffsetCell(buildingVisual.CurrentCell, cellOffset)] = buildingVisual;
+			}
+			else
+			{
+				cells[buildingVisual.CurrentCell] = buildingVisual;
+				SgtLogger.warning("No occupy area on " + buildingVisual);
+			}
 		}
 
-		public static void CleanDirtyVisuals()
+		public static void CleanDirtyVisuals(ulong playerId)
 		{
-			foreach (int cell in ColoredCells.Keys)
+			var coloredCells = ColoredCells[playerId];
+			foreach (int cell in coloredCells.Keys)
 			{
-				CellColorPayload cellColorPayload = ColoredCells[cell];
+				CellColorPayload cellColorPayload = coloredCells[cell];
 				TileVisualizer.RefreshCell(cell, cellColorPayload.TileLayer, cellColorPayload.ReplacementLayer);
 			}
 
-			ColoredCells.Clear();
-			CleanableVisuals.ForEach(cleanableVisual => cleanableVisual.Clean());
+			coloredCells.Clear();
+			CleanableVisuals[playerId].ForEach(cleanableVisual => cleanableVisual.Clean());
 		}
 		#endregion
 
-		#region Rotation
 
-		/// <summary>
-		/// the blueprint of this building supports both rotating and flipping in any direction, e.g a tile or backwall
-		/// only to be used in visualizer checks, not in actual building placement!
-		/// </summary>
-		public const PermittedRotations All = (PermittedRotations)411;
-
-		static Orientation BlueprintOrientation = Orientation.Neutral;
-		static bool FlippedX, FlippedY;
-		static PermittedRotations Permitted = All;
-		public static string TransformationBlockedByBuildingName;
-
-		public static bool CanRotate => Permitted == All || Permitted == PermittedRotations.R360;
-		public static bool CanFlipH => Permitted == All || Permitted == PermittedRotations.FlipH;
-		public static bool CanFlipV => Permitted == All || Permitted == PermittedRotations.FlipV;
-
-		public static void CheckPermittedRotations()
+		public class BlueprintTransformationInfo
 		{
-			Permitted = All;
-			TransformationBlockedByBuildingName = string.Empty;
-
-			foreach (var vis in FoundationVisuals)
+			public BlueprintTransformationInfo(ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
 			{
-				var rotation = vis.GetAllowedRotations();
-				switch (rotation)
+				this.playerId = playerId;
+			}
+
+			public void StoreDimensions(Blueprint bp)
+			{
+				if (bp == null)
+					bp = ModAssets.SelectedBlueprint;
+				if (bp == null)
+					return;
+				lastBlueprintDimensions = bp.Dimensions;
+			}
+			#region Rotation
+			public ulong playerId = PlayerId_DefaultTilePreviews;
+			/// <summary>
+			/// the blueprint of this building supports both rotating and flipping in any direction, e.g a tile or backwall
+			/// only to be used in visualizer checks, not in actual building placement!
+			/// </summary>
+			public const PermittedRotations All = (PermittedRotations)411;
+
+			Orientation BlueprintOrientation = Orientation.Neutral;
+			bool FlippedX, FlippedY;
+			PermittedRotations Permitted = All;
+			public string TransformationBlockedByBuildingName;
+
+			public bool CanRotate => Permitted == All || Permitted == PermittedRotations.R360;
+			public bool CanFlipH => Permitted == All || Permitted == PermittedRotations.FlipH;
+			public bool CanFlipV => Permitted == All || Permitted == PermittedRotations.FlipV;
+
+			internal Vector2I lastBlueprintPos, lastBlueprintDimensions;
+
+			public void CheckPermittedRotations()
+			{
+				Permitted = All;
+				TransformationBlockedByBuildingName = string.Empty;
+
+				foreach (var vis in FoundationVisuals[playerId])
 				{
-					case All:
-						continue;
-					case PermittedRotations.Unrotatable:
-						Permitted = PermittedRotations.Unrotatable;
-						if (vis.BuildingID != null)
-							TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
-						return;
-					case PermittedRotations.FlipH:
-						Permitted = PermittedRotations.FlipH;
-						if (vis.BuildingID != null)
-							TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
+					var rotation = vis.GetAllowedRotations();
+					switch (rotation)
+					{
+						case All:
+							continue;
+						case PermittedRotations.Unrotatable:
+							Permitted = PermittedRotations.Unrotatable;
+							if (vis.BuildingID != null)
+								TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
+							return;
+						case PermittedRotations.FlipH:
+							Permitted = PermittedRotations.FlipH;
+							if (vis.BuildingID != null)
+								TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
+							break;
+					}
+				}
+				foreach (var vis in DependentVisuals[playerId])
+				{
+					var rotation = vis.GetAllowedRotations();
+					switch (rotation)
+					{
+						case All:
+							continue;
+						case PermittedRotations.Unrotatable:
+							if (vis.BuildingID != null)
+								TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
+							Permitted = PermittedRotations.Unrotatable;
+							return;
+						case PermittedRotations.FlipH:
+							Permitted = PermittedRotations.FlipH;
+							if (vis.BuildingID != null)
+								TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
+							break;
+					}
+				}
+			}
+			public void ResetRotations()
+			{
+				FlippedX = false;
+				FlippedY = false;
+				BlueprintOrientation = Orientation.Neutral;
+			}
+			public void ApplyRotatedCellAndMove(Vector2I origin, IVisual bpEntryVis, bool forcingRedraw)
+			{
+				bpEntryVis.ApplyRotation(BlueprintOrientation, FlippedX, FlippedY);
+				bpEntryVis.MoveVisualizer(GetRotatedCell(origin, bpEntryVis), forcingRedraw);
+			}
+			public int GetRotatedCell(Vector2I originI, IVisual bpEntryVis)
+			{
+				Vector2 visPos = bpEntryVis.Offset; //the original bp offset
+				Vector2 origin = originI;
+
+				///origin shift
+				int shiftX = (int)(lastBlueprintDimensions.X * originShiftX);
+				int shiftY = (int)(lastBlueprintDimensions.Y * originShiftY);
+				visPos.x -= shiftX;
+				visPos.y -= shiftY;
+
+
+				///rotation
+				Matrix4x4 rotationMatrix = default;
+				switch (BlueprintOrientation)
+				{
+					case Orientation.Neutral:
+						rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 0));
+						break;
+					case Orientation.R90:
+						rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -90));
+						break;
+					case Orientation.R180:
+						rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -180));
+						break;
+					case Orientation.R270:
+						rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -270));
+						break;
+				}
+				visPos = rotationMatrix.MultiplyVector(visPos);
+
+				///flipping
+				var flipMatrix = Matrix4x4.Scale(new Vector3(FlippedX ? -1 : 1, FlippedY ? -1 : 1, 1));
+				visPos = flipMatrix.MultiplyVector(visPos);
+
+				return Grid.PosToCell(origin + visPos);
+			}
+
+			public void FlipVertical()
+			{
+				if (Permitted != All && Permitted != PermittedRotations.FlipV)
+					return;
+
+				FlippedY = !FlippedY;
+				SgtLogger.l("Flipped Vertically: " + FlippedY);
+			}
+			public void FlipHorizontal()
+			{
+				if (Permitted != All && Permitted != PermittedRotations.FlipH)
+					return;
+				FlippedX = !FlippedX;
+				SgtLogger.l("Flipped Horizontally: " + FlippedX);
+			}
+			public void TryRotateBlueprint(bool inverted = false)
+			{
+				if (Permitted != All && Permitted != PermittedRotations.R360)
+					return;
+
+				bool flipInversion = FlippedX != FlippedY;
+				inverted ^= flipInversion;
+
+				switch (BlueprintOrientation)
+				{
+					case Orientation.Neutral:
+						BlueprintOrientation = inverted ? Orientation.R270 : Orientation.R90;
+						break;
+					case Orientation.R90:
+						BlueprintOrientation = inverted ? Orientation.Neutral : Orientation.R180;
+						break;
+					case Orientation.R180:
+						BlueprintOrientation = inverted ? Orientation.R90 : Orientation.R270;
+						break;
+					case Orientation.R270:
+						BlueprintOrientation = inverted ? Orientation.R180 : Orientation.Neutral;
 						break;
 				}
 			}
-			foreach (var vis in DependentVisuals)
+			#endregion
+			#region AnchorShift
+			static int _state = 0;
+			static float originShiftX = 0, originShiftY = 0;
+			static readonly List<AnchorState> ShiftStates = new()
 			{
-				var rotation = vis.GetAllowedRotations();
-				switch (rotation)
+				new("middle",0.5f,0.5f),
+				new ("bottomLeft",0,0),
+				new ("topLeft",0,1),
+				new ("topRight",1,1),
+				new ("bottomRight",1,0),
+			};
+			public class AnchorState
+			{
+				public string Name;
+				public float diffX, diffY;
+				public AnchorState(string name, float diffX, float diffY)
 				{
-					case All:
-						continue;
-					case PermittedRotations.Unrotatable:
-						if (vis.BuildingID != null)
-							TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
-						Permitted = PermittedRotations.Unrotatable;
-						return;
-					case PermittedRotations.FlipH:
-						Permitted = PermittedRotations.FlipH;
-						if (vis.BuildingID != null)
-							TransformationBlockedByBuildingName = Assets.GetBuildingDef(vis.BuildingID).Name;
-						break;
+					Name = name;
+					this.diffX = diffX;
+					this.diffY = diffY;
 				}
 			}
-		}
-
-		static void ResetRotations()
-		{
-			FlippedX = false;
-			FlippedY = false;
-			BlueprintOrientation = Orientation.Neutral;
-		}
-		public static void ApplyRotatedCellAndMove(Vector2I origin, IVisual bpEntryVis, bool forcingRedraw)
-		{
-			bpEntryVis.ApplyRotation(BlueprintOrientation, FlippedX, FlippedY);
-			bpEntryVis.MoveVisualizer(GetRotatedCell(origin, bpEntryVis), forcingRedraw);
-		}
-
-		public static int GetRotatedCell(Vector2I originI, IVisual bpEntryVis)
-		{
-			Vector2 visPos = bpEntryVis.Offset; //the original bp offset
-			Vector2 origin = originI;
-
-			///origin shift
-			int shiftX = (int)(lastBlueprintDimensions.X * originShiftX);
-			int shiftY = (int)(lastBlueprintDimensions.Y * originShiftY);
-			visPos.x -= shiftX;
-			visPos.y -= shiftY;
-
-
-			///rotation
-			Matrix4x4 rotationMatrix = default;
-			switch (BlueprintOrientation)
+			public void SetAnchorState(float newDiffX = -1, float newDiffY = -1, Blueprint snapshotBlueprint = null)
 			{
-				case Orientation.Neutral:
-					rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, 0));
-					break;
-				case Orientation.R90:
-					rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -90));
-					break;
-				case Orientation.R180:
-					rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -180));
-					break;
-				case Orientation.R270:
-					rotationMatrix = Matrix4x4.Rotate(Quaternion.Euler(0, 0, -270));
-					break;
+				if (newDiffX != -1)
+					originShiftX = newDiffX;
+				if (newDiffY != -1)
+					originShiftY = newDiffY;
+				UpdateVisual(playerId, GetMousePos(), true, snapshotBlueprint);
 			}
-			visPos = rotationMatrix.MultiplyVector(visPos);
-
-			///flipping
-			var flipMatrix = Matrix4x4.Scale(new Vector3(FlippedX ? -1 : 1, FlippedY ? -1 : 1, 1));
-			visPos = flipMatrix.MultiplyVector(visPos);
-
-			return Grid.PosToCell(origin + visPos);
-		}
-
-
-		public static void FlipVertical()
-		{
-			if (Permitted != All && Permitted != PermittedRotations.FlipV)
-				return;
-
-			FlippedY = !FlippedY;
-			SgtLogger.l("Flipped Vertically: " + FlippedY);
-		}
-		public static void FlipHorizontal()
-		{
-			if (Permitted != All && Permitted != PermittedRotations.FlipH)
-				return;
-			FlippedX = !FlippedX;
-			SgtLogger.l("Flipped Horizontally: " + FlippedX);
-		}
-
-		public static void TryRotateBlueprint(bool inverted = false)
-		{
-			if (Permitted != All && Permitted != PermittedRotations.R360)
-				return;
-
-			bool flipInversion = FlippedX != FlippedY;
-			inverted ^= flipInversion;
-
-			switch (BlueprintOrientation)
+			public void NextAnchorState(Blueprint snapshotBlueprint = null)
 			{
-				case Orientation.Neutral:
-					BlueprintOrientation = inverted ? Orientation.R270 : Orientation.R90;
-					break;
-				case Orientation.R90:
-					BlueprintOrientation = inverted ? Orientation.Neutral : Orientation.R180;
-					break;
-				case Orientation.R180:
-					BlueprintOrientation = inverted ? Orientation.R90 : Orientation.R270;
-					break;
-				case Orientation.R270:
-					BlueprintOrientation = inverted ? Orientation.R180 : Orientation.Neutral;
-					break;
+				_state = (_state + 1) % ShiftStates.Count;
+				originShiftX = ShiftStates[_state].diffX;
+				originShiftY = ShiftStates[_state].diffY;
+
+				UpdateVisual(playerId, GetMousePos(), true, snapshotBlueprint);
+			}
+			public Vector2I GetMousePos()
+			{
+				var mousePos = PlayerController.GetCursorPos(KInputManager.GetMousePos());
+
+				if (ShouldFetchPlayerCursorPos(playerId, out var otherPlayerPos))
+				{
+					mousePos = otherPlayerPos;
+				}
+
+				return new((int)mousePos.x, (int)mousePos.y);
 			}
 		}
-		#endregion
-		#region AnchorShift
-		static int _state = 0;
-		static float originShiftX = 0, originShiftY = 0;
-		static List<AnchorState> ShiftStates = new()
-		{
-			new("middle",0.5f,0.5f),
-			new ("bottomLeft",0,0),
-			new ("topLeft",0,1),
-			new ("topRight",1,1),
-			new ("bottomRight",1,0),
-		};
 
-		public class AnchorState
+		internal static bool LayerOccupiedAt(IVisual checkingEntity, ObjectLayer layer, int cellParam)
 		{
-			public string Name;
-			public float diffX, diffY;
-			public AnchorState(string name, float diffX, float diffY)
+			if (BackwallManager.HasBackwall(cellParam))
+				return true;
+			var objectAtLayer = Grid.Objects[cellParam, (int)layer];
+
+			if (objectAtLayer != null && objectAtLayer != checkingEntity.Visualizer)
+				return true;
+
+			if (!OccupiedCells[PlayerId_DefaultTilePreviews].TryGetValue(layer, out var collection))
 			{
-				Name = name;
-				this.diffX = diffX;
-				this.diffY = diffY;
-			}
-		}
-		public static void SetAnchorState(float newDiffX = -1, float newDiffY = -1, Blueprint snapshotBlueprint = null)
-		{
-			if (newDiffX != -1)
-				originShiftX = newDiffX;
-			if (newDiffY != -1)
-				originShiftY = newDiffY;
-			var mousePos = PlayerController.GetCursorPos(KInputManager.GetMousePos());
-			UpdateVisual(new((int)mousePos.x, (int)mousePos.y), true, snapshotBlueprint);
-		}
-		public static void NextAnchorState(Blueprint snapshotBlueprint = null)
-		{
-			_state = (_state + 1) % ShiftStates.Count;
-			originShiftX = ShiftStates[_state].diffX;
-			originShiftY = ShiftStates[_state].diffY;
-
-			var mousePos = PlayerController.GetCursorPos(KInputManager.GetMousePos());
-
-			UpdateVisual(new((int)mousePos.x, (int)mousePos.y), true, snapshotBlueprint);
-		}
-		static Vector2I GetShiftedPositions(Vector2I startPos, Blueprint bp = null)
-		{
-			if (bp == null)
-				bp = ModAssets.SelectedBlueprint;
-			if (bp == null)
-				return startPos;
-
-			return startPos;
-
-			var dimensions = bp.Dimensions;
-			int shiftX = (int)(dimensions.X * originShiftX);
-			int shiftY = (int)(dimensions.Y * originShiftY);
-
-
-			var newPosX = startPos.X - shiftX;
-			var newPosY = startPos.Y - shiftY;
-
-			//if (FlippedX)
-			//	newPosX += dimensions.X;
-			//if (FlippedY)
-			//	newPosY += dimensions.Y;
-
-
-			switch (BlueprintOrientation)
-			{
-				case Orientation.Neutral:
-					break;
-				case Orientation.R90:
-					newPosY += dimensions.X;
-					break;
-				case Orientation.R180:
-					newPosX += dimensions.X;
-					newPosY += dimensions.Y;
-					break;
-				case Orientation.R270:
-					newPosX += dimensions.Y;
-					break;
+				SgtLogger.error("Unknown object layer: " + layer);
+				return false;
 			}
 
-			var newVector = new Vector2I(newPosX, newPosY);
-
-			return newVector;
-		}
-
-		internal static bool LayerOccupiedAt(ObjectLayer backwall, int cellParam)
-		{
-			///add visualizer layer pre-registration eventually so that checks for layers can look at if the blueprint adds it if not existing
-			return true;
-
-			//foreach(var vis in FoundationVisuals)
-			//	if(vis.cell)
+			return collection.TryGetValue(cellParam, out var vis) && vis != checkingEntity;
 		}
 		#endregion
 	}

@@ -376,6 +376,7 @@ namespace UtilLibs
 			};
 		}
 
+		public static Color GetRandomRainbowColor(bool desaturated = false) => GetRainbowColorForIndex(UnityEngine.Random.Range(0, RainbowColors.Count), desaturated);
 		public static Color GetRainbowColorForIndex(int i, bool desaturated = false) => !desaturated ? RainbowColors[i % RainbowColors.Count] : RainbowColorsDesaturated[i % RainbowColorsDesaturated.Count];
 
 		public static readonly List<Color> RainbowColors = new List<Color> {

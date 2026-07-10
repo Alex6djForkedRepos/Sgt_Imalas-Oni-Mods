@@ -1,0 +1,53 @@
+﻿using BlueprintsV2.BlueprintData;
+using ONI_Together.Networking.Packets.Architecture;
+using ONI_Together_API;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using UtilLibs;
+
+namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packets
+{
+	internal class StartBlueprintVisualizationPacket : IPacket
+	{
+		public StartBlueprintVisualizationPacket(Blueprint bp)
+		{
+			SenderId = SessionInfoAPI.LocalUserID;
+			blueprint = bp;
+		}
+		ulong SenderId;
+		Blueprint blueprint;
+
+		string GetCompressed()
+		{
+			var sb = new StringBuilder();
+			StringWriter sw = new StringWriter(sb);
+			blueprint.WriteJsonString(sw);
+			return StringCompression.CompressString(sb.ToString());
+		}
+
+		public void Deserialize(BinaryReader reader)
+		{
+			SenderId = reader.ReadUInt64();
+			string uncompressedBp = StringCompression.DecompressString(reader.ReadString());
+			if (!ModAssets.TryImportBlueprintFromString(uncompressedBp, out blueprint))
+			{
+				SgtLogger.warning("[MP] could not visualize blueprint received from other player");
+				blueprint = null;
+				return;
+			}
+		}
+		public void Serialize(BinaryWriter writer)
+		{
+			writer.Write(SenderId);
+			writer.Write(GetCompressed());
+		}
+		public void OnDispatched()
+		{
+			if (blueprint == null)
+				return;
+			BlueprintState.SetDisplayBlueprintForPlayer(blueprint, SenderId);
+		}
+	}
+}

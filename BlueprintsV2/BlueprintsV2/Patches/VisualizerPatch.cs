@@ -1,4 +1,5 @@
 ﻿using BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer;
 using HarmonyLib;
 using Rendering;
 using UnityEngine;
@@ -7,14 +8,14 @@ namespace BlueprintsV2.Patches
 {
 	internal class VisualizerPatch
 	{
-		[HarmonyPatch(typeof(BlockTileRenderer), "GetCellColour")]
+		[HarmonyPatch(typeof(BlockTileRenderer), nameof(BlockTileRenderer.GetCellColour))]
 		public static class BlockTileRendererGetCellColour
 		{
-			public static void Postfix(int cell, SimHashes element, ref Color __result)
+			public static void Postfix(BlockTileRenderer __instance,int cell, SimHashes element, ref Color __result)
 			{
-				if (__result != Color.red && element == SimHashes.Void && BlueprintState.ColoredCells.ContainsKey(cell))
+				if(__instance is CustomTileRenderer customRenderer)
 				{
-					__result = BlueprintState.ColoredCells[cell].Color;
+					__result = customRenderer.GetCachedCellColor(__result, cell, element);
 				}
 			}
 		}

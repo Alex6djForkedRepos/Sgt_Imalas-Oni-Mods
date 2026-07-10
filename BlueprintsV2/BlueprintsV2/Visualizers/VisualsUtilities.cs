@@ -1,30 +1,16 @@
 ﻿
 using BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer;
 using UnityEngine;
 
 namespace BlueprintsV2.Visualizers
 {
 	public static class VisualsUtilities
 	{
-		public static void SetTileColor(int cell, Color color, BuildingConfig buildingConfig)
+		public static void SetTileColor(ulong playerId, int cell, Color color, BuildingConfig buildingConfig)
 		{
-			BlueprintState.ColoredCells[cell] = new CellColorPayload(color, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-			TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-		}
-
-		public static void SetVisualizerColor(int cell, Color color, GameObject visualizer, BuildingConfig buildingConfig)
-		{
-			if (buildingConfig.BuildingDef.isKAnimTile && buildingConfig.BuildingDef.BlockTileAtlas != null && !BlueprintState.ColoredCells.ContainsKey(cell))
-			{
-				BlueprintState.ColoredCells.Add(cell, new CellColorPayload(color, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer));
-				TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-			}
-
-			if (visualizer.TryGetComponent<KBatchedAnimController>(out var kbac))
-			{
-				kbac.TintColour = color;
-			}
+			BlueprintState.ColoredCells[playerId][cell] = new CellColorPayload(color, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+			CustomTileRenderer.RefreshCell(playerId, cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
 		}
 	}
-
 }

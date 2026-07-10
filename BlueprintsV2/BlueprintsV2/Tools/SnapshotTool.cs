@@ -242,7 +242,7 @@ namespace BlueprintsV2.Tools
 			else
 			{
 				BlueprintState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), blueprintToVisualize);
-				BlueprintState.SetAnchorState(shiftX, shiftY, blueprintToVisualize);
+				BlueprintState.GetCurrentTransformationInfo().SetAnchorState(shiftX, shiftY, blueprintToVisualize);
 
 				MultiToolParameterMenu.Instance.HideMenu();
 				ToolMenu.Instance.PriorityScreen.Show();
@@ -270,7 +270,7 @@ namespace BlueprintsV2.Tools
 
 			else if (hasFocus)
 			{
-				BlueprintState.UseBlueprint(Grid.PosToXY(cursorPos), snapshotBlueprint);
+				BlueprintState.UseBlueprint(BlueprintState.PlayerId_DefaultTilePreviews, Grid.PosToXY(cursorPos), snapshotBlueprint);
 			}
 		}
 
@@ -291,20 +291,21 @@ namespace BlueprintsV2.Tools
 
 			else if (hasFocus)
 			{
-				BlueprintState.UpdateVisual(Grid.PosToXY(cursorPos), false, snapshotBlueprint);
+				BlueprintState.UpdateVisual(BlueprintState.PlayerId_DefaultTilePreviews,Grid.PosToXY(cursorPos), false, snapshotBlueprint);
 			}
 		}
 
 		void SetForceMaterialChange(bool enabled)
 		{
 			BlueprintState.ForceBuild = enabled;
-			BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+			BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews,snapshotBlueprint);
 			CurrentBlueprintStateScreen.Instance.SetForceMaterialChange(enabled);
 		}
 		public override void OnKeyDown(KButtonEvent buttonEvent)
 		{
 			if ((DetailsScreen.Instance?.isEditing ?? false) || (DetailsScreen.Instance?.HasFocus ?? false))
 				return;
+			var stateInfo = BlueprintState.GetCurrentTransformationInfo();
 
 			if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsToggleHotkeyToolTips.GetKAction()))
 			{
@@ -336,28 +337,28 @@ namespace BlueprintsV2.Tools
 			}
 			else if (buttonEvent.TryConsume(Action.RotateBuilding) || buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotate.GetKAction()))
 			{
-				BlueprintState.TryRotateBlueprint();
-				BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+				stateInfo.TryRotateBlueprint();
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
 			}
 			else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotateInverse.GetKAction()))
 			{
-				BlueprintState.TryRotateBlueprint(true);
-				BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+				stateInfo.TryRotateBlueprint(true);
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
 			}
 			else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction()))
 			{
-				BlueprintState.FlipHorizontal();
-				BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+				stateInfo.FlipHorizontal();
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
 			}
 			else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipVertical.GetKAction()))
 			{
-				BlueprintState.FlipVertical();
-				BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+				stateInfo.FlipVertical();
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
 			}
 			else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsSwapAnchorAction.GetKAction()))
 			{
-				BlueprintState.NextAnchorState();
-				BlueprintState.RefreshBlueprintVisualizers(snapshotBlueprint);
+				stateInfo.NextAnchorState();
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
 			}
 			base.OnKeyDown(buttonEvent);
 		}
