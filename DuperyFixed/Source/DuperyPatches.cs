@@ -96,7 +96,7 @@ namespace Dupery
 					}
 
 
-                    PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod);
+					PersonalityManager.TryImportPersonalities(personalitiesFilePath, mod);
 				}
 			}
 
@@ -113,10 +113,10 @@ namespace Dupery
 			string dreamIconDicrectory = FileSystem.Normalize(System.IO.Path.Combine(mod.ContentPath, "dreamicons"));
 			if (System.IO.Directory.Exists(dreamIconDicrectory))
 			{
-				foreach(var file in System.IO.Directory.GetFiles(dreamIconDicrectory))
+				foreach (var file in System.IO.Directory.GetFiles(dreamIconDicrectory))
 				{
 					var fileInfo = new FileInfo(file);
-					if(fileInfo.Extension == ".png")
+					if (fileInfo.Extension == ".png")
 					{
 						SgtLogger.l("Adding custom dream icon to assets: " + fileInfo.Name);
 						AssetUtils.AddSpriteToAssets(fileInfo);
@@ -131,13 +131,15 @@ namespace Dupery
 
 			if (!System.IO.Directory.Exists(animDirectory))
 			{
-				SgtLogger.l("no anim directory found under: "+ animDirectory);
-                return null;
-            }
+				SgtLogger.l("no anim directory found under: " + animDirectory);
+				return null;
+			}
 
-			foreach (DirectoryInfo directory1 in new DirectoryInfo(animDirectory).GetDirectories())
+			var soloDuperyDirectory = Path.Combine(animDirectory, "dupery_anims");
+			if (System.IO.Directory.Exists(soloDuperyDirectory))
 			{
-				foreach (DirectoryInfo directory2 in directory1.GetDirectories())
+				SgtLogger.l("dedicated dupery kanim directory found, only fetching symbols from that.");
+				foreach (DirectoryInfo directory2 in new DirectoryInfo(soloDuperyDirectory).GetDirectories())
 				{
 					string name = directory2.Name + "_kanim";
 					SgtLogger.l("Kanim in mod: " + name);
@@ -146,6 +148,24 @@ namespace Dupery
 						if (kAnimFile.name == name)
 						{
 							animNames.Add(name);
+						}
+					}
+				}
+			}
+			else
+			{
+				foreach (DirectoryInfo directory1 in new DirectoryInfo(animDirectory).GetDirectories())
+				{
+					foreach (DirectoryInfo directory2 in directory1.GetDirectories())
+					{
+						string name = directory2.Name + "_kanim";
+						SgtLogger.l("Kanim in mod: " + name);
+						foreach (KAnimFile kAnimFile in Assets.ModLoadedKAnims)
+						{
+							if (kAnimFile.name == name)
+							{
+								animNames.Add(name);
+							}
 						}
 					}
 				}
