@@ -71,12 +71,22 @@ namespace BlueprintsV2.Visualizers
 			VisualsUtilities.SetTileColor(_playerId, cell, GetVisualizerColor(cell), buildingConfig);
 			this.cell = -1;
 			DirtyCell = cell;
+			isTile = buildingConfig.BuildingDef.isKAnimTile && buildingConfig.BuildingDef.BlockTileAtlas;
 			UpdateGrid(cell);
 		}
 
 		public override void ForceRedraw()
 		{
-			VisualsUtilities.SetTileColor(_playerId, cell, GetVisualizerColor(cell), buildingConfig);
+			ApplyColorIfChanged(cell);
+		}
+
+		public override void ApplyColorIfChanged(int cellParam)
+		{
+			if (isTile)
+			{
+				VisualsUtilities.SetTileColor(_playerId, cellParam, GetVisualizerColor(cellParam), buildingConfig);
+				return;
+			}
 		}
 
 		public override void MoveVisualizer(int cellParam, bool forceRedraw)
@@ -85,7 +95,8 @@ namespace BlueprintsV2.Visualizers
 			{
 				Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, buildingConfig.BuildingDef.SceneLayer));
 				UpdateGrid(cellParam);
-				VisualsUtilities.SetTileColor(_playerId, cellParam, GetVisualizerColor(cellParam), buildingConfig);
+				ApplyColorIfChanged(cellParam);
+				cell = cellParam;
 			}
 		}
 
@@ -103,117 +114,26 @@ namespace BlueprintsV2.Visualizers
 				{
 					CustomTileRenderer.RemoveTileBlock(_playerId, buildingConfig.BuildingDef, false, SimHashes.Void, DirtyCell);
 					ActiveTileVisuals[_playerId].Remove(DirtyCell);
+					CustomTileRenderer.RefreshCell(_playerId, DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
 				}
-				CustomTileRenderer.RefreshCell(GetPlayerId(), DirtyCell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-				//if (buildingConfig.BuildingDef.isKAnimTile)
-				//{
-				//	GameObject tileLayerObject = Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer];
-				//	if (tileLayerObject == null || !tileLayerObject.TryGetComponent<Constructable>(out _))
-				//	{
-				//		CustomTileRenderer.RemoveTileBlock(GetPlayerId(), buildingConfig.BuildingDef, false, SimHashes.Void, DirtyCell);
-				//	}
-
-				//	GameObject replacementLayerObject = hasReplacementLayer ? Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] : null;
-				//	if (replacementLayerObject == null || replacementLayerObject == Visualizer)
-				//	{
-				//		CustomTileRenderer.RemoveTileBlock(GetPlayerId(), buildingConfig.BuildingDef, true, SimHashes.Void, DirtyCell);
-				//	}
-				//}
-				//if (Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer] == Visualizer)
-				//{
-				//	Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer] = null;
-				//}
-				//if (hasReplacementLayer && Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] == Visualizer)
-				//{
-				//	Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] = null;
-				//}
 			}
 			DirtyCell = -1;
 
 		}
-		private bool CanReplace(int cell)
-		{
-			CellOffset[] placementOffsets = buildingConfig.BuildingDef.PlacementOffsets;
-
-			for (int index = 0; index < placementOffsets.Length; ++index)
-			{
-				CellOffset rotatedCellOffset = Rotatable.GetRotatedCellOffset(placementOffsets[index], buildingConfig.Orientation);
-				int offsetCell = Grid.OffsetCell(cell, rotatedCellOffset);
-
-				if (!Grid.IsValidBuildingCell(cell) || Grid.Objects[offsetCell, (int)buildingConfig.BuildingDef.ObjectLayer] == null || Grid.Objects[offsetCell, (int)buildingConfig.BuildingDef.ReplacementLayer] != null)
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-		private void UpdateGrid(int cell)
+		private void UpdateGrid(int cellParam)
 		{
 			Clean();
-			if (Grid.IsValidBuildingCell(cell) && buildingConfig.BuildingDef.isKAnimTile && buildingConfig.BuildingDef.BlockTileAtlas != null)
+			if (Grid.IsValidBuildingCell(cellParam) && isTile)
 			{
-				if (ActiveTileVisuals[_playerId].ContainsKey(cell))
+				if (ActiveTileVisuals[_playerId].TryGetValue(cellParam, out var existing))
 				{
-					SgtLogger.warning(_playerId + ": there is already a tilevisual in " + cell);
+					SgtLogger.warning(_playerId + ": there is already a tilevisual in " + cellParam);
 				}
-				bool replacing = hasReplacementLayer && CanReplace(cell);
-				CustomTileRenderer.AddTileBlock(_playerId, LayerMask.NameToLayer("Overlay"), buildingConfig.BuildingDef, false, SimHashes.Void, cell);
-				ActiveTileVisuals[_playerId][cell] = this.BuildingDef;
-				//if (!BlueprintState.InstantBuild && BlueprintState.ForceBuild && CanRebuildWithMaterial(cell, out _))
-				//{
-				//	VisualsUtilities.SetVisualizerColor(_playerId, cell, ModAssets.BLUEPRINTS_COLOR_VALIDPLACEMENT, Visualizer, buildingConfig);
-				//}
-				//else if (!ValidCell(cell))
-				//{
-				//	VisualsUtilities.SetVisualizerColor(_playerId, cell, ModAssets.BLUEPRINTS_COLOR_INVALIDPLACEMENT, Visualizer, buildingConfig);
-				//}
-				CustomTileRenderer.RefreshCell(_playerId, cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-
-				DirtyCell = cell;
-
-				//bool visualizerSeated = false;
-
-				//if (Grid.Objects[cell, (int)buildingConfig.BuildingDef.TileLayer] == null)
-				//{
-				//	Grid.Objects[cell, (int)buildingConfig.BuildingDef.TileLayer] = Visualizer;
-				//	visualizerSeated = true;
-				//}
-				//if (buildingConfig.BuildingDef.isKAnimTile)
-				//{
-				//	GameObject tileLayerObject = Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.TileLayer];
-				//	GameObject replacementLayerObject = hasReplacementLayer ? Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] : null;
-
-				//	if (tileLayerObject == null || tileLayerObject.GetComponent<Constructable>() == null && replacementLayerObject == null)
-				//	{
-				//		if (buildingConfig.BuildingDef.BlockTileAtlas != null)
-				//		{
-				//			if (!BlueprintState.InstantBuild && BlueprintState.ForceBuild && CanRebuildWithMaterial(cell, out _))
-				//			{
-				//				VisualsUtilities.SetVisualizerColor(cell, ModAssets.BLUEPRINTS_COLOR_VALIDPLACEMENT, Visualizer, buildingConfig);
-				//			}
-
-				//			if (!ValidCell(cell))
-				//			{
-				//				VisualsUtilities.SetVisualizerColor(cell, ModAssets.BLUEPRINTS_COLOR_INVALIDPLACEMENT, Visualizer, buildingConfig);
-				//			}
-
-				//			if (Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] == null)
-				//			{
-				//				CustomTileRenderer.AddTileBlock(GetPlayerId(), LayerMask.NameToLayer("Overlay"), buildingConfig.BuildingDef, replacing, SimHashes.Void, cell);
-				//				if (replacing && !visualizerSeated && Grid.Objects[DirtyCell, (int)buildingConfig.BuildingDef.ReplacementLayer] == null)
-				//				{
-				//					Grid.Objects[cell, (int)buildingConfig.BuildingDef.ReplacementLayer] = Visualizer;
-				//				}
-				//			}
-
-				//			TileVisualizer.RefreshCell(cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-
-				//		}
-				//	}
-				//}
-
-				//DirtyCell = cell;
+				//bool replacing = hasReplacementLayer && CanReplace(cell);
+				CustomTileRenderer.AddTileBlock(_playerId, LayerMask.NameToLayer("Overlay"), buildingConfig.BuildingDef, false, SimHashes.Void, cellParam);
+				ActiveTileVisuals[_playerId][cellParam] = this.BuildingDef;
+				CustomTileRenderer.RefreshCell(_playerId, cellParam, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+				DirtyCell = cellParam;	
 			}
 		}
 	}

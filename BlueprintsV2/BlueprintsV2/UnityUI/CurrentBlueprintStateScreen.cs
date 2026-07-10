@@ -72,15 +72,15 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			}
 
 			CurrentBPName.SetText(bp.FriendlyName);
-			EnableSnapshotMaterialOverrides.gameObject.SetActive(BlueprintState.IsPlacingSnapshot);
-			ChangeMaterialOverrides.transform.parent.gameObject.SetActive(BlueprintState.IsPlacingSnapshot);
-			if (BlueprintState.IsPlacingSnapshot)
+			EnableSnapshotMaterialOverrides.gameObject.SetActive(BlueprintState.CurrentStateInfo().IsPlacingSnapshot);
+			ChangeMaterialOverrides.transform.parent.gameObject.SetActive(BlueprintState.CurrentStateInfo().IsPlacingSnapshot);
+			if (BlueprintState.CurrentStateInfo().IsPlacingSnapshot)
 			{
 				CurrentBPName.SetText("-");
 				FolderInfoGO.SetActive(true);
 				string folderInfo = string.Format(FOLDERINFO.LABEL_SNAPSHOT, SnapshotTool.SnapshotIndex + 1, SnapshotTool.SnapshotCount);
 				FolderInfo.SetText(folderInfo);
-				ChangeMaterialOverrides.SetInteractable(BlueprintState.MaterialReplacementInSnapshots);
+				ChangeMaterialOverrides.SetInteractable(BlueprintState.CurrentStateInfo().MaterialReplacementInSnapshots);
 			}
 			else
 			{
@@ -96,7 +96,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		public void RefreshButtonStates()
 		{
-			var info = BlueprintState.GetCurrentTransformationInfo();
+			var info = BlueprintState.CurrentStateInfo();
 			bool canRotate = info.CanRotate;
 
 			//CanRotate.SetInfoState(canRotate);
@@ -118,7 +118,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		}
 		void RefreshStateChangeBPs()
 		{
-			if (BlueprintState.IsPlacingSnapshot)
+			if (BlueprintState.CurrentStateInfo().IsPlacingSnapshot)
 			{
 				bool storedBPs = SnapshotTool.HasSnapshotsStored;
 				bool canGoNext = SnapshotTool.Instance?.HasNextSnapshot ?? false;
@@ -163,19 +163,19 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 			ApplyBPSettings = transform.Find("InfoItemsContainer/ApplyStoredSettings").gameObject.AddOrGet<FToggle>();
 			ApplyBPSettings.SetCheckmark("Checkbox/Checkmark");
-			ApplyBPSettings.SetOnFromCode(BlueprintState.ApplyBlueprintSettings);
-			ApplyBPSettings.OnChange += (on) => BlueprintState.ApplyBlueprintSettings = on;
+			ApplyBPSettings.SetOnFromCode(BlueprintState.CurrentStateInfo().ApplyBlueprintSettings);
+			ApplyBPSettings.OnChange += (on) => BlueprintState.CurrentStateInfo().ApplyBlueprintSettings = on;
 
 
 			ForceRebuildMismatchedBuildings = transform.Find("InfoItemsContainer/ForceRebuild").gameObject.AddOrGet<FToggle>();
 			ForceRebuildMismatchedBuildings.SetCheckmark("Checkbox/Checkmark");
-			ForceRebuildMismatchedBuildings.SetOnFromCode(BlueprintState.ForceBuild);
-			ForceRebuildMismatchedBuildings.OnChange += (on) => BlueprintState.ForceBuild = on;
+			ForceRebuildMismatchedBuildings.SetOnFromCode(BlueprintState.CurrentStateInfo().ForceBuild);
+			ForceRebuildMismatchedBuildings.OnChange += (on) => BlueprintState.CurrentStateInfo().ForceBuild = on;
 			UIUtils.AddSimpleTooltipToObject(ForceRebuildMismatchedBuildings.gameObject, UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsToggleForce.GetKAction()) + "]"));
 
 			EnableSnapshotMaterialOverrides = transform.Find("InfoItemsContainer/MaterialReplacement").gameObject.AddOrGet<FToggle>();
 			EnableSnapshotMaterialOverrides.SetCheckmark("Checkbox/Checkmark");
-			EnableSnapshotMaterialOverrides.SetOnFromCode(BlueprintState.MaterialReplacementInSnapshots);
+			EnableSnapshotMaterialOverrides.SetOnFromCode(BlueprintState.CurrentStateInfo().MaterialReplacementInSnapshots);
 			EnableSnapshotMaterialOverrides.OnChange += OnSnapshotOverrideChanged; 
 			UIUtils.AddSimpleTooltipToObject(EnableSnapshotMaterialOverrides.gameObject, MATERIALREPLACEMENT.TOOLTIP);
 
@@ -215,7 +215,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		void OnSnapshotOverrideChanged(bool on)
 		{
-			BlueprintState.MaterialReplacementInSnapshots = on;
+			BlueprintState.CurrentStateInfo().MaterialReplacementInSnapshots = on;
 			ChangeMaterialOverrides.SetInteractable(on);
 			SnapshotTool.CurrentSnapshot?.CacheCost();
 		}
@@ -242,23 +242,23 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		void HandleFlipH()
 		{
-			BlueprintState.GetCurrentTransformationInfo().FlipHorizontal();
+			BlueprintState.CurrentStateInfo().FlipHorizontal();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleFlipV()
 		{
 
-			BlueprintState.GetCurrentTransformationInfo().FlipVertical();
+			BlueprintState.CurrentStateInfo().FlipVertical();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleRotationR()
 		{
-			BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint();
+			BlueprintState.CurrentStateInfo().TryRotateBlueprint();
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 		void HandleRotationL()
 		{
-			BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint(true);
+			BlueprintState.CurrentStateInfo().TryRotateBlueprint(true);
 			BlueprintState.RefreshBlueprintVisualizers();
 		}
 
@@ -269,7 +269,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		void HandleNextBP()
 		{
-			if (BlueprintState.IsPlacingSnapshot)
+			if (BlueprintState.CurrentStateInfo().IsPlacingSnapshot)
 			{
 				SnapshotTool.Instance.VisualizeNextSnapshot();
 				SetSelectedBlueprint(SnapshotTool.CurrentSnapshot);
@@ -282,7 +282,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		}
 		void HandlePrevBP()
 		{
-			if (BlueprintState.IsPlacingSnapshot)
+			if (BlueprintState.CurrentStateInfo().IsPlacingSnapshot)
 			{
 				SnapshotTool.Instance.VisualizePreviousSnapshot();
 				SetSelectedBlueprint(SnapshotTool.CurrentSnapshot);

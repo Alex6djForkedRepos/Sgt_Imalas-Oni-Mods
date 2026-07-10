@@ -273,7 +273,7 @@ namespace BlueprintsV2.ModAPI
 		/// <param name="buildingConfig"></param>
 		public static void ApplyAdditionalBuildingData(GameObject gameObject, BuildingConfig buildingConfig)
 		{
-			if (BlueprintState.ApplyBlueprintSettings == false)
+			if (BlueprintState.CurrentStateInfo().ApplyBlueprintSettings == false)
 				return;
 
 			if (gameObject.TryGetComponent<Building>(out var building) && building.Def != buildingConfig.BuildingDef)

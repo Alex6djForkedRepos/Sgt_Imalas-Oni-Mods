@@ -30,11 +30,11 @@ namespace BlueprintsV2.Visualizers
 				batchedAnimController.visibilityType = KAnimControllerBase.VisibilityType.Always;
 				batchedAnimController.isMovable = true;
 				batchedAnimController.Offset = buildingConfig.BuildingDef.GetVisualizerOffset();
-				batchedAnimController.TintColour = GetVisualizerColor(cell);
+				//batchedAnimController.TintColour = GetVisualizerColor(cell);
 
 				batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
 			}
-			RefreshColor();
+			ApplyColorIfChanged(cell);
 		}
 
 		public override void ApplyBuildingData(GameObject building)
@@ -66,13 +66,12 @@ namespace BlueprintsV2.Visualizers
 			{
 				Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, Grid.SceneLayer.Building));				
 				cell = cellParam;
-				RefreshColor();
+				ApplyColorIfChanged(cell);
 			}
 		}
 		public override void RefreshColor()
 		{
-			if(hasKbac)
-				kbac.TintColour = GetVisualizerColor(cell); kbac.TintColour = GetVisualizerColor(cell);
+			ApplyColorIfChanged(cell);
 		}
 	}
 }

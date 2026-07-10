@@ -28,7 +28,7 @@ namespace BlueprintsV2.BlueprintData
 
 		public static BlueprintSelectedMaterial GetBlueprintSelectedMaterial(Tag selected, Tag category, Tag buildingId)
 		{
-			if (BlueprintState.AdvancedMaterialReplacement)
+			if (BlueprintState.CurrentStateInfo().AdvancedMaterialReplacement)
 			{
 				if (buildingId != null)
 					return new BlueprintSelectedMaterial(selected, category, buildingId);

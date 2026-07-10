@@ -237,7 +237,7 @@ namespace BlueprintsV2.UnityUI
 
 			AdvancedReplacementToggle = transform.Find("MaterialSwitch/PerBuildingOverrides").gameObject.AddOrGet<FToggle>();
 			AdvancedReplacementToggle.SetCheckmark("Checkbox/Checkmark");
-			AdvancedReplacementToggle.SetOnFromCode(BlueprintState.AdvancedMaterialReplacement);
+			AdvancedReplacementToggle.SetOnFromCode(BlueprintState.CurrentStateInfo().AdvancedMaterialReplacement);
 			UIUtils.AddSimpleTooltipToObject(transform.Find("MaterialSwitch/PerBuildingOverrides/Label").gameObject, PERBUILDINGOVERRIDES.TOOLTIP);
 			AdvancedReplacementToggle.OnChange += OnAdvancedReplacementToggleChanged;
 
@@ -713,7 +713,7 @@ namespace BlueprintsV2.UnityUI
 
 		private void OnAdvancedReplacementToggleChanged(bool enabled)
 		{
-			BlueprintState.AdvancedMaterialReplacement = enabled;
+			BlueprintState.CurrentStateInfo().AdvancedMaterialReplacement = enabled;
 			TargetBlueprint?.CacheCost();
 			ClearUIState();
 		}

@@ -14,7 +14,7 @@ namespace BlueprintsV2.Tools
 		public UseBlueprintTool()
 		{
 			Instance = this;
-			BlueprintState.ForceBuild = false;
+			BlueprintState.CurrentStateInfo().ForceBuild = false;
 		}
 
 		public UseBlueprintToolHoverCard HoverCard;
@@ -65,7 +65,7 @@ namespace BlueprintsV2.Tools
 		public override void OnActivateTool()
 		{
 			base.OnActivateTool();
-			BlueprintState.IsPlacingSnapshot = false;
+			BlueprintState.CurrentStateInfo().IsPlacingSnapshot = false;
 
 			ToolMenu.Instance.PriorityScreen.Show();
 			ShowBlueprintsWindow();
@@ -114,7 +114,7 @@ namespace BlueprintsV2.Tools
 		public override void OnDeactivateTool(InterfaceTool newTool)
 		{
 			base.OnDeactivateTool(newTool);
-			BlueprintState.ForceBuild = false;
+			BlueprintState.CurrentStateInfo().ForceBuild = false;
 
 			BlueprintState.ClearVisuals();
 			ToolMenu.Instance.PriorityScreen.Show(false);
@@ -145,7 +145,7 @@ namespace BlueprintsV2.Tools
 		}
 		void SetForceMaterialChange(bool enabled)
 		{
-			BlueprintState.ForceBuild = enabled;
+			BlueprintState.CurrentStateInfo().ForceBuild = enabled;
 			BlueprintState.RefreshBlueprintVisualizers();
 			CurrentBlueprintStateScreen.Instance.SetForceMaterialChange(enabled);
 		}
@@ -173,27 +173,27 @@ namespace BlueprintsV2.Tools
 
 				if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsSwapAnchorAction.GetKAction()))
 				{
-					BlueprintState.GetCurrentTransformationInfo().NextAnchorState();
+					BlueprintState.CurrentStateInfo().NextAnchorState();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(Action.RotateBuilding) || buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotate.GetKAction()))
 				{
-					BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint();
+					BlueprintState.CurrentStateInfo().TryRotateBlueprint();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotateInverse.GetKAction()))
 				{
-					BlueprintState.GetCurrentTransformationInfo().TryRotateBlueprint(true);
+					BlueprintState.CurrentStateInfo().TryRotateBlueprint(true);
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction()))
 				{
-					BlueprintState.GetCurrentTransformationInfo().FlipHorizontal();
+					BlueprintState.CurrentStateInfo().FlipHorizontal();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipVertical.GetKAction()))
 				{
-					BlueprintState.GetCurrentTransformationInfo().FlipVertical();
+					BlueprintState.CurrentStateInfo().FlipVertical();
 					BlueprintState.RefreshBlueprintVisualizers();
 				}
 				else if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsSelectPrevious.GetKAction()))
@@ -250,6 +250,7 @@ namespace BlueprintsV2.Tools
 			{
 				SetForceMaterialChange(false);
 			}
+			BlueprintState.OnStateChanged();
 		}
 	}
 }

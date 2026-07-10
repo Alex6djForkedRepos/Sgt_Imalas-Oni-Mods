@@ -7,10 +7,15 @@ namespace BlueprintsV2.Visualizers
 {
 	public static class VisualsUtilities
 	{
-		public static void SetTileColor(ulong playerId, int cell, Color color, BuildingConfig buildingConfig)
+		public static void SetTileColor(ulong playerId, int cell, Color newColor, BuildingConfig buildingConfig)
 		{
-			BlueprintState.ColoredCells[playerId][cell] = new CellColorPayload(color, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
-			CustomTileRenderer.RefreshCell(playerId, cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
+			if (!BlueprintState.ColoredCells[playerId].TryGetValue(cell, out var existingColor))
+				existingColor = Color.white;
+
+			BlueprintState.ColoredCells[playerId][cell] = newColor;
+
+			if (existingColor != newColor)
+				CustomTileRenderer.RefreshCell(playerId, cell, buildingConfig.BuildingDef.TileLayer, buildingConfig.BuildingDef.ReplacementLayer);
 		}
 	}
 }

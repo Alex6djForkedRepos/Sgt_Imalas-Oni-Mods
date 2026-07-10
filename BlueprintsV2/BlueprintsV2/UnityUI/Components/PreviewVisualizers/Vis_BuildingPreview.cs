@@ -34,14 +34,14 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 			kbac.defaultAnim = defaultAnim = defaultAnimState.ToString();
 			UpdatePosition(building);
 		}
-		void Update()
-		{
-			return;
-			if (rotate)
-			{
-				transform.Rotate(0, 0, -90 * Time.unscaledDeltaTime);
-			}
-		}
+		//void Update()
+		//{
+		//	return;
+		//	if (rotate)
+		//	{
+		//		transform.Rotate(0, 0, -90 * Time.unscaledDeltaTime);
+		//	}
+		//}
 		bool rotate = false;
 
 		/// <summary>
