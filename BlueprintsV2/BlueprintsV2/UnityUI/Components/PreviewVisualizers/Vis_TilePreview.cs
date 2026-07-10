@@ -14,9 +14,6 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 {
 	internal class Vis_TilePreview : KMonoBehaviour
 	{
-		string buildingDefId;
-		//[MyCmpGet]
-		//SpriteRenderer TilespriteRenderer;
 		Image TilespriteRenderer;
 
 		static Dictionary<BuildingDef, BlockTileRenderer.RenderInfo> _tileInfos = [];

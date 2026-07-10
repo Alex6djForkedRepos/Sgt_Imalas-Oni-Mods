@@ -544,7 +544,7 @@ namespace BlueprintsV2.UnityUI
 				DimensionInfo.SetText($"{dimensions.X} x {dimensions.Y}");
 				BuildingCount.SetText(TargetBlueprint.BuildingConfigurations.Count.ToString());
 				DigCount.SetText(TargetBlueprint.DigLocations.Count.ToString());
-				NoteCount.SetText(TargetBlueprint.WorldNotes.Count.ToString());
+				NoteCount.SetText((TargetBlueprint.PlanningToolMod_PlanDataValues.Count+TargetBlueprint.WorldNotes.Count).ToString());
 
 				RefreshInfoIcon();
 				LoadBlueprintDescription();

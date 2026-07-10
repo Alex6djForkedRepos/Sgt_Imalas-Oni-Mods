@@ -61,7 +61,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 			float width = def.WidthInCells;
 			float heigh = def.HeightInCells;
 
-			_rectTransform.pivot = new(1f/width, 1f/heigh);
+			_rectTransform.pivot = new(1f / width, 1f / heigh);
 
 			if (correctX)
 			{
@@ -87,7 +87,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 					break;
 				case Orientation.R90:
 					rotate = true;
-					transform.Rotate(0,0, -90);
+					transform.Rotate(0, 0, -90);
 					transform.localPosition += new Vector3(-50, 50, 0);
 					break;
 				case Orientation.R180:

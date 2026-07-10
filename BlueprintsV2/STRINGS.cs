@@ -312,7 +312,7 @@ namespace BlueprintsV2
 						{
 							public class DESCRIPTOR
 							{
-								public static LocString LABEL = "Number of notes:";
+								public static LocString LABEL = "Number of notes/shapes:";
 							}
 						}
 					}
