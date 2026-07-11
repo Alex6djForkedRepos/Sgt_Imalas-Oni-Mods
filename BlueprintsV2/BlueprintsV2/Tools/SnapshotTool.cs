@@ -244,7 +244,7 @@ namespace BlueprintsV2.Tools
 				var mousePos = Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos()));
 				BlueprintState.VisualizeBlueprint(mousePos, blueprintToVisualize);
 				BlueprintState.CurrentStateInfo().SetAnchorState(shiftX, shiftY, blueprintToVisualize);
-				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, snapshotBlueprint);
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, blueprintToVisualize);
 
 				MultiToolParameterMenu.Instance.HideMenu();
 				ToolMenu.Instance.PriorityScreen.Show();

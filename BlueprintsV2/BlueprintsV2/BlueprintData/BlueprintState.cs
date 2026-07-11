@@ -1,4 +1,5 @@
-﻿using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+﻿using BlueprintsV2.BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
 using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packets;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
@@ -555,6 +556,7 @@ namespace BlueprintsV2.BlueprintData
 			transformData.CheckPermittedRotations();
 
 			OnBlueprintVisualized(playerId, blueprint, topLeft);
+			UpdateVisual(playerId, topLeft, true, blueprint);
 		}
 
 		private static void AddVisual(IVisual visual, BuildingDef buildingDef)
@@ -672,12 +674,15 @@ namespace BlueprintsV2.BlueprintData
 		}
 		#endregion
 
-
+		/// <summary>
+		/// holds individual blueprint transformation info for one blueprint placer (== player)
+		/// connecting players in the multiplayer mod get their own cached so their settings can be synced up
+		/// </summary>
 		public class BlueprintTransformationInfo
 		{
 			public void ConsumePacket(ModeChangePacket data)
 			{
-				SgtLogger.l("Syncing TransferState");
+				//SgtLogger.l("Syncing TransferState");
 				this.AdvancedMaterialReplacement = data.AdvancedMaterialReplacement;
 				this.ForceBuild = data.ForceBuild;
 				this.MaterialReplacementInSnapshots = data.MaterialReplacementInSnapshots;
@@ -686,7 +691,7 @@ namespace BlueprintsV2.BlueprintData
 				this.FlippedX = data.FlippedX;
 				this.FlippedY = data.FlippedY;
 				this.Permitted = data.Permitted;
-				this._state = data._state;
+				this._state = (BlueprintAnchorState)data._state;
 				this.originShiftX = data.originShiftX;
 				this.originShiftY = data.originShiftY;
 			}
@@ -701,7 +706,7 @@ namespace BlueprintsV2.BlueprintData
 				packet.FlippedX = FlippedX;
 				packet.FlippedY = FlippedY;
 				packet.Permitted = Permitted;
-				packet._state = _state;
+				packet._state = (int)_state;
 				packet.originShiftX = originShiftX;
 				packet.originShiftY = originShiftY;
 				return packet;
@@ -805,7 +810,7 @@ namespace BlueprintsV2.BlueprintData
 				FlippedY = false;
 				BlueprintOrientation = Orientation.Neutral;
 
-				ResetAnchorState();
+				RefreshAnchorState();
 			}
 			public void ApplyRotatedCellAndMove(Vector2I origin, IVisual bpEntryVis, bool forcingRedraw)
 			{
@@ -891,30 +896,29 @@ namespace BlueprintsV2.BlueprintData
 			}
 			#endregion
 			#region AnchorShift
-			int _state = 0;
+			BlueprintAnchorState _state = 0;
 			float originShiftX = 0, originShiftY = 0;
-			static readonly List<AnchorState> ShiftStates = new()
+			static readonly Dictionary<BlueprintAnchorState, AnchorState> ShiftStates = new()
 			{
-				new("middle",0.5f,0.5f),
-				new ("bottomLeft",0,0),
-				new ("topLeft",0,1),
-				new ("topRight",1,1),
-				new ("bottomRight",1,0),
+				{ BlueprintAnchorState.BottomCenter, new(0.5f,0f) },
+				{ BlueprintAnchorState.Center,new(0.5f,0.5f)},
+				{ BlueprintAnchorState.BottomLeft,new(0,0)},
+				{ BlueprintAnchorState.TopLeft,new(0,1)},
+				{ BlueprintAnchorState.TopRight,new(1,1)},
+				{ BlueprintAnchorState.BottomRight,new(1,0)},
 			};
 			public class AnchorState
 			{
-				public string Name;
 				public float diffX, diffY;
-				public AnchorState(string name, float diffX, float diffY)
+				public AnchorState(float diffX, float diffY)
 				{
-					Name = name;
 					this.diffX = diffX;
 					this.diffY = diffY;
 				}
 			}
 			public void ResetAnchorState()
 			{
-				_state = 0;
+				_state = Config.Instance.DefaultAnchorState;
 				originShiftX = ShiftStates[_state].diffX;
 				originShiftY = ShiftStates[_state].diffY; 
 			}
@@ -927,13 +931,21 @@ namespace BlueprintsV2.BlueprintData
 					originShiftY = newDiffY;
 				UpdateVisual(playerId, lastBlueprintPos, true, snapshotBlueprint);
 			}
-			public void NextAnchorState(Blueprint snapshotBlueprint = null)
+			public void RefreshAnchorState(Blueprint snapshotBlueprint = null)
 			{
-				_state = (_state + 1) % ShiftStates.Count;
 				originShiftX = ShiftStates[_state].diffX;
 				originShiftY = ShiftStates[_state].diffY;
 
 				UpdateVisual(playerId, lastBlueprintPos, true, snapshotBlueprint);
+			}
+
+			public void NextAnchorState(Blueprint snapshotBlueprint = null)
+			{
+				int state = (int)_state;
+				state = (state + 1) % ShiftStates.Count;
+				_state = (BlueprintAnchorState)state;
+				RefreshAnchorState(snapshotBlueprint);
+				
 			}
 			//public Vector2I GetMousePos()
 			//{

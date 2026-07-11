@@ -7,6 +7,16 @@ namespace BlueprintsV2
 {
 	public class STRINGS
 	{
+		public class BLUEPRINT_ANCHORSTATE
+		{
+			public static LocString BC = "Bottom Center";
+			public static LocString C = "Center";
+			public static LocString BL = "Bottom Left";
+			public static LocString BR = "Bottom Right";
+			public static LocString TL = "Top Left";
+			public static LocString TR = "Top Right";
+
+		}
 		public class BLUEPRINTS_FORCE_REPLACER
 		{
 			public static LocString PENDING_INFO = "This building plan is currently pending to be placed, as soon as the area is cleared of occupying buildings.";
@@ -87,6 +97,11 @@ namespace BlueprintsV2
 			{
 				public static LocString TITLE = "Automatic Preview Confirmation Threshold";
 				public static LocString TOOLTIP = "Blueprints with more than this number of buildings won't automatically show a ui preview and instead ask for confirmation.";
+			}
+			public class DEFAULT_ANCHOR
+			{
+				public static LocString TITLE = "Default Placement Anchoring";
+				public static LocString TOOLTIP = "Placed blueprints are alligned with this position under the cursor by default.\nCan be swapped through via ctrl+R, persisting between blueprint placing.";
 			}
 		}
 
