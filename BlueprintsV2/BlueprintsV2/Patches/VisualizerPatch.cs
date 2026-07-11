@@ -15,7 +15,7 @@ namespace BlueprintsV2.Patches
 			{
 				if(__instance is CustomTileRenderer customRenderer)
 				{
-					__result = customRenderer.GetCachedCellColor(__result, cell, element);
+					customRenderer.GetCachedCellColor(ref __result, cell, element);
 				}
 			}
 		}

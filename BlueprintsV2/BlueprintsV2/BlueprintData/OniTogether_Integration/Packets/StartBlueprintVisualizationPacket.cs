@@ -11,12 +11,16 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 {
 	internal class StartBlueprintVisualizationPacket : IPacket
 	{
-		public StartBlueprintVisualizationPacket(Blueprint bp)
+		public StartBlueprintVisualizationPacket() { }
+		public StartBlueprintVisualizationPacket(Blueprint bp, Vector2I pos)
 		{
 			SenderId = SessionInfoAPI.LocalUserID;
 			blueprint = bp;
+			x = pos.x; 
+			y = pos.y;
 		}
 		ulong SenderId;
+		int x, y;
 		Blueprint blueprint;
 
 		string GetCompressed()
@@ -30,8 +34,10 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 		public void Deserialize(BinaryReader reader)
 		{
 			SenderId = reader.ReadUInt64();
+			x = reader.ReadInt32();
+			y = reader.ReadInt32();
 			string uncompressedBp = StringCompression.DecompressString(reader.ReadString());
-			if (!ModAssets.TryImportBlueprintFromString(uncompressedBp, out blueprint))
+			if (!ModAssets.TryImportBlueprintFromString(uncompressedBp, out blueprint, false))
 			{
 				SgtLogger.warning("[MP] could not visualize blueprint received from other player");
 				blueprint = null;
@@ -41,6 +47,8 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 		public void Serialize(BinaryWriter writer)
 		{
 			writer.Write(SenderId);
+			writer.Write(x);
+			writer.Write(y);
 			writer.Write(GetCompressed());
 		}
 		public void OnDispatched()

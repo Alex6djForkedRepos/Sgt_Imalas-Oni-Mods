@@ -44,7 +44,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			if(Type == NoteType.Text)
 			{
 				jsonWriter.WritePropertyName("title"); jsonWriter.WriteValue(Title);
-				jsonWriter.WritePropertyName("text"); jsonWriter.WriteValue(Title);
+				jsonWriter.WritePropertyName("text"); jsonWriter.WriteValue(Text);
 				jsonWriter.WritePropertyName("tinthex"); jsonWriter.WriteValue(SymbolTint.ToHexString());
 			}
 			else if(Type == NoteType.Element)

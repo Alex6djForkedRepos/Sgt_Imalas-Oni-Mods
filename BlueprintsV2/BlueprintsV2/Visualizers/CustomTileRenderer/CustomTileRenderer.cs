@@ -16,7 +16,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 {
 	internal class CustomTileRenderer : BlockTileRenderer
 	{
-		static int OnPlayerJoin = -1, OnPlayerLeave = -1;
+		static int 
+			//OnPlayerJoin = -1,
+			OnPlayerLeave = -1, OnPlayerCursorMade = -1;
 		static readonly Dictionary<ulong, CustomTileRenderer> customTileRenderers = [];
 		/// <summary>
 		/// update id for this specific player
@@ -32,6 +34,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 			}
 
 			ulong playerId = Boxed<ulong>.Unbox(boxedId);
+			SgtLogger.l("Player Left: " + playerId);
 
 			if (!customTileRenderers.TryGetValue(playerId, out var renderer))
 			{
@@ -43,6 +46,23 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 			BlueprintState.RemoveCachesForPlayer(playerId);
 			TileVisual.OnPlayerRemoved(playerId);
 		}
+		//static void OnPlayerCursorCreated(object boxedId)
+		//{
+		//	if (boxedId is not Boxed<ulong> b)
+		//	{
+		//		SgtLogger.warning(boxedId + " was not as expected an ulong, instead it was " + boxedId.GetType());
+		//		return;
+		//	}
+
+		//	ulong playerId = Boxed<ulong>.Unbox(boxedId);
+		//	SgtLogger.l("Player Cursor created: " + playerId);
+		//	BlueprintState.CachePlayerColor(playerId);
+		//}
+
+		/// <summary>
+		/// Using the create cursor event as that triggers for all types of players for all others, regardless if its client or host
+		/// </summary>
+		/// <param name="boxedId"></param>
 		static void OnPlayerJoined(object boxedId)
 		{
 			if (boxedId is not Boxed<ulong> b)
@@ -52,6 +72,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 			}
 
 			ulong playerId = Boxed<ulong>.Unbox(boxedId);
+			SgtLogger.l("Player Joined: " + playerId);
 
 			if (customTileRenderers.TryGetValue(playerId, out var renderer))
 			{
@@ -59,8 +80,10 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 				return;
 			}
 			renderer = World.Instance.gameObject.AddComponent<CustomTileRenderer>();
+			renderer.PlayerId = playerId;
 			customTileRenderers.Add(playerId, renderer);
-			BlueprintState.AddCachesForPlayer(playerId);
+			BlueprintState.AddCachesForPlayer(playerId); 
+			BlueprintState.CachePlayerColor(playerId);
 			TileVisual.OnPlayerAdded(playerId);
 		}
 
@@ -83,8 +106,9 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 		{
 			public static void Postfix()
 			{
-				OnPlayerJoin = Game.Instance.Subscribe(MP_Mod_Hashes.OnPlayerJoined, OnPlayerJoined);
-				OnPlayerLeave = Game.Instance.Subscribe(MP_Mod_Hashes.OnPlayerJoined, OnPlayerLeft);
+				//OnPlayerJoin = Game.Instance.Subscribe(MP_Mod_Hashes.OnPlayerJoined, OnPlayerJoined);
+				OnPlayerLeave = Game.Instance.Subscribe(MP_Mod_Hashes.OnPlayerLeft, OnPlayerLeft);
+				OnPlayerCursorMade = Game.Instance.Subscribe(MP_Mod_Hashes.OnPlayerCursorCreated, OnPlayerJoined);
 			}
 		}
 
@@ -93,15 +117,20 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 		{
 			public static void Postfix(World __instance)
 			{
-				if (OnPlayerJoin != -1)
-				{
-					Game.Instance?.Unsubscribe(OnPlayerJoin);
-					OnPlayerJoin = -1;
-				}
+				//if (OnPlayerJoin != -1)
+				//{
+				//	Game.Instance?.Unsubscribe(OnPlayerJoin);
+				//	OnPlayerJoin = -1;
+				//}
 				if (OnPlayerLeave != -1)
 				{
 					Game.Instance?.Unsubscribe(OnPlayerLeave);
 					OnPlayerLeave = -1;
+				}
+				if (OnPlayerCursorMade != -1)
+				{
+					Game.Instance?.Unsubscribe(OnPlayerCursorMade);
+					OnPlayerCursorMade = -1;
 				}
 
 				foreach (var r in customTileRenderers.Values)
@@ -175,13 +204,12 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 			}
 		}
 
-		public Color GetCachedCellColor(Color current, int cell, SimHashes element)
+		public void GetCachedCellColor(ref Color current, int cell, SimHashes element)
 		{
 			if (BlueprintState.ColoredCells.TryGetValue(PlayerId, out var cache) && cache.TryGetValue(cell, out var data))
 			{
-				return data.Color;
+				current = data;
 			}
-			return current;
 		}
 
 		public override Bits GetConnectionBits(int x, int y, int query_layer)
@@ -199,16 +227,6 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer
 			//realTileBits |= GetVisualizerConnectionBits(x, y, query_layer);
 			return GetVisualizerConnectionBits(x, y, query_layer);
 		}
-
-		[HarmonyPatch(typeof(HeadquartersConfig), nameof(HeadquartersConfig.ConfigureBuildingTemplate))]
-		public class HeadquartersConfig_ConfigureBuildingTemplate_Patch
-		{
-			public static void Postfix(GameObject go)
-			{
-				go.GetComponent<Light2D>().Color = UIUtils.Lerp(Color.yellow, Color.red, 10) * 2.5f;
-			}
-		}
-
 		bool MatchesDefVis(int cell, BuildingDef def)
 		{
 			if (!TileVisual.HasTileAt(PlayerId, cell, out var vis))

@@ -24,7 +24,7 @@ namespace BlueprintsV2.Visualizers
 	{
 		///store the rotation state of the blueprint without affecting conduits/wires itself; only used by conduits
 		protected Orientation BlueprintRotationStateHolder = Orientation.Neutral;
-
+		
 		public GameObject Visualizer { get; protected set; }
 		public Vector2I Offset { get; protected set; }
 
@@ -45,6 +45,8 @@ namespace BlueprintsV2.Visualizers
 		protected ulong _playerId = BlueprintState.PlayerId_DefaultTilePreviews;
 		protected KBatchedAnimController kbac;
 		protected bool hasKbac = false;
+		protected bool isTile = false;
+		//protected Color? _lastColor = null;
 
 		public BuildingVisual(BuildingConfig buildingConfig, int cell, ulong playerId)
 		{
@@ -70,7 +72,7 @@ namespace BlueprintsV2.Visualizers
 				batchedAnimController.visibilityType = KAnimControllerBase.VisibilityType.Always;
 				batchedAnimController.isMovable = true;
 				batchedAnimController.Offset = buildingConfig.BuildingDef.GetVisualizerOffset();
-				batchedAnimController.TintColour = GetVisualizerColor(cell);
+				//batchedAnimController.TintColour = GetVisualizerColor(cell);
 
 				batchedAnimController.SetLayer(LayerMask.NameToLayer("Place"));
 				batchedAnimController.Play("place");
@@ -80,6 +82,7 @@ namespace BlueprintsV2.Visualizers
 			{
 				Visualizer.SetLayerRecursively(LayerMask.NameToLayer("Place"));
 			}
+			ApplyColorIfChanged(cell);
 			hasKbac = kbac != null;
 			UpdateRequirementsState();
 		}
@@ -99,19 +102,13 @@ namespace BlueprintsV2.Visualizers
 			if (cell != cellParam || forceRedraw)
 			{
 				Visualizer.transform.SetPosition(Grid.CellToPosCBC(cellParam, buildingConfig.BuildingDef.SceneLayer));
-				if (Visualizer.TryGetComponent<KBatchedAnimController>(out var kbac))
-				{
-					kbac.TintColour = GetVisualizerColor(cell);
-				}
+				ApplyColorIfChanged(cellParam);
 				cell = cellParam;
 			}
 		}
 		public virtual void RefreshColor()
 		{
-			if (Visualizer.TryGetComponent<KBatchedAnimController>(out var kbac))
-			{
-				kbac.TintColour = GetVisualizerColor(cell);
-			}
+			ApplyColorIfChanged(cell);
 		}
 
 		private Tag[] GetConstructionElements()
@@ -408,7 +405,7 @@ namespace BlueprintsV2.Visualizers
 
 		public virtual bool CanForceRebuild(int cellParam)
 		{
-			bool allowed = BlueprintState.ForceBuild && AllowedInWorld() && HasTech();
+			bool allowed = BlueprintState.CurrentStateInfo(_playerId).ForceBuild && AllowedInWorld() && HasTech();
 			if (!allowed)
 				return false;
 
@@ -659,12 +656,23 @@ namespace BlueprintsV2.Visualizers
 			API_Methods.BuildableStateValid(buildingConfig.BuildingDef, out var state);
 			RequirementsState = state;
 		}
+		public virtual void ApplyColorIfChanged(int cellParam)
+		{
+			Color newColor = GetVisualizerColor(cellParam);
 
+			//if (_lastColor.HasValue && newColor == _lastColor.Value)
+			//	return;
 
-		public virtual Color GetVisualizerColor(int cellParam)
+			//_lastColor = newColor;
+
+			if(hasKbac)
+				kbac.TintColour = newColor;
+		}
+
+		public Color GetVisualizerColor(int cellParam)
 		{
 			Color playerColor = default;
-			if (!LocalPlayerId(ref _playerId) && IsMultiplayerVisualizer(_playerId, ref playerColor))
+			if (!LocalPlayerId(_playerId) && IsMultiplayerVisualizer(_playerId, ref playerColor))
 				return playerColor;
 
 			UpdateRequirementsState();

@@ -131,7 +131,7 @@ namespace BlueprintsV2.UnityUI.Components
 
 		void SetElementNameText(string elementName)
 		{
-			if (BlueprintState.AdvancedMaterialReplacement && SelectedAndCategory.BuildingIdTag != null)
+			if (BlueprintState.CurrentStateInfo().AdvancedMaterialReplacement && SelectedAndCategory.BuildingIdTag != null)
 			{
 				var prefab = Assets.TryGetPrefab(SelectedAndCategory.BuildingIdTag);
 				if (prefab != null)

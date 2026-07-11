@@ -798,7 +798,6 @@ namespace BlueprintsV2.BlueprintData
 			WriteJsonString(sw);
 			var copy = new Blueprint(sb);
 			copy.Folder = Folder;
-			copy.InferFileLocation();
 			return copy;
 		}
 		public Dictionary<string, int> GetBuildingCounts()

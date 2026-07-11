@@ -1,14 +1,18 @@
-﻿using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+﻿using BlueprintsV2.BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
 using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packets;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration.EnumMirrors;
 using BlueprintsV2.BlueprintsV2.Visualizers;
+using BlueprintsV2.BlueprintsV2.Visualizers.CustomTileRenderer;
 using BlueprintsV2.ModAPI;
 using BlueprintsV2.Tools;
 using BlueprintsV2.Visualizers;
 using Epic.OnlineServices.Sessions;
 using ONI_Together_API;
+using ONI_Together_API.Networking;
 using STRINGS;
 using System;
 using System.Collections.Generic;
@@ -22,19 +26,6 @@ using static UnityEngine.UI.Image;
 
 namespace BlueprintsV2.BlueprintData
 {
-	public struct CellColorPayload
-	{
-		public Color Color { get; private set; }
-		public ObjectLayer TileLayer { get; private set; }
-		public ObjectLayer ReplacementLayer { get; private set; }
-
-		public CellColorPayload(Color color, ObjectLayer tileLayer, ObjectLayer replacementLayer)
-		{
-			Color = color;
-			TileLayer = tileLayer;
-			ReplacementLayer = replacementLayer;
-		}
-	}
 
 	public static class BlueprintState
 	{
@@ -48,7 +39,7 @@ namespace BlueprintsV2.BlueprintData
 			DependentVisuals[PlayerId_DefaultTilePreviews] = new();
 			CleanableVisuals[PlayerId_DefaultTilePreviews] = new();
 			ColoredCells[PlayerId_DefaultTilePreviews] = new();
-			NormalPlayer = PlayerBlueprintStateInfos[PlayerId_DefaultTilePreviews] = new();
+			NormalPlayer = PlayerBlueprintStateInfos[PlayerId_DefaultTilePreviews] = new BlueprintTransformationInfo();
 		}
 
 
@@ -59,22 +50,16 @@ namespace BlueprintsV2.BlueprintData
 
 		public static bool InstantBuild => DebugHandler.InstantBuildMode || Game.Instance.SandboxModeActive && SandboxToolParameterMenu.instance.settings.InstantBuild;
 
-		public static bool AdvancedMaterialReplacement = false;
-		public static bool ForceBuild = false;
-		public static bool MaterialReplacementInSnapshots = false;
-
-		public static bool ApplyBlueprintSettings = true;
-		public static bool IsPlacingSnapshot { get; set; }
-
+		private static readonly Dictionary<ulong, Blueprint> CurrentVisualizers = new();
 		private static readonly Dictionary<ulong, List<IVisual>> FoundationVisuals = new();
 		private static readonly Dictionary<ulong, List<IVisual>> DependentVisuals = new();
 		private static readonly Dictionary<ulong, List<ICleanableVisual>> CleanableVisuals = new();
 
 		public static readonly Dictionary<ulong, Dictionary<ObjectLayer, Dictionary<int, BuildingVisual>>> OccupiedCells = new();
 
-		public static readonly Dictionary<ulong, Dictionary<int, CellColorPayload>> ColoredCells = new();
+		public static readonly Dictionary<ulong, Dictionary<int, Color>> ColoredCells = new();
 
-		public static BlueprintTransformationInfo NormalPlayer = new();
+		private static BlueprintTransformationInfo NormalPlayer = new BlueprintTransformationInfo();
 		static readonly Dictionary<ulong, Color> PlayerColorsCached = [];
 
 		#region MP_Integration
@@ -87,6 +72,11 @@ namespace BlueprintsV2.BlueprintData
 
 		public static void AddCachesForPlayer(ulong id)
 		{
+			SgtLogger.l("Adding Blueprint Caches for " + id);
+			if (OccupiedCells.ContainsKey(id))
+				SgtLogger.warning(id + " was already cached");
+
+			OccupiedCells[id] = [];
 			foreach (ObjectLayer objectLayer in Enum.GetValues(typeof(ObjectLayer)))
 				OccupiedCells[id][objectLayer] = new();
 			FoundationVisuals[id] = new();
@@ -95,6 +85,11 @@ namespace BlueprintsV2.BlueprintData
 			ColoredCells[id] = new();
 			var info = new BlueprintTransformationInfo(id);
 			PlayerBlueprintStateInfos[id] = info;
+
+		}
+		public static void CachePlayerColor(ulong id)
+		{
+			SgtLogger.l("Caching Blueprint Player color for " + id);
 			if (SessionInfoAPI.TryGetPlayerColor(id, out var playerColor))
 				PlayerColorsCached[id] = playerColor;
 			else
@@ -102,9 +97,12 @@ namespace BlueprintsV2.BlueprintData
 				SgtLogger.warning("Could not cache player color for " + id);
 				PlayerColorsCached[id] = UIUtils.GetRandomRainbowColor(true);
 			}
+			SgtLogger.l("Color cached: " + PlayerColorsCached[id]);
 		}
 		public static void RemoveCachesForPlayer(ulong id)
 		{
+			SgtLogger.l("Removing Blueprint Caches for " + id);
+			ClearVisuals(id);
 			OccupiedCells.Remove(id);
 			FoundationVisuals.Remove(id);
 			DependentVisuals.Remove(id);
@@ -112,7 +110,7 @@ namespace BlueprintsV2.BlueprintData
 			ColoredCells.Remove(id);
 			PlayerColorsCached.Remove(id);
 		}
-		public static BlueprintTransformationInfo GetCurrentTransformationInfo(ulong id = PlayerId_DefaultTilePreviews)
+		public static BlueprintTransformationInfo CurrentStateInfo(ulong id = PlayerId_DefaultTilePreviews)
 		{
 			if (!PlayerBlueprintStateInfos.TryGetValue(id, out var info))
 				return NormalPlayer;
@@ -123,7 +121,7 @@ namespace BlueprintsV2.BlueprintData
 		{
 			otherPlayerCursorPos = default;
 
-			if (LocalPlayerId(ref playerId))
+			if (LocalPlayerId(playerId))
 				return false;
 
 			if (!MP_Helpers.MPInstalledAndActive())
@@ -133,13 +131,13 @@ namespace BlueprintsV2.BlueprintData
 
 		}
 
-		public static bool LocalPlayerId(ref ulong playerId)
+		public static bool LocalPlayerId(ulong playerId)
 		{
 			return (playerId == BlueprintState.PlayerId_DefaultTilePreviews || playerId == BlueprintState.PlayerId_ReplacementTiles || playerId == SessionInfoAPI.LocalUserID);
 		}
 		public static bool IsMultiplayerVisualizer(ulong _playerId, ref Color playerColor)
 		{
-			if (LocalPlayerId(ref _playerId))
+			if (LocalPlayerId(_playerId))
 				return false;
 			if (PlayerColorsCached.TryGetValue(_playerId, out playerColor))
 				return true;
@@ -155,51 +153,139 @@ namespace BlueprintsV2.BlueprintData
 		//	return (BlueprintPlayerIdMap.TryGetValue(bp, out playerId) && playerId != SessionInfoAPI.LocalUserID);
 		//}
 
+		#region packetReceiver
+
+
+
 		/// <summary>
 		/// only called by packets
 		/// </summary>
 		/// <param name="playerId"></param>
 		public static void SetDisplayBlueprintForPlayer(Blueprint bp, ulong playerId)
 		{
-			if (LocalPlayerId(ref playerId))
+			SgtLogger.l("SetDisplayBlueprintForPlayer recevied for " + playerId);
+			if (LocalPlayerId(playerId))
+			{
+				SgtLogger.l("PlayerId was local, skipping");
 				return;
-
-			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+			}
+			if (!MP_Helpers.MPInstalledAndActive())
+			{
+				SgtLogger.l("MP mod not enabled");
 				return;
+			}
+			if (!SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+			{
+				SgtLogger.l("Cannot fetch cursor position for player");
+				return;
+			}
 
 			//BlueprintPlayerIdMap[bp] = playerId;
 			ClearVisuals(playerId);
-			VisualizeBlueprint(playerId, new((int)playerCursorPos.x, (int)playerCursorPos.y), bp);
+			bp.CacheCost();
+			var pos = new Vector2I((int)playerCursorPos.x, (int)playerCursorPos.y);
+			CurrentVisualizers[playerId] = bp;
+			VisualizeBlueprint(playerId, pos, bp);
 		}
-		/// <summary>
+
+		public static void PlaceBlueprintForPlayer(Blueprint bp, ulong playerId, int x, int y)
+		{
+			SgtLogger.l("PlaceBlueprintForPlayer recevied for " + playerId);
+			if (LocalPlayerId(playerId))
+			{
+				return;
+			}
+			if (!MP_Helpers.MPInstalledAndActive())
+			{
+				return;
+			}
+			ClearVisuals(playerId);
+			CurrentVisualizers[playerId] = bp;
+			bp.CacheCost();
+			var pos = new Vector2I(x, y);
+			VisualizeBlueprint(playerId, pos, bp);
+			UpdateVisual(playerId, pos, true, bp);
+			UseBlueprint(playerId, pos, bp);
+		}
+
+		/// <summary>CurrentStateInfo(playerId).ResetRotations()
 		/// only called by packets
 		/// </summary>
 		/// <param name="playerId"></param>
 		public static void ClearDisplayBlueprintForPlayer(ulong playerId)
 		{
-			if (LocalPlayerId(ref playerId))
+			SgtLogger.l("ClearDisplayBlueprintForPlayer recevied for " + playerId);
+			if (LocalPlayerId(playerId))
 				return;
 
-			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+			if (!MP_Helpers.MPInstalledAndActive())
 				return;
 
+			CurrentVisualizers.Remove(playerId);
 			ClearVisuals(playerId);
+			CurrentStateInfo(playerId).ResetRotations();
 		}
 		/// <summary>
 		/// only called by packets
 		/// </summary>
 		/// <param name="playerId"></param>
-		public static void MoveDisplayBlueprintForPlayer(ulong playerId)
+		public static void MoveDisplayBlueprintForPlayer(ulong playerId, int x, int y)
 		{
-			if (LocalPlayerId(ref playerId))
+			SgtLogger.l("MoveDisplayBlueprintForPlayer recevied for " + playerId);
+			if (LocalPlayerId(playerId))
 				return;
 
-			if (!MP_Helpers.MPInstalledAndActive() || !SessionInfoAPI.TryGetPlayerCursorPos(playerId, out var playerCursorPos))
+			if (!MP_Helpers.MPInstalledAndActive() || !CurrentVisualizers.TryGetValue(playerId, out var playerBP))
 				return;
 
-			UpdateVisual(playerId, new Vector2I((int)playerCursorPos.x, (int)playerCursorPos.y), false);
+			UpdateVisual(playerId, new Vector2I(x, y), false, playerBP);
 		}
 
+		public static void UpdateRemoteState(ulong playerId, ModeChangePacket stateInfo)
+		{
+			SgtLogger.l("Updating remote state for " + playerId);
+			if (LocalPlayerId(playerId) || !MP_Helpers.MPInstalledAndActive() || !CurrentVisualizers.TryGetValue(playerId, out var playerBP))
+				return;
+			CurrentStateInfo(playerId).ConsumePacket(stateInfo);
+			UpdateVisual(playerId, CurrentStateInfo(playerId).lastBlueprintPos, true, playerBP);
+		}
+
+		#endregion
+		#region packetSender
+		public static void OnStateChanged(ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
+		{
+			if (!LocalPlayerId(playerId) || !MP_Helpers.MPInstalledAndActive())
+				return;
+			PacketSenderAPI.SendToAllOtherPeers(CurrentStateInfo().GetFilledModePacket());
+		}
+		public static void OnBlueprintUsed(ulong playerId, Blueprint bp, Vector2I pos)
+		{
+			if (!LocalPlayerId(playerId) || bp == null || !MP_Helpers.MPInstalledAndActive())
+				return;
+			PacketSenderAPI.SendToAllOtherPeers(new PlaceBlueprintPacket(bp, pos));
+
+		}
+
+		public static void OnBlueprintMoved(ulong playerId, Vector2I pos)
+		{
+			if (!LocalPlayerId(playerId) || !MP_Helpers.MPInstalledAndActive())
+				return;
+			PacketSenderAPI.SendToAllOtherPeers(new UpdateBlueprintVisualizationPacket(pos));
+		}
+		public static void OnBlueprintVisualized(ulong playerId, Blueprint bp, Vector2I pos)
+		{
+			if (!LocalPlayerId(playerId) || !MP_Helpers.MPInstalledAndActive())
+				return;
+			PacketSenderAPI.SendToAllOtherPeers(new StartBlueprintVisualizationPacket(bp, pos));
+		}
+		public static void OnBlueprintCleared(ulong playerId)
+		{
+			if (!LocalPlayerId(playerId) || !MP_Helpers.MPInstalledAndActive())
+				return;
+			PacketSenderAPI.SendToAllOtherPeers(new StopBlueprintVisualizationPacket());
+		}
+
+		#endregion
 
 		#endregion
 
@@ -369,9 +455,9 @@ namespace BlueprintsV2.BlueprintData
 		}
 		public static void UseBlueprint(ulong playerId, Vector2I origin, Blueprint snapshotBp = null)
 		{
-			var transformData = GetCurrentTransformationInfo(playerId);
+			var transformData = CurrentStateInfo(playerId);
 
-			CleanDirtyVisuals(playerId);
+			//CleanDirtyVisuals(playerId);
 			transformData.StoreDimensions(snapshotBp);
 			FoundationVisuals[playerId].ForEach(foundationVisual =>
 			{
@@ -381,13 +467,18 @@ namespace BlueprintsV2.BlueprintData
 			{
 				dependentVisual.TryUse(transformData.GetRotatedCell(origin, dependentVisual));
 			});
+
+			if(snapshotBp == null && !LocalPlayerId(playerId) && CurrentVisualizers.TryGetValue(playerId, out var current))
+				snapshotBp = current;
+			OnBlueprintUsed(playerId, snapshotBp == null ? ModAssets.SelectedBlueprint : snapshotBp, origin);
 		}
 		#endregion
 		#region Visualizers
 
 		public static void RefreshBlueprintVisualizers(ulong playerId = PlayerId_DefaultTilePreviews, Blueprint snapshot = null)
 		{
-			BlueprintState.UpdateVisual(playerId, GetCurrentTransformationInfo(playerId).lastBlueprintPos, true, snapshot);
+
+			BlueprintState.UpdateVisual(playerId, CurrentStateInfo(playerId).lastBlueprintPos, true, snapshot);
 		}
 		public static void VisualizeBlueprint(Vector2I topLeft, Blueprint blueprint) => VisualizeBlueprint(PlayerId_DefaultTilePreviews, topLeft, blueprint);
 		public static void VisualizeBlueprint(ulong playerId, Vector2I topLeft, Blueprint blueprint)
@@ -396,10 +487,10 @@ namespace BlueprintsV2.BlueprintData
 			{
 				return;
 			}
-
 			int errors = 0;
 			ClearVisuals(playerId);
-			var transformData = GetCurrentTransformationInfo(playerId);
+			var transformData = CurrentStateInfo(playerId);
+			transformData.lastBlueprintPos = topLeft;
 
 			foreach (BuildingConfig buildingConfig in blueprint.BuildingConfigurations)
 			{
@@ -463,6 +554,9 @@ namespace BlueprintsV2.BlueprintData
 			}
 
 			transformData.CheckPermittedRotations();
+
+			OnBlueprintVisualized(playerId, blueprint, topLeft);
+			UpdateVisual(playerId, topLeft, true, blueprint);
 		}
 
 		private static void AddVisual(IVisual visual, BuildingDef buildingDef)
@@ -489,7 +583,11 @@ namespace BlueprintsV2.BlueprintData
 
 		public static void UpdateVisual(ulong playerId, Vector2I origin, bool forcingRedraw = false, Blueprint snapshotBp = null)
 		{
-			var transformData = GetCurrentTransformationInfo(playerId);
+			OnStateChanged(playerId);
+			var transformData = CurrentStateInfo(playerId);
+
+			if (transformData.lastBlueprintPos == origin && !forcingRedraw)
+				return;
 
 			transformData.lastBlueprintPos = origin;
 			CleanDirtyVisuals(playerId);
@@ -511,12 +609,15 @@ namespace BlueprintsV2.BlueprintData
 			{
 				dependentVisual.RefreshColor();
 			});
+
+			OnBlueprintMoved(playerId, origin);
 		}
 
 
 		public static void ClearVisuals(ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
 		{
 			CleanDirtyVisuals(playerId);
+
 
 			var foundations = FoundationVisuals[playerId];
 			foundations.ForEach(foundationVis => foundationVis.DestroyVisualizer());
@@ -526,7 +627,11 @@ namespace BlueprintsV2.BlueprintData
 			dependents.ForEach(dependantVisual => dependantVisual.DestroyVisualizer());
 			dependents.Clear();
 			ClearOccupiedCells(playerId);
-			GetCurrentTransformationInfo(playerId).ResetRotations();
+
+			if(LocalPlayerId(playerId))
+				CurrentStateInfo(playerId).ResetRotations();
+
+			OnBlueprintCleared(playerId);
 		}
 		static void ClearOccupiedCells(ulong playerId)
 		{
@@ -559,29 +664,79 @@ namespace BlueprintsV2.BlueprintData
 		public static void CleanDirtyVisuals(ulong playerId)
 		{
 			var coloredCells = ColoredCells[playerId];
-			foreach (int cell in coloredCells.Keys)
-			{
-				CellColorPayload cellColorPayload = coloredCells[cell];
-				TileVisualizer.RefreshCell(cell, cellColorPayload.TileLayer, cellColorPayload.ReplacementLayer);
-			}
+			//foreach (int cell in coloredCells.Keys)
+			//{
+			//	CustomTileRenderer.RefreshCell(playerId, cell, ObjectLayer.FoundationTile);
+			//}
 
 			coloredCells.Clear();
 			CleanableVisuals[playerId].ForEach(cleanableVisual => cleanableVisual.Clean());
 		}
 		#endregion
 
-
+		/// <summary>
+		/// holds individual blueprint transformation info for one blueprint placer (== player)
+		/// connecting players in the multiplayer mod get their own cached so their settings can be synced up
+		/// </summary>
 		public class BlueprintTransformationInfo
 		{
+			public void ConsumePacket(ModeChangePacket data)
+			{
+				//SgtLogger.l("Syncing TransferState");
+				this.AdvancedMaterialReplacement = data.AdvancedMaterialReplacement;
+				this.ForceBuild = data.ForceBuild;
+				this.MaterialReplacementInSnapshots = data.MaterialReplacementInSnapshots;
+				this.IsPlacingSnapshot = data.IsPlacingSnapshot;
+				this.BlueprintOrientation = data.BlueprintOrientation;
+				this.FlippedX = data.FlippedX;
+				this.FlippedY = data.FlippedY;
+				this.Permitted = data.Permitted;
+				this._state = (BlueprintAnchorState)data._state;
+				this.originShiftX = data.originShiftX;
+				this.originShiftY = data.originShiftY;
+			}
+			public ModeChangePacket GetFilledModePacket()
+			{
+				var packet = new ModeChangePacket();
+				packet.AdvancedMaterialReplacement = AdvancedMaterialReplacement;
+				packet.ForceBuild = ForceBuild;
+				packet.MaterialReplacementInSnapshots = MaterialReplacementInSnapshots;
+				packet.IsPlacingSnapshot = IsPlacingSnapshot;
+				packet.BlueprintOrientation = BlueprintOrientation;
+				packet.FlippedX = FlippedX;
+				packet.FlippedY = FlippedY;
+				packet.Permitted = Permitted;
+				packet._state = (int)_state;
+				packet.originShiftX = originShiftX;
+				packet.originShiftY = originShiftY;
+				return packet;
+			}
+
 			public BlueprintTransformationInfo(ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
 			{
 				this.playerId = playerId;
 			}
 
+			public bool AdvancedMaterialReplacement = false;
+			public bool ForceBuild = false;
+			public bool MaterialReplacementInSnapshots = false;
+			public bool IsPlacingSnapshot { get; set; }
+			public bool ApplyBlueprintSettings = true;
+
 			public void StoreDimensions(Blueprint bp)
 			{
+				//SgtLogger.l(playerId + "-State refreshing BP dimensions, is Local: "+ LocalPlayerId(playerId)+", id has bp: "+CurrentVisualizers.ContainsKey(playerId));
+
+				if (bp == null && !LocalPlayerId(playerId) && CurrentVisualizers.TryGetValue(playerId, out var current))
+				{
+					bp = current;
+					//SgtLogger.l("Storing dimensions of remote bp: " + current);
+				}
 				if (bp == null)
+				{
+					//SgtLogger.l("Storing dimensions of selected bp");
 					bp = ModAssets.SelectedBlueprint;
+				}
 				if (bp == null)
 					return;
 				lastBlueprintDimensions = bp.Dimensions;
@@ -654,6 +809,8 @@ namespace BlueprintsV2.BlueprintData
 				FlippedX = false;
 				FlippedY = false;
 				BlueprintOrientation = Orientation.Neutral;
+
+				RefreshAnchorState();
 			}
 			public void ApplyRotatedCellAndMove(Vector2I origin, IVisual bpEntryVis, bool forcingRedraw)
 			{
@@ -739,54 +896,68 @@ namespace BlueprintsV2.BlueprintData
 			}
 			#endregion
 			#region AnchorShift
-			static int _state = 0;
-			static float originShiftX = 0, originShiftY = 0;
-			static readonly List<AnchorState> ShiftStates = new()
+			BlueprintAnchorState _state = 0;
+			float originShiftX = 0, originShiftY = 0;
+			static readonly Dictionary<BlueprintAnchorState, AnchorState> ShiftStates = new()
 			{
-				new("middle",0.5f,0.5f),
-				new ("bottomLeft",0,0),
-				new ("topLeft",0,1),
-				new ("topRight",1,1),
-				new ("bottomRight",1,0),
+				{ BlueprintAnchorState.BottomCenter, new(0.5f,0f) },
+				{ BlueprintAnchorState.Center,new(0.5f,0.5f)},
+				{ BlueprintAnchorState.BottomLeft,new(0,0)},
+				{ BlueprintAnchorState.TopLeft,new(0,1)},
+				{ BlueprintAnchorState.TopRight,new(1,1)},
+				{ BlueprintAnchorState.BottomRight,new(1,0)},
 			};
 			public class AnchorState
 			{
-				public string Name;
 				public float diffX, diffY;
-				public AnchorState(string name, float diffX, float diffY)
+				public AnchorState(float diffX, float diffY)
 				{
-					Name = name;
 					this.diffX = diffX;
 					this.diffY = diffY;
 				}
 			}
+			public void ResetAnchorState()
+			{
+				_state = Config.Instance.DefaultAnchorState;
+				originShiftX = ShiftStates[_state].diffX;
+				originShiftY = ShiftStates[_state].diffY; 
+			}
+
 			public void SetAnchorState(float newDiffX = -1, float newDiffY = -1, Blueprint snapshotBlueprint = null)
 			{
 				if (newDiffX != -1)
 					originShiftX = newDiffX;
 				if (newDiffY != -1)
 					originShiftY = newDiffY;
-				UpdateVisual(playerId, GetMousePos(), true, snapshotBlueprint);
+				UpdateVisual(playerId, lastBlueprintPos, true, snapshotBlueprint);
 			}
-			public void NextAnchorState(Blueprint snapshotBlueprint = null)
+			public void RefreshAnchorState(Blueprint snapshotBlueprint = null)
 			{
-				_state = (_state + 1) % ShiftStates.Count;
 				originShiftX = ShiftStates[_state].diffX;
 				originShiftY = ShiftStates[_state].diffY;
 
-				UpdateVisual(playerId, GetMousePos(), true, snapshotBlueprint);
+				UpdateVisual(playerId, lastBlueprintPos, true, snapshotBlueprint);
 			}
-			public Vector2I GetMousePos()
+
+			public void NextAnchorState(Blueprint snapshotBlueprint = null)
 			{
-				var mousePos = PlayerController.GetCursorPos(KInputManager.GetMousePos());
-
-				if (ShouldFetchPlayerCursorPos(playerId, out var otherPlayerPos))
-				{
-					mousePos = otherPlayerPos;
-				}
-
-				return new((int)mousePos.x, (int)mousePos.y);
+				int state = (int)_state;
+				state = (state + 1) % ShiftStates.Count;
+				_state = (BlueprintAnchorState)state;
+				RefreshAnchorState(snapshotBlueprint);
+				
 			}
+			//public Vector2I GetMousePos()
+			//{
+			//	var mousePos = PlayerController.GetCursorPos(KInputManager.GetMousePos());
+
+			//	if (ShouldFetchPlayerCursorPos(playerId, out var otherPlayerPos))
+			//	{
+			//		mousePos = otherPlayerPos;
+			//	}
+
+			//	return new((int)mousePos.x, (int)mousePos.y);
+			//}
 		}
 
 		internal static bool LayerOccupiedAt(IVisual checkingEntity, ObjectLayer layer, int cellParam)

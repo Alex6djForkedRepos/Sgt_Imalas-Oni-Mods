@@ -80,7 +80,7 @@ namespace BlueprintsV2
 			BlueprintInfoStateGO.AddOrGet<CurrentBlueprintStateScreen>();
 			NoteToolStateScreenGO.AddOrGet<NoteToolScreen>();
 			IconSelectorGO.AddOrGet<SpriteSelectorScreen>();
-			
+
 			var TMPConverter = new TMPConverter();
 			TMPConverter.ReplaceAllText(BlueprintSelectionScreenGO);
 			TMPConverter.ReplaceAllText(BlueprintInfoStateGO);
@@ -179,10 +179,10 @@ namespace BlueprintsV2
 		{
 			DynamicReplacementTags.Clear();
 		}
-		public static bool TryGetReplacementTag(BlueprintSelectedMaterial tag, out Tag replacement)
+		public static bool TryGetReplacementTag(BlueprintSelectedMaterial tag, out Tag replacement, ulong playerId = BlueprintState.PlayerId_DefaultTilePreviews)
 		{
 			replacement = null;
-			if ((SelectedBlueprint == null && !BlueprintSelectionScreen.HasBlueprintSelected() && !BlueprintState.IsPlacingSnapshot) || (BlueprintState.IsPlacingSnapshot && !BlueprintState.MaterialReplacementInSnapshots)) //only do replacement in regular blueprint tool, not in snapshot tool
+			if ((SelectedBlueprint == null && !BlueprintSelectionScreen.HasBlueprintSelected() && !BlueprintState.CurrentStateInfo(playerId).IsPlacingSnapshot) || (BlueprintState.CurrentStateInfo(playerId).IsPlacingSnapshot && !BlueprintState.CurrentStateInfo(playerId).MaterialReplacementInSnapshots)) //only do replacement in regular blueprint tool, not in snapshot tool
 			{
 				return false;
 			}
@@ -196,7 +196,7 @@ namespace BlueprintsV2
 		}
 		public static StringBuilder sb = new StringBuilder();
 
-		internal static bool TryImportBlueprintFromString(string bpString, out Blueprint bp)
+		internal static bool TryImportBlueprintFromString(string bpString, out Blueprint bp, bool storeToFile = true)
 		{
 			bp = null;
 			try
@@ -208,8 +208,12 @@ namespace BlueprintsV2
 				bp = new Blueprint(sb);
 				if (bp == null)
 					return false;
-				bp.SetFolder(SelectedFolder?.Name ?? string.Empty);
-				BlueprintFileHandling.HandleBlueprintLoading(bp.FilePath);
+
+				if (storeToFile)
+				{
+					bp.SetFolder(SelectedFolder?.Name ?? string.Empty);
+					BlueprintFileHandling.HandleBlueprintLoading(bp.FilePath);
+				}
 				return true;
 			}
 			catch (Exception e)
@@ -698,7 +702,7 @@ namespace BlueprintsV2
 		internal static float GetSpawnTemperature(BuildingDef def, Tag[] selectedElements)
 		{
 			float minMeltTemp = ElementLoader.GetMinMeltingPointAmongElements(selectedElements) - 10f;
-			return Mathf.Min(def.Temperature , minMeltTemp);
+			return Mathf.Min(def.Temperature, minMeltTemp);
 		}
 
 		public static class ActionKeys

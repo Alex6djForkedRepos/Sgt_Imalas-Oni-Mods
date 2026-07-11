@@ -35,7 +35,7 @@ namespace BlueprintsV2.Tools
 
 			if (BlueprintState.ExtendedCardTooltips)
 			{
-				var stateInfo = BlueprintState.GetCurrentTransformationInfo();
+				var stateInfo = BlueprintState.CurrentStateInfo();
 				drawer.DrawText(string.Format(STRINGS.UI.TOOLS.SNAPSHOT_TOOL.REUSELASTSNAPSHOT, UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsSnapshotReuseAction.GetKAction()) + "]")), Styles_Instruction.Standard);
 				drawer.NewLine();
 				if (UsingSnapshot)
@@ -65,7 +65,7 @@ namespace BlueprintsV2.Tools
 						), Styles_Instruction.Standard);
 
 					drawer.NewLine();
-					bool forceRebuild = BlueprintState.ForceBuild;
+					bool forceRebuild = BlueprintState.CurrentStateInfo().ForceBuild;
 					drawer.DrawText(string.Format(STRINGS.UI.TOOLS.USE_TOOL.FORCEREBUILD, (forceRebuild ? STRINGS.UI.TOOLS.USE_TOOL.REBUILD_ACTIVE : STRINGS.UI.TOOLS.USE_TOOL.REBUILD_INACTIVE), UI.FormatAsHotkey("[" + GameUtil.GetActionString(ModAssets.Actions.BlueprintsToggleForce.GetKAction()) + "]")), forceRebuild ? Styles_Instruction.Selected : Styles_Instruction.Standard);
 					drawer.NewLine(44);
 				}

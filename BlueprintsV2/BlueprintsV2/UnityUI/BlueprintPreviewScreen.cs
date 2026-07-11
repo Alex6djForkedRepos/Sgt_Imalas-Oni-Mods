@@ -1,6 +1,10 @@
 ﻿using BlueprintsV2.BlueprintData;
 using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
+using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration;
+using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration.EnumMirrors;
 using BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers;
+using NodeEditorFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +16,9 @@ using UtilLibs;
 using UtilLibs.UIcmp;
 using static BlueprintsV2.STRINGS.UI.BLUEPRINTSELECTOR.BLUEPRINTINFO.STATS;
 using static Database.MonumentPartResource;
+using static STRINGS.LORE.BUILDINGS;
+using static STRINGS.MISC.STATUSITEMS;
+using static STRINGS.UI.CLUSTERMAP.ASTEROIDS;
 
 namespace BlueprintsV2.BlueprintsV2.UnityUI
 {
@@ -90,6 +97,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			Vector3 centerOffset = new(xOffset * 100, yOffset * 100);
 			GeneratePreview_Buildings(blueprint, centerOffset);
 			GeneratePreview_Notes(blueprint, centerOffset);
+			GeneratePreview_Shapes(blueprint, centerOffset);
 
 		}
 		void GeneratePreview_Buildings(Blueprint blueprint, Vector3 centerOffset)
@@ -124,19 +132,14 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 				var entry = Instantiate(BuildingEntry, transform);
 				entry.transform.localPosition = GetCellCenterPos(note.Key, Grid.SceneLayer.FXFront); //new(building.Offset.X * 100f - xOffset, building.Offset.Y * 100f - yOffset);
 				entry.transform.localPosition -= centerOffset;
-
+				var preview = entry.AddOrGet<Vis_SpritePreview>().Init();
 				entry.SetActive(true);
-				var image = entry.transform.Find("TileMask/TileVis").gameObject.GetComponent<Image>();
-				image.gameObject.SetActive(true);
-				image.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 100);
-				image.rectTransform().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
 				BlueprintNoteData noteData = note.Value;
 				switch (noteData.Type)
 				{
 					case BlueprintNoteData.NoteType.Text:
-						image.color = noteData.SymbolTint;
-						image.sprite = ModAssets.Note_Placer_Sprite;
-						UIUtils.AddSimpleTooltipToObject(image.gameObject, noteData.Title + "\n" + noteData.Text);
+						preview.SetDisplayed(new(ModAssets.Note_Placer_Sprite, noteData.SymbolTint));
+						entry.AddOrGet<Vis_Tooltip>().SetText(noteData.Title, noteData.Text);
 						break;
 					case BlueprintNoteData.NoteType.Element:
 						if (ElementLoader.FindElementByHash(noteData.ElementId) == null)
@@ -146,7 +149,8 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 						}
 						else
 						{
-							SetElementInfo(image, noteData);
+							preview.SetDisplayed(GetElementInfoDisplay(noteData));
+							entry.AddOrGet<Vis_Tooltip>().SetText(ElementLoader.FindElementByHash(noteData.ElementId).name, GetElementInfoString(noteData));
 						}
 						break;
 					default:
@@ -154,6 +158,44 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 						continue;
 
 				}
+
+				BPVisualizers.Add(entry);
+			}
+		}
+
+		string GetElementInfoString(BlueprintNoteData noteData)
+		{
+			var element = ElementLoader.FindElementByHash(noteData.ElementId);
+			if ((element.state & Element.State.Solid) == Element.State.Vacuum)
+			{
+				return string.Empty;
+			}
+			else
+			{
+				string mass = GameUtil.GetFormattedMass(noteData.ElementMass);
+				string temperature = GameUtil.GetFormattedTemperature(noteData.ElementTemperature);
+				return string.Format("{0}, {1}",mass, temperature);
+			}
+		}
+
+		void GeneratePreview_Shapes(Blueprint blueprint, Vector3 centerOffset)
+		{
+			foreach (var note in blueprint.PlanningToolMod_PlanDataValues)
+			{
+				var entry = Instantiate(BuildingEntry, transform);
+				entry.transform.localPosition = GetCellCenterPos(note.Key, Grid.SceneLayer.FXFront); //new(building.Offset.X * 100f - xOffset, building.Offset.Y * 100f - yOffset);
+				entry.transform.localPosition -= centerOffset;
+				var preview = entry.AddOrGet<Vis_SpritePreview>().Init();
+				entry.SetActive(true);
+				var noteData = note.Value;
+
+				Sprite sprite = noteData.first switch
+				{
+					PlanShape.Circle => ModAssets.PlanningToolPreview_Circle,
+					PlanShape.Diamond => ModAssets.PlanningToolPreview_Diamond,
+					_ => ModAssets.PlanningToolPreview_Square,
+				};
+				preview.SetDisplayed(new(sprite, PlanningTool_EnumMapping.AsColor(noteData.second)));
 
 				BPVisualizers.Add(entry);
 			}
@@ -191,35 +233,33 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			else
 				GeneratePreview(blueprint);
 		}
-		void SetElementInfo(Image image, BlueprintNoteData noteData)
+		Tuple<Sprite,Color> GetElementInfoDisplay(BlueprintNoteData noteData)
 		{
 			var element = ElementLoader.FindElementByHash(noteData.ElementId);
-
+			var color = Color.white;
+			Sprite sprite;
 			bool vaccuum = false;
 			switch (element.state & Element.State.Solid)
 			{
 				case Element.State.Gas:
-					image.sprite = ModAssets.Gas_Placer_Sprite;
+					sprite = ModAssets.Gas_Placer_Sprite;
 					break;
 				case Element.State.Liquid:
-					image.sprite = ModAssets.Liquid_Placer_Sprite;
+					sprite = ModAssets.Liquid_Placer_Sprite;
 					break;
 				case Element.State.Solid:
-					image.sprite = ModAssets.Solid_Placer_Sprite;
+					sprite = ModAssets.Solid_Placer_Sprite;
 					break;
 				default:
 				case Element.State.Vacuum:
 					vaccuum = true;
-					image.sprite = ModAssets.Special_Placer_Sprite;
+					sprite = ModAssets.Special_Placer_Sprite;
 					break;
 			}
 			if (!vaccuum)
-				image.color = element.substance.colour;
-			string mass = GameUtil.GetFormattedMass(noteData.ElementMass);
-			if (vaccuum)
-				UIUtils.AddSimpleTooltipToObject(image.gameObject, element.name);
-			else
-				UIUtils.AddSimpleTooltipToObject(image.gameObject, element.name + ": " + mass);
+				color = element.substance.colour;
+
+			return new Tuple<Sprite,Color>(sprite, color);
 		}
 
 		Vector3 GetCellCenterPos(Vector2 offset, Grid.SceneLayer layer)

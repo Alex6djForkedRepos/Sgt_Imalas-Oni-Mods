@@ -1,5 +1,7 @@
-﻿using PeterHan.PLib.Options;
+﻿using BlueprintsV2.BlueprintsV2.BlueprintData;
+using PeterHan.PLib.Options;
 using System;
+using static BlueprintsV2.STRINGS.BLUEPRINTS_CONFIG;
 
 namespace BlueprintsV2
 {
@@ -41,5 +43,7 @@ namespace BlueprintsV2
 
 		[Option("STRINGS.BLUEPRINTS_CONFIG.AUTOPREVIEWCUTTOFF.TITLE", "STRINGS.BLUEPRINTS_CONFIG.AUTOPREVIEWCUTTOFF.TOOLTIP")]
 		public int AutoPreviewCuttoff { get; set; } = 2000;
+		[Option("STRINGS.BLUEPRINTS_CONFIG.DEFAULT_ANCHOR.TITLE", "STRINGS.BLUEPRINTS_CONFIG.DEFAULT_ANCHOR.TOOLTIP")]
+		public BlueprintAnchorState DefaultAnchorState { get; set; } = BlueprintAnchorState.BottomCenter;
 	}
 }

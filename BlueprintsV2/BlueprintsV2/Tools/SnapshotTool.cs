@@ -33,7 +33,7 @@ namespace BlueprintsV2.Tools
 		public SnapshotTool()
 		{
 			Instance = this;
-			BlueprintState.ForceBuild = false;
+			BlueprintState.CurrentStateInfo().ForceBuild = false;
 		}
 
 		public static void DestroyInstance()
@@ -128,7 +128,7 @@ namespace BlueprintsV2.Tools
 		public override void OnActivateTool()
 		{
 			base.OnActivateTool();
-			BlueprintState.IsPlacingSnapshot = true;
+			BlueprintState.CurrentStateInfo().IsPlacingSnapshot = true;
 			UsedSnapshotIndex = 0;
 			if (visualizer == null)
 			{
@@ -141,8 +141,8 @@ namespace BlueprintsV2.Tools
 		{
 			DeleteBlueprint();
 			base.OnDeactivateTool(newTool);
-			BlueprintState.ForceBuild = false;
-			BlueprintState.IsPlacingSnapshot = false;
+			BlueprintState.CurrentStateInfo().ForceBuild = false;
+			BlueprintState.CurrentStateInfo().IsPlacingSnapshot = false;
 			BlueprintState.ClearVisuals();
 			snapshotBlueprint = null;
 
@@ -241,8 +241,10 @@ namespace BlueprintsV2.Tools
 			}
 			else
 			{
-				BlueprintState.VisualizeBlueprint(Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos())), blueprintToVisualize);
-				BlueprintState.GetCurrentTransformationInfo().SetAnchorState(shiftX, shiftY, blueprintToVisualize);
+				var mousePos = Grid.PosToXY(PlayerController.GetCursorPos(KInputManager.GetMousePos()));
+				BlueprintState.VisualizeBlueprint(mousePos, blueprintToVisualize);
+				BlueprintState.CurrentStateInfo().SetAnchorState(shiftX, shiftY, blueprintToVisualize);
+				BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews, blueprintToVisualize);
 
 				MultiToolParameterMenu.Instance.HideMenu();
 				ToolMenu.Instance.PriorityScreen.Show();
@@ -297,7 +299,7 @@ namespace BlueprintsV2.Tools
 
 		void SetForceMaterialChange(bool enabled)
 		{
-			BlueprintState.ForceBuild = enabled;
+			BlueprintState.CurrentStateInfo().ForceBuild = enabled;
 			BlueprintState.RefreshBlueprintVisualizers(BlueprintState.PlayerId_DefaultTilePreviews,snapshotBlueprint);
 			CurrentBlueprintStateScreen.Instance.SetForceMaterialChange(enabled);
 		}
@@ -305,7 +307,7 @@ namespace BlueprintsV2.Tools
 		{
 			if ((DetailsScreen.Instance?.isEditing ?? false) || (DetailsScreen.Instance?.HasFocus ?? false))
 				return;
-			var stateInfo = BlueprintState.GetCurrentTransformationInfo();
+			var stateInfo = BlueprintState.CurrentStateInfo();
 
 			if (buttonEvent.TryConsume(ModAssets.Actions.BlueprintsToggleHotkeyToolTips.GetKAction()))
 			{
@@ -375,6 +377,7 @@ namespace BlueprintsV2.Tools
 			buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipHorizontal.GetKAction());
 			buttonEvent.TryConsume(ModAssets.Actions.BlueprintsFlipVertical.GetKAction());
 			buttonEvent.TryConsume(ModAssets.Actions.BlueprintsRotate.GetKAction());
+			BlueprintState.OnStateChanged();
 		}
 
 		public override void OnSyncChanged(bool synced)
