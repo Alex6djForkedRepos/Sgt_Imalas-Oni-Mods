@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UtilLibs;
 using static BlueprintsV2.STRINGS.UI.BLUEPRINTSELECTOR.BLUEPRINTINFO.STATS;
 using static Grid.Restriction;
 
@@ -28,10 +29,8 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 			kbac.AnimFiles = building.BuildingDef.AnimFiles;
 			kbac.isMovable = true;
 
-			string defaultAnimState = building.BuildingDef.DefaultAnimState;
-			if (!kbac.HasAnimation(defaultAnimState))
-				defaultAnimState = kbac.AnimFiles.First()?.GetData()?.GetAnim(0)?.name ?? "off";
-			kbac.defaultAnim = defaultAnim = defaultAnimState.ToString();
+			kbac.defaultAnim = defaultAnim = building.BuildingDef.DefaultAnimState;
+			//SgtLogger.l("StartAnim " + def.name + ": " + defaultAnim);
 			UpdatePosition(building);
 		}
 		//void Update()
@@ -103,9 +102,20 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI.Components.PreviewVisualizers
 			}
 		}
 
+		void CorrectDefaultAnim()
+		{
+			///Relevant for some logic buildings that usually have their anim set by the logic component
+			if (!kbac.HasAnimation(defaultAnim))
+			{
+				//SgtLogger.l(defaultAnim + " anim not found");
+				defaultAnim = kbac.AnimFiles.First()?.GetData()?.GetAnim(0)?.name ?? "off";
+			}
+		}
+
 		public override void OnSpawn()
 		{
 			base.OnSpawn();
+			CorrectDefaultAnim();
 			kbac.Play(defaultAnim);
 
 			kbac.SetSymbolVisiblity("booster", false);
