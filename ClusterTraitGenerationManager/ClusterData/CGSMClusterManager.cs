@@ -1260,11 +1260,11 @@ namespace ClusterTraitGenerationManager.ClusterData
 			{
 				DisableModdedGeopumpStoryTrait();
 			}
-			if (CGMWorldGenUtils.HasImpactorShower(adding.world)) //impactor shower from potential mod in the future
+			if (CGMWorldGenUtils.HasImpactorShower(adding.world)) //impactor shower from impactor story trait
 			{
 				DisableModdedImpactorShowerStoryTrait();
 			}
-			if (CGMWorldGenUtils.HasMinnowOnWorld(adding.world)) //impactor shower from potential mod in the future
+			if (CGMWorldGenUtils.HasMinnowOnWorld(adding.world)) //minnow from minnow story trait
 			{
 				DisableModdedMinnowStoryTrait();
 			}
