@@ -681,19 +681,22 @@ namespace BlueprintsV2.UnityUI
 				uiEntry.gameObject.SetActive(true);
 				uiEntry.SetSelected(bp == TargetBlueprint);
 			}
+			//StartCoroutine(ToggleCamLock(true));
 		}
 
-		public void LockCam()
-		{
-			Task.Run(() =>
-			{
-				Task.Delay(25);
-				if (this.isActive)
-				{
-					CameraController.Instance.DisableUserCameraControl = true;
-				}
-			});
-		}
+		//IEnumerator ToggleCamLock(bool lockCam)
+		//{
+		//	yield return null;
+		//	CameraController.Instance.DisableUserCameraControl = lockCam;
+		//}
+		//public void UnlockCam()
+		//{
+		//	Task.Run(() =>
+		//	{
+		//		Task.Delay(30);
+		//		CameraController.Instance.DisableUserCameraControl = false;
+		//	});
+		//}
 
 		private void OnAdvancedReplacementToggleChanged(bool enabled)
 		{
@@ -1039,6 +1042,8 @@ namespace BlueprintsV2.UnityUI
 				Init();
 			}
 			CurrentlyActive = show;
+
+			CameraController.Instance.DisableUserCameraControl = show;
 			Instance.ConsumeMouseScroll = show;
 		}
 
