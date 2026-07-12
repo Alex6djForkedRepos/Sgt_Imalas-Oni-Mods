@@ -27,7 +27,7 @@ namespace BlueprintsV2.UnityUI
 	{
 #pragma warning disable IDE0051 // Remove unused private members
 #pragma warning disable CS0414 // Remove unused private members
-		new bool ConsumeMouseScroll = true; // do not remove!!!!
+		//new bool ConsumeMouseScroll = true; // do not remove!!!!
 #pragma warning restore CS0414 // Remove unused private members
 #pragma warning restore IDE0051 // Remove unused private members
 		public static BlueprintSelectionScreen Instance = null;
@@ -422,7 +422,6 @@ namespace BlueprintsV2.UnityUI
 			Instance.TargetBlueprint = targetBlueprint;
 			Instance.onCloseAction = OnClose;
 			Instance.Show(true);
-			Instance.ConsumeMouseScroll = true;
 			Instance.transform.SetAsLastSibling();
 			Instance.ClearUIState();
 			Instance.OpenedFromSnapshot = !showBlueprintList;
@@ -682,8 +681,6 @@ namespace BlueprintsV2.UnityUI
 				uiEntry.gameObject.SetActive(true);
 				uiEntry.SetSelected(bp == TargetBlueprint);
 			}
-			this.ConsumeMouseScroll = true;
-			StartCoroutine(ToggleCamLock(true));
 		}
 
 		public void LockCam()
@@ -695,19 +692,6 @@ namespace BlueprintsV2.UnityUI
 				{
 					CameraController.Instance.DisableUserCameraControl = true;
 				}
-			});
-		}
-		IEnumerator ToggleCamLock(bool lockCam)
-		{
-			yield return null;
-			CameraController.Instance.DisableUserCameraControl = lockCam;
-		}
-		public void UnlockCam()
-		{
-			Task.Run(() =>
-			{
-				Task.Delay(30);
-				CameraController.Instance.DisableUserCameraControl = false;
 			});
 		}
 
@@ -1055,10 +1039,7 @@ namespace BlueprintsV2.UnityUI
 				Init();
 			}
 			CurrentlyActive = show;
-			if (!show)
-			{
-				UnlockCam();
-			}
+			Instance.ConsumeMouseScroll = show;
 		}
 
 		internal static void RefreshOnBpChanges()

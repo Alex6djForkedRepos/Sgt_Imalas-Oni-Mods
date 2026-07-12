@@ -39,6 +39,13 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		LocText WarningText;
 		Blueprint ScheduledToShow = null;
 
+		//take prioirity consuming the scroll
+		public override float GetSortKey()
+		{
+			return base.GetSortKey() + 10;
+		}
+
+
 		void Init()
 		{
 			if (_init)
