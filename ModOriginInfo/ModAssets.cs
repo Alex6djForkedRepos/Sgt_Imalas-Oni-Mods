@@ -59,6 +59,18 @@ namespace ModOriginInfo
 				ModdedContentPrefabIdToModId[elementTag] = modID;
 			}
 		}
+		internal static void RegisterSpice(Assembly assembly, Database.Spice spice)
+		{
+			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))
+			{
+				string spiceId = spice.Id;
+				if (ModdedContentPrefabIdToModId.ContainsKey(spiceId))
+					return;
+				SgtLogger.l("Modded Spice: " + spiceId + " from " + modID);
+
+				ModdedContentPrefabIdToModId[spiceId] = modID;
+			}
+		}
 		internal static void RegisterGeyser(Assembly assembly, GeyserType geyser)
 		{
 			if (AssemblyToModIdMap.TryGetValue(assembly, out string modID))

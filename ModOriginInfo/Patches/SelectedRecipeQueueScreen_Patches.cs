@@ -15,7 +15,7 @@ namespace ModOriginInfo.Patches
 			public static void Postfix(SelectedRecipeQueueScreen __instance, string recipeCategoryID)
 			{
 				if (ModAssets.IsModded(recipeCategoryID, out _)) {
-					SgtLogger.l(recipeCategoryID);
+					//SgtLogger.l(recipeCategoryID);
 					__instance.recipeMainDescription.text += ModAssets.GetModNameIfValid(recipeCategoryID, 2);
 				}
 			}
