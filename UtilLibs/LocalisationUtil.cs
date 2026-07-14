@@ -59,7 +59,7 @@ namespace UtilLibs
 
 			if (code.IsNullOrWhiteSpace()) return;
 
-			string path = Path.Combine(UtilMethods.ModPath, "translations", Localization.GetLocale().Code + ".po");
+			string path = Path.Combine(IO_Utils.ModPath, "translations", Localization.GetLocale().Code + ".po");
 
 			if (File.Exists(path))
 			{
