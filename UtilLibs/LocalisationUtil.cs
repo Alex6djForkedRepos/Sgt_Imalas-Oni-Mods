@@ -15,9 +15,61 @@ namespace UtilLibs
 {
 	public static class LocalisationUtil
 	{
-		static Type stringType;
+		static Type _stringsRootType;
+		static bool _registerTemplate;
+
+		public static void RegisterForLocalization(this Harmony harmony, Type root, bool generateTemplate = false)
+		{
+			_stringsRootType = root;
+			_registerTemplate = generateTemplate;
+			var m_TargetMethod =  AccessTools.Method(typeof(Localization),nameof(Localization.Initialize));
+			//var m_Transpiler = AccessTools.Method(typeof(CharacterSelectionController_Patch), "Transpiler");		
+			var m_Postfix = AccessTools.Method(typeof(LocalisationUtil), nameof(Mod_Localization_Register));
+			harmony.Patch(m_TargetMethod, postfix: new HarmonyMethod(m_Postfix));
+		}
+		public static void Mod_Localization_Register()
+		{
+			if (_stringsRootType != null)
+				LocalisationUtil.Translate(_stringsRootType, true);
+		}
+
+		public static void Translate(Type root, bool generateTemplate = false)
+		{
+			Localization.RegisterForTranslation(root);
+			if (generateTemplate)
+				GenerateStringTemplates(root);
+			OverLoadStrings();
+			LocString.CreateLocStringKeys(root, null);
+		}
+		public static void GenerateStringTemplates(Type root)
+		{
+			var translationFolder = Path.Combine(IO_Utils.ModPath, "translations");
+			System.IO.Directory.CreateDirectory(translationFolder);
+
+			Localization.GenerateStringsTemplate(root, Path.Combine(Manager.GetDirectory(), "strings_templates"));
+			Localization.GenerateStringsTemplate(root.Namespace, Assembly.GetExecutingAssembly(), Path.Combine(IO_Utils.ModPath, "translation_template.pot"), null);
+			Localization.GenerateStringsTemplate(root.Namespace, Assembly.GetExecutingAssembly(), Path.Combine(translationFolder, "translation_template.pot"), null);
+
+		}
+
+		// Loads user created translations
+		private static void OverLoadStrings()
+		{
+			string code = Localization.GetLocale()?.Code;
+
+			if (code.IsNullOrWhiteSpace()) return;
+
+			string path = Path.Combine(UtilMethods.ModPath, "translations", Localization.GetLocale().Code + ".po");
+
+			if (File.Exists(path))
+			{
+				Localization.OverloadStrings(Localization.LoadStringsFile(path, false));
+				Debug.Log($"Found translation file for {code}.");
+			}
+		}
 
 
+		
 		static Dictionary<string, Dictionary<string, string>> LocalizedStrings = null;
 		static Dictionary<string, string> CachedTranslationMods = new()
 		{
@@ -158,56 +210,6 @@ namespace UtilLibs
 				return false;
 			}
 			return translatedStrings.TryGetValue(key, out translatedString);
-		}
-
-		public static void ManualTranslationPatch(Harmony harmony, Type type)
-		{
-			stringType = type;
-			var m_TargetMethod = AccessTools.Method("Localization, Assembly-CSharp:Initialize");
-			//var m_Transpiler = AccessTools.Method(typeof(CharacterSelectionController_Patch), "Transpiler");
-			var m_Postfix = AccessTools.Method(typeof(LocalisationUtil), "Postfix");
-
-			harmony.Patch(m_TargetMethod, postfix: new HarmonyMethod(m_Postfix));
-		}
-		public static void Postfix()
-		{
-			if (stringType != null)
-				LocalisationUtil.Translate(stringType, true);
-		}
-
-		public static void Translate(Type root, bool generateTemplate = false)
-		{
-			Localization.RegisterForTranslation(root);
-			if (generateTemplate)
-				GenerateStringTemplates(root);
-			OverLoadStrings();
-			LocString.CreateLocStringKeys(root, null);
-		}
-		public static void GenerateStringTemplates(Type root)
-		{
-			var translationFolder = Path.Combine(IO_Utils.ModPath, "translations");
-			System.IO.Directory.CreateDirectory(translationFolder);
-
-			Localization.GenerateStringsTemplate(root, Path.Combine(Manager.GetDirectory(), "strings_templates"));
-			Localization.GenerateStringsTemplate(root.Namespace, Assembly.GetExecutingAssembly(), Path.Combine(IO_Utils.ModPath, "translation_template.pot"), null);
-			Localization.GenerateStringsTemplate(root.Namespace, Assembly.GetExecutingAssembly(), Path.Combine(translationFolder, "translation_template.pot"), null);
-
-		}
-
-		// Loads user created translations
-		private static void OverLoadStrings()
-		{
-			string code = Localization.GetLocale()?.Code;
-
-			if (code.IsNullOrWhiteSpace()) return;
-
-			string path = Path.Combine(UtilMethods.ModPath, "translations", Localization.GetLocale().Code + ".po");
-
-			if (File.Exists(path))
-			{
-				Localization.OverloadStrings(Localization.LoadStringsFile(path, false));
-				Debug.Log($"Found translation file for {code}.");
-			}
 		}
 	}
 }
