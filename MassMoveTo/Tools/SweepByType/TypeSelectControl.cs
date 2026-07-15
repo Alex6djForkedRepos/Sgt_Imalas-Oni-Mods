@@ -400,7 +400,7 @@ namespace MassMoveTo.Tools.SweepByType
 			foreach (var item in children)
 				if (item.Value.children.TryGetValue(elementTag.Value, out var selectElement))
 				{
-					selectElement.SetSelected(selected, false	);
+					selectElement.SetSelected(selected, false);
 				}
 		}
 
@@ -408,20 +408,23 @@ namespace MassMoveTo.Tools.SweepByType
 		{
 			bool hasFilter = !FilterText.IsNullOrWhiteSpace() && FilterText.Length > 0;
 			var filterUpper = FilterText.ToUpperInvariant();
-			foreach (var item in children)
+			foreach (var category in children)
 			{
-				bool shouldBeVisible = false;
+				bool categoryInFilters = category.Key.ProperName().ToUpperInvariant().Contains(filterUpper);
+				bool childInFilters = false;
 
-				foreach (var entry in item.Value.children)
+				foreach (var entry in category.Value.children)
 				{
-					bool filterFulfilled = !hasFilter || entry.Key.ProperName().ToUpperInvariant().Contains(filterUpper);
+					bool filterFulfilled = !hasFilter || categoryInFilters || entry.Key.ProperName().ToUpperInvariant().Contains(filterUpper);
 					entry.Value.CheckBox.SetActive(filterFulfilled);
 					if (filterFulfilled)
-						shouldBeVisible = true;
+						childInFilters = true;
 				}
-				item.Value.Header.SetActive(shouldBeVisible);
-				if (shouldBeVisible)
-					item.Value.SetToggleState(shouldBeVisible && hasFilter);
+				bool categoryActive = childInFilters || categoryInFilters;
+
+				category.Value.Header.SetActive(categoryActive);
+				if (categoryActive)
+					category.Value.SetToggleState(categoryActive && hasFilter);
 
 			}
 		}
@@ -666,7 +669,7 @@ namespace MassMoveTo.Tools.SweepByType
 				else
 					// Clicked when checked, clear and possibly uncheck
 					PCheckBox.SetCheckState(CheckBox, PCheckBox.STATE_UNCHECKED);
-				if(updateParent)
+				if (updateParent)
 					parent.UpdateFromChildren(ElementTag, selected);
 			}
 
