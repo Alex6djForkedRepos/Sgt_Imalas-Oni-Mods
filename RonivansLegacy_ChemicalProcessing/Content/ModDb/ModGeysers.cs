@@ -77,7 +77,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 				135000,
 				0.4f,
 				0.8f,
-				272.15f).Log().SetTuningCategory(Category.WATER_CATEGORY),
+				268.15f).Log().SetTuningCategory(Category.WATER_CATEGORY),
 				generic));
 
 			//===[ CHEMICAL: HOT MERCURY GAS VENT ]=====================================================================
