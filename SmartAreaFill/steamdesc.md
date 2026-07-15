@@ -4,27 +4,34 @@ Adds hold-to-use flood fill to most vanilla tools for smarter mass selection of 
 
 [img]https://raw.githubusercontent.com/Sgt-Imalas/Sgt_Imalas-Oni-Mods/refs/heads/master/Compat_All.png[/img]
 
-[h1]Current latest Version: 1.0.1[/h1]
+[h1]Current latest Version: 1.3[/h1]
 
 [hr][/hr]
 
 [h1]Features[/h1]
 Most vanilla tools now have a flood fill while holding leftclick.
+It starts after holding down the mouse for 0.5 seconds (value configurable in the config)
 Moving the mouse outside the original tile cancels the flood fill and reverts the tool back to its vanilla selection rectangle behavior.
 The following tools have flood fill:
 [list][*] Build Tool* (only active for 1x1 drywall like buildings)
-[*] Dig Tool (fills adjacent tiles of the same element)
+[*] Dig Tool (fills adjacent tiles of the same element, also checks diagonally)
 [*] Attack Tool (fills adjacent non-solid tiles)
 [*] Wrangle Tool (fills adjacent non-solid tiles)
 [*] Harvest Tool (fills adjacent non-solid tiles)
 [*] Disinfect Tool (fills adjacent non-solid tiles)
 [*] Sweep Tool (fills adjacent non-solid tiles)
-[*] Mop Tool (fills adjacent liquid tiles)
+[*] Mop Tool (fills adjacent liquid tiles, also checks diagonally)
 [*] Prioritize Tool (fills adjacent tiles of the same state as the start tile, either solid or non-solid)
 [*] Deconstruct Tool (follows the tool filter, checks for all valid categories in start tile and fills into adjacent tiles that fulfill those categories)
 [*] Cancel Tool Tool (follows the tool filter, checks for all valid categories in start tile and fills into adjacent tiles that fulfill those categories)
 [*] Empty Pipe Tool (follows the tool filter, checks for all valid categories in start tile and fills into adjacent tiles that fulfill those categories)
 [*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3301490799] Mass Move Tool[/url] (fills adjacent non-solid tiles)
+[/list]
+
+Config Options:[list]
+[*]Doors block non solid expansion (on/off)
+[*]Diagonal expansion in some tools (on/off)
+[*]Time delay after holding down left mouse to start flood filling (time in s)
 [/list]
 
 

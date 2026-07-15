@@ -19,5 +19,8 @@ namespace SmartAreaFill
 		[Option("STRINGS.FLOODFILLTOOLS_OPTIONS.HOLD_DELAY.NAME", "STRINGS.FLOODFILLTOOLS_OPTIONS.HOLD_DELAY.TOOLTIP", Format ="0.0 s")]
 		[JsonProperty]
 		public float ActivationDelay { get; set; } = 0.5f;
+
+		[Option("STRINGS.FLOODFILLTOOLS_OPTIONS.DIAGONAL_PROPAGATION.NAME", "STRINGS.FLOODFILLTOOLS_OPTIONS.DIAGONAL_PROPAGATION.TOOLTIP")]
+		public bool DiagonalPropagation { get; set; } = true;
 	}
 }

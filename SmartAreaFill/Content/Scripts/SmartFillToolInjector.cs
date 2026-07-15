@@ -47,6 +47,8 @@ namespace SmartAreaFill.Content.Scripts
 		ExpansionRules Rule = ExpansionRules.None;
 		ExpansionElementTypeRequirement ElementRequirement = ExpansionElementTypeRequirement.None;
 
+		bool allowDiagonalPropagation = false;
+
 		bool mouseHeldDown = false;
 		float timeSinceMouseDown = 0f;
 		int startCell = Grid.InvalidCell;
@@ -184,6 +186,11 @@ namespace SmartAreaFill.Content.Scripts
 
 		IEnumerator FloodFillCoroutine()
 		{
+			if(Rule == ExpansionRules.None)
+			{
+				yield break;
+			}
+
 			if (PlayerController.Instance.activeTool != dragTool || !mouseHeldDown)
 			{
 				SgtLogger.l("Canceling coroutine: tool not active");
@@ -243,6 +250,7 @@ namespace SmartAreaFill.Content.Scripts
 				case nameof(DigTool):
 					Rule = ExpansionRules.SameElement;
 					ElementRequirement = ExpansionElementTypeRequirement.NaturalSolidOrBackwall;
+					allowDiagonalPropagation = Config.Instance.DiagonalPropagation;
 					break;
 				case nameof(AttackTool):
 				case nameof(CaptureTool):
@@ -258,6 +266,7 @@ namespace SmartAreaFill.Content.Scripts
 				case nameof(MopTool):
 					Rule = ExpansionRules.NonSolidTile;
 					ElementRequirement = ExpansionElementTypeRequirement.Liquid;
+					allowDiagonalPropagation = Config.Instance.DiagonalPropagation;
 					break;
 				case nameof(PrioritizeTool):
 				//	Rule = ExpansionRules.FollowSourceTileState;
@@ -268,46 +277,54 @@ namespace SmartAreaFill.Content.Scripts
 					Rule = ExpansionRules.FilterTool;
 					break;
 			}
+
+			if(Rule == ExpansionRules.None)
+			{
+				SgtLogger.l("This tool does not have an expansion rule set, no flood fill will be applied.\nIf you are a mod creator with a tool that should get flood fill, please contact me.");
+			}
 		}
 
-		void PreCacheAllCells()
-		{
-			CachedUnclaimedCells.Clear();
-			var visited = new HashSet<int>();
-			var world = Grid.WorldIdx[startCell];
-			if (filteredDragTool != null)
-			{
-				CacheFilterableLayers();
-			}
-			else if (buildTool != null)
-			{
-				SgtLogger.l("BuildTool caching, current build tool def: " + buildTool.def.name);
-				if (buildTool.def.WidthInCells == 1 && buildTool.def.HeightInCells == 1 && buildTool.def.ObjectLayer == ObjectLayer.Backwall)
-				{
-					cachedDef = buildTool.def;
-				}
-				else
-					cachedDef = null;
+		//void PreCacheAllCells()
+		//{
+		//	CachedUnclaimedCells.Clear();
+		//	var visited = new HashSet<int>();
+		//	var world = Grid.WorldIdx[startCell];
+		//	if (filteredDragTool != null)
+		//	{
+		//		CacheFilterableLayers();
+		//	}
+		//	else if (buildTool != null)
+		//	{
+		//		SgtLogger.l("BuildTool caching, current build tool def: " + buildTool.def.name);
+		//		if (buildTool.def.WidthInCells == 1 && buildTool.def.HeightInCells == 1 && buildTool.def.ObjectLayer == ObjectLayer.Backwall)
+		//		{
+		//			cachedDef = buildTool.def;
+		//		}
+		//		else
+		//			cachedDef = null;
 
-				SgtLogger.l(cachedDef == null ? "invalid def for spread" : "valid def for spread");
-			}
-			bool followSource = (Rule == ExpansionRules.FollowSourceTileState);
-			if (followSource)
-				Rule = Grid.IsSolidCell(startCell) ? ExpansionRules.SolidTile : ExpansionRules.NonSolidTile;
+		//		SgtLogger.l(cachedDef == null ? "invalid def for spread" : "valid def for spread");
+		//	}
+		//	bool followSource = (Rule == ExpansionRules.FollowSourceTileState);
+		//	if (followSource)
+		//		Rule = Grid.IsSolidCell(startCell) ? ExpansionRules.SolidTile : ExpansionRules.NonSolidTile;
 
-			Queue<int> toVisit = [];
-			toVisit.Enqueue(startCell);
-			if (IsValidCell(startCell))
-			{
-				CacheCells(toVisit, ref world, ref visited);
-				//CachedUnclaimedCells.Sort(CellSort);
-			}
+		//	Queue<int> toVisit = [];
+		//	toVisit.Enqueue(startCell);
+		//	if (IsValidCell(startCell))
+		//	{
+		//		CacheCells(toVisit, ref world, ref visited);
+		//		//CachedUnclaimedCells.Sort(CellSort);
+		//	}
 
-			if (followSource)
-				Rule = ExpansionRules.FollowSourceTileState;
-		}
+		//	if (followSource)
+		//		Rule = ExpansionRules.FollowSourceTileState;
+		//}
 		bool PreCacheWalk()
 		{
+			if (Rule == ExpansionRules.None)
+				return false;
+
 			WalkableCells.Clear();
 			VisitedCells.Clear();
 			StartCellWorldIdx = Grid.WorldIdx[startCell];
@@ -466,6 +483,24 @@ namespace SmartAreaFill.Content.Scripts
 			if (Grid.IsValidCellInWorld(right, StartCellWorldIdx))
 				WalkableCells.Enqueue(right);
 
+			if (allowDiagonalPropagation)
+			{
+				int upLeft = Grid.CellUpLeft(toCheck);
+				int upRight = Grid.CellUpRight(toCheck);
+				int downLeft = Grid.CellDownLeft(toCheck);
+				int downRight = Grid.CellDownRight(toCheck);
+
+				if (Grid.IsValidCellInWorld(upLeft, StartCellWorldIdx))
+					WalkableCells.Enqueue(upLeft);
+				if (Grid.IsValidCellInWorld(upRight, StartCellWorldIdx))
+					WalkableCells.Enqueue(upRight);
+				if (Grid.IsValidCellInWorld(downLeft, StartCellWorldIdx))
+					WalkableCells.Enqueue(downLeft);
+				if (Grid.IsValidCellInWorld(downRight, StartCellWorldIdx))
+					WalkableCells.Enqueue(downRight);
+			}
+
+
 			if (followSource)
 				Rule = ExpansionRules.FollowSourceTileState;
 		}
@@ -492,8 +527,9 @@ namespace SmartAreaFill.Content.Scripts
 			return valid;
 		}
 
+		public string[] GetRequiredDlcIds() => TUNING.FOOD.FOOD_TYPES.MAKI.GetRequiredDlcIds();
 		bool IsValidCell(int targetCell)
-		{
+		{		
 			if (startCell == targetCell)
 				return true;
 
