@@ -28,7 +28,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 			var sb = new StringBuilder();
 			StringWriter sw = new StringWriter(sb);
 			blueprint.WriteJsonString(sw);
-			return StringCompression.CompressString(sb.ToString());
+			return (sb.ToString().CompressString());
 		}
 
 		public void Deserialize(BinaryReader reader)
@@ -36,7 +36,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 			SenderId = reader.ReadUInt64();
 			x = reader.ReadInt32();
 			y = reader.ReadInt32();
-			string uncompressedBp = StringCompression.DecompressString(reader.ReadString());
+			string uncompressedBp = reader.ReadString().DecompressString();
 			if (!ModAssets.TryImportBlueprintFromString(uncompressedBp, out blueprint, false))
 			{
 				SgtLogger.warning("[MP] could not visualize blueprint received from other player");

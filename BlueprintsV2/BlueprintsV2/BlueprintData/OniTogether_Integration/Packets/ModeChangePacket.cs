@@ -62,6 +62,8 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 		}
 		public void OnDispatched()
 		{
+			if (SenderId == SessionInfoAPI.LocalUserID)
+				return;
 			BlueprintState.UpdateRemoteState(SenderId, this);
 		}
 	}

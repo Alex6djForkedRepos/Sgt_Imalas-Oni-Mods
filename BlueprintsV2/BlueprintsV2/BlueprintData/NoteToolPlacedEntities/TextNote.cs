@@ -1,4 +1,6 @@
-﻿using KSerialization;
+﻿using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
+using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
+using KSerialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,12 +38,12 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 
 		public override void SetDescription()
 		{
-			base.SetDescription();
 			var name = Title;
 			selectable?.SetName(name);
 			this.gameObject.name = name;
 			description?.description = Text;
 			renderer?.material?.color = SymbolTint;
+			base.SetDescription();
 		}
 
 		internal void SetInfo(string title, string text, Color tint, bool shouldSeat = false)
@@ -58,6 +60,21 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			if(text != null) Text = text;
 			if (tint != null && tint.HasValue) SymbolTint = tint.Value;
 			SetDescription();
+		}
+
+		public static BlueprintNote Create(int cell, string title, string text, Color color, bool seat = false)
+		{
+			var infoIndicator = Util.KInstantiate(Assets.GetPrefab(TextNoteConfig.ID));
+			Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = infoIndicator;
+			Vector3 posCbc = Grid.CellToPosCBC(cell, MopTool.Instance.visualizerLayer);
+			posCbc.z -= 0.15f;
+			infoIndicator.transform.SetPosition(posCbc);
+			if (infoIndicator.TryGetComponent<TextNote>(out var info))
+			{
+				info.SetInfo(title, text, color, seat);
+			}
+			infoIndicator.SetActive(true);
+			return info;
 		}
 	}
 }

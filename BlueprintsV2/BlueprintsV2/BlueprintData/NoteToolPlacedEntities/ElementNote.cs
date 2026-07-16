@@ -1,5 +1,6 @@
 ﻿using BlueprintsV2.BlueprintData;
 using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlanningToolMod_Integration.EnumMirrors;
 using Klei.AI;
 using KSerialization;
@@ -109,6 +110,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements
 			selectable?.SetName(name);
 			this.gameObject.name = name;
 			description?.description = desc;
+			base.SetDescription();
 		}
 		void OnFilterChanged(Tag elementTag)
 		{
@@ -134,6 +136,8 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements
 		{
 			SetElementTint();
 			SetDescription();
+
+			MP_Helpers.HandleNoteUpdate(this);
 		}
 		public void SetElementTint()
 		{
@@ -179,6 +183,21 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements
 				ElementTemperature = this.ElementTemperature,
 				Location = newPosition ?? default
 			};
+		}
+
+		public static BlueprintNote Create(int cell, SimHashes elementId, float amount, float temperature = -1, bool seat = false)
+		{
+			var infoIndicator = Util.KInstantiate(Assets.GetPrefab(ElementNoteConfig.ID));
+			Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = infoIndicator;
+			Vector3 posCbc = Grid.CellToPosCBC(cell, MopTool.Instance.visualizerLayer);
+			posCbc.z -= 0.15f;
+			infoIndicator.transform.SetPosition(posCbc);
+			if (infoIndicator.TryGetComponent<ElementNote>(out var info))
+			{
+				info.SetInfo(elementId, amount, temperature, seat);
+			}
+			infoIndicator.SetActive(true);
+			return info;
 		}
 	}
 }

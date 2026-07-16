@@ -123,11 +123,11 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			ClearText.SetInteractable(TextInput.Text.Any());
 		}
 
-		internal void ApplyTextNoteInfo(TextNote info)
+		internal void GetTextNoteInfo(out string title, out string text, out Color color)
 		{
-			string title = TitleInput.Text.Any() ? TitleInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TITLE;
-			string text = TextInput.Text.Any() ? TextInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TEXT;
-			info.SetInfo(title, text, ColorPicker.SelectedColor, true);
+			title = TitleInput.Text.Any() ? TitleInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TITLE;
+			text = TextInput.Text.Any() ? TextInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TEXT;
+			color = ColorPicker.SelectedColor;
 		}		
 	}
 }

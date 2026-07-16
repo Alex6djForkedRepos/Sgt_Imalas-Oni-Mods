@@ -1,4 +1,5 @@
 ﻿using BlueprintsV2.BlueprintData;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using KSerialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -46,6 +47,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 		protected void OnCancel()
 		{
 			DetailsScreen.Instance.Show(false);
+			MP_Helpers.HandleNoteDeletion(this);
 			this.DeleteObject();
 		}
 		void Seat()
@@ -69,6 +71,20 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 		public virtual BlueprintNoteData GetNoteData(Vector2I? newPosition = null)
 		{
 			return new BlueprintNoteData();
+		}
+
+		public static void ClearExistingNote(int cell)
+		{
+			if (!Grid.IsValidCell(cell))
+				return;
+
+			var existingItem = Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer];
+
+			if (existingItem != null)
+			{
+				existingItem.DeleteObject();
+				Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = null;
+			}
 		}
 	}
 }

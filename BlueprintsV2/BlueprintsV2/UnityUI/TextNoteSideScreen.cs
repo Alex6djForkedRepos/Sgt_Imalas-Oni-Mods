@@ -1,4 +1,5 @@
 ﻿using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
 using System;
 using System.Collections;
@@ -83,6 +84,14 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			ClearText = transform.Find("NoteTextInput/DeleteButton").gameObject.AddOrGet<FButton>();
 			ClearText.OnClick += () => TextInput.Text = string.Empty;
 		}
+		
+		public override void ClearTarget()
+		{
+			MP_Helpers.HandleNoteUpdate(Target);
+			Target = null;
+			base.ClearTarget();
+		}
+
 		public override void SetTarget(GameObject target)
 		{
 			base.SetTarget(target);
@@ -116,10 +125,5 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			RefreshClearButtons();
 		}
 		void SetColor(Color color)  => Target?.UpdateInfo(tint: color);
-		public override void ClearTarget()
-		{
-			base.ClearTarget();
-			Target = null;
-		}
 	}
 }

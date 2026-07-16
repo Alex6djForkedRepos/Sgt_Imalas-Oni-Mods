@@ -230,7 +230,7 @@ namespace BlueprintsV2
 			{
 				try
 				{
-					string uncompressed = StringCompression.DecompressString(clipboard);
+					string uncompressed = clipboard.DecompressString();
 					///base64 import
 					if (TryImportBlueprintFromString(uncompressed, out bp))
 						return true;
@@ -254,7 +254,7 @@ namespace BlueprintsV2
 				sb.Clear();
 				StringWriter sw = new StringWriter(sb);
 				bp.WriteJsonString(sw);
-				string ToCopy = StringCompression.CompressString(sb.ToString());
+				string ToCopy = sb.ToString().CompressString();
 				IO_Utils.PutToClipboard(ToCopy);
 			}
 		}

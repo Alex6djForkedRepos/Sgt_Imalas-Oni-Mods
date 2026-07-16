@@ -1,5 +1,6 @@
 ﻿using BlueprintsV2.BlueprintData;
 using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
+using BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration;
 using BlueprintsV2.BlueprintsV2.BlueprintData.PlannedElements;
 using BlueprintsV2.BlueprintsV2.UnityUI;
 using BlueprintsV2.Tools;
@@ -128,57 +129,31 @@ namespace BlueprintsV2.BlueprintsV2.Tools
 		{
 			if (!Grid.IsValidCell(cell))
 				return;
-
-			ClearExistingNote(cell);
-
 			var settings = SandboxToolParameterMenu.instance.settings;
 			Element element = ElementLoader.elements[settings.GetIntSetting("SandboxTools.SelectedElement")];
 			var ElementId = element.id;
-			var infoIndicator = Util.KInstantiate(Assets.GetPrefab(ElementNoteConfig.ID));
-			Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = infoIndicator;
-			Vector3 posCbc = Grid.CellToPosCBC(cell, MopTool.Instance.visualizerLayer);
-			posCbc.z -= 0.15f;
-			infoIndicator.transform.SetPosition(posCbc);
 			var Amount = settings.GetFloatSetting("SandboxTools.Mass");
 			var Temperature = settings.GetFloatSetting("SandbosTools.Temperature");
-			if (infoIndicator.TryGetComponent<ElementNote>(out var info))
-			{
-				info.SetInfo(ElementId, Amount, Temperature, true);
-			}
-			infoIndicator.SetActive(true);
-		}
-		void ClearExistingNote(int cell)
-		{
-			var existingItem = Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer];
 
-			if (existingItem != null)
-			{
-				existingItem.DeleteObject();
-				Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = null;
-			}
+			var data = ElementNote.Create(cell, ElementId, Amount, Temperature, true);
+			MP_Helpers.HandleNoteCreation(data);
 		}
 		void CreateTextNote(int cell)
 		{
 			if (!Grid.IsValidCell(cell))
 				return;
-			ClearExistingNote(cell);
 
-			var infoIndicator = Util.KInstantiate(Assets.GetPrefab(TextNoteConfig.ID));
-			Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = infoIndicator;
-			Vector3 posCbc = Grid.CellToPosCBC(cell, MopTool.Instance.visualizerLayer);
-			posCbc.z -= 0.15f;
-			infoIndicator.transform.SetPosition(posCbc);			
-			if (infoIndicator.TryGetComponent<TextNote>(out var info))
-			{
-				NoteToolScreen.Instance.ApplyTextNoteInfo(info);
-			}
-			infoIndicator.SetActive(true);
+			NoteToolScreen.Instance.GetTextNoteInfo(out string title, out string text, out Color color);
+
+			var data = TextNote.Create(cell, title, text, color, true);
+			MP_Helpers.HandleNoteCreation(data);
 		}
 		public override void OnDragTool(int cell, int distFromOrigin)
 		{
 			if (!Grid.IsValidCell(cell))
 				return;
 
+			BlueprintNote.ClearExistingNote(cell);
 			if (NoteToolScreen.Instance.IsTextMode)
 				CreateTextNote(cell);
 			else
