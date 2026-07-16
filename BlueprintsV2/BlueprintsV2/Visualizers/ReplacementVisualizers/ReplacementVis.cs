@@ -227,7 +227,11 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers.ReplacementVisualizers
 				if (deconstruct && decon.allowDeconstruction)
 				{
 					queuedDeconstructablesGlobal[decon] = this;
-					decon.QueueDeconstruction();
+					//Sandbox QueueDecon needs to be instant, but isnt without DebugInstaBuild, so it needs to be forced
+					if(BlueprintState.InstantBuild && !DebugHandler.InstantBuildMode)
+						decon.OnCompleteWork(null);
+					else
+						decon.QueueDeconstruction();
 				}
 				else if (!deconstruct)
 				{
