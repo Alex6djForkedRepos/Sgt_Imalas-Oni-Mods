@@ -16,6 +16,7 @@ namespace BlueprintsV2
 	{
 		public override void OnLoad(Harmony harmony)
 		{
+			SgtLogger.LogVersion(this, harmony);
 			ModAssets.LoadAssets();
 			PUtil.InitLibrary();
 			new POptions().RegisterOptions(this, typeof(Config));
@@ -24,7 +25,6 @@ namespace BlueprintsV2
 			ModAssets.RegisterActions();
 			SgtLogger.l("Loading Mod Assets...");
 
-			SgtLogger.LogVersion(this, harmony);
 			BlueprintFileHandling.AttachFileWatcher();
 
 		}
