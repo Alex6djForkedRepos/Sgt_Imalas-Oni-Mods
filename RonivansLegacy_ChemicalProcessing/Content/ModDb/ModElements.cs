@@ -659,6 +659,16 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb
 		}
 		internal static void ConfigureElements()
 		{
+			if (Config.Instance.ChemicalProcessing_BioChemistry_Enabled)
+			{
+				//Warning: this needs to be done after Db.Init()!
+				var veggyOilLubeEffect = BionicOilMonitor.CreateFreshOilEffectVariation(VegetableOil_Liquid.Tag.ToString(), -1f / 60f, 3f);
+				//power delta doesnt work, its handled somewhere around batteries i think
+				//veggyOilLubeEffect.Add(new AttributeModifier(Db.Get().Amounts.BionicInternalBattery.deltaAttribute.Id, stressBonus, global::STRINGS.DUPLICANTS.MODIFIERS.FRESHOIL.NAME));
+				BionicOilMonitor.LUBRICANT_TYPE_EFFECT[VegetableOil_Liquid] = veggyOilLubeEffect;
+			}
+
+
 			AddElementOverheatModifier(ConcreteBlock_Solid, 100);
 			AddElementDecorModifier(ConcreteBlock_Solid, -0.15f);
 
