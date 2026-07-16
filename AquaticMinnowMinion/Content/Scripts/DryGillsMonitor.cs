@@ -35,8 +35,7 @@ namespace AquaticMinnowMinion.Content.Scripts
 				.ToggleEffect(Aq_Effects.DryGills_Extreme.Id)
 				.ToggleUrge(Aq_Urges.MoisturizeMe) 
 				.ToggleUrge(Db.Get().Urges.Shower)
-				.UpdateTransition(very_dry, (smi, dt) => AboveMoisture(smi, 0));
-
+				.UpdateTransition(very_dry, (smi, dt) => AboveMoisture(smi, 0));			
 		}
 		private static bool AboveMoisture(Instance smi, float moistureTreshold)
 		{

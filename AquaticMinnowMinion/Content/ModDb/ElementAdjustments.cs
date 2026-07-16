@@ -16,7 +16,7 @@ namespace AquaticMinnowMinion.Content.ModDb
 			MakeLiquidBreathable(SimHashes.Brine);
 			MakeLiquidBreathable(SimHashes.SaltWater);
 			MakeLiquidBreathable(SimHashes.MurkyBrine);
-			//yucky lungs:
+			//itchy gills:
 			AddElementTag(SimHashes.DirtyWater, Tags.PollutedLiquid);
 			AddElementTag(SimHashes.MurkyBrine, Tags.PollutedLiquid);
 		}

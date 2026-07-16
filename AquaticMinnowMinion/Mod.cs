@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using KMod;
+using PeterHan.PLib.Core;
+using PeterHan.PLib.Options;
 using System;
 using System.Collections.Generic;
 using UtilLibs;
@@ -10,9 +12,13 @@ namespace AquaticMinnowMinion
 	{
 		public override void OnLoad(Harmony harmony)
 		{
-			base.OnLoad(harmony);
 			SgtLogger.LogVersion(this, harmony);
+			PUtil.InitLibrary();
+			new POptions().RegisterOptions(this, typeof(Config));
 			UtilLibs.SharedTweaks.SkillsWidgetBetterConnectionLines.Register();
+			if (!DlcManager.IsContentSubscribed(DlcManager.DLC5_ID))
+				return;
+			base.OnLoad(harmony);
 		}
 
 		public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<KMod.Mod> mods)

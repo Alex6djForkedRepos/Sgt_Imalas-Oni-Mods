@@ -5,7 +5,7 @@ This mod turns Minnow into a new, fully amphibious duplicant species that has gi
 Requires aquatic planet pack!
 [img]https://raw.githubusercontent.com/Sgt-Imalas/Sgt_Imalas-Oni-Mods/refs/heads/master/Compat_All_DLC5_Required.png[/img]
 
-[h1]Current latest Version: 1.0[/h1]
+[h1]Current latest Version: 1.1[/h1]
 
 [hr][/hr]
 
@@ -20,6 +20,7 @@ Requires aquatic planet pack!
 [*] alternatively to doing minnows quest, you can also roll her in the starting screen by selecting the "amphibious duplicant" in the model dropdown.
 [*] Plastic beds have been made immune to flooding so minnow can sleep in her underwater clam bed.
 [*] DuperyFixed Model Id: "AquaticMinion"
+[*] Optional Setting (disabled by default): Amphibious Crew - also adds an amphibious Duplicant variant of all regular duplicant personalities
 [/list]
 
 

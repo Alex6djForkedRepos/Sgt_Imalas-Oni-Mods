@@ -14,15 +14,17 @@ namespace AquaticMinnowMinion.Patches
         public class Assets_OnPrefabInit_Patch
         {
             public static void Postfix(Assets __instance)
-            {
-                var minnowOriginal = Assets.GetSprite("dreamIcon_Minnow");
-                if (minnowOriginal == null)
-                {
-                    SgtLogger.warning("Could not find minnows original dream icon :rwcry:");
-                    return;
-                }
-                string aquaName = "dreamIcon_" + Aq_Personalities.AQUATIC_MINNOW;
-				Assets.Sprites.Add(aquaName, minnowOriginal);
+            {              
+                SgtLogger.l("Adding aquatic dream icons");
+                int count = 0;
+                foreach(var kvp in Aq_Personalities.OriginalDreamIconMap)
+				{
+                    ++count;
+					Assets.Sprites.Add("dreamIcon_"+kvp.Key, kvp.Value);
+				}
+                SgtLogger.l($"Added {count} aquatic dream icons");
+               // string aquaName = "dreamIcon_" + Aq_Personalities.AQUATIC_MINNOW;
+				//Assets.Sprites.Add(aquaName, minnowOriginal);
 				AssetUtils.AddAllSpritesInAssetsSubDir(__instance, "SkillBadges");
 			}
         }

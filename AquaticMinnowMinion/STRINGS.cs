@@ -144,9 +144,17 @@ namespace AquaticMinnowMinion
 				{
 					public class ADAPT_WATERBREATHINGEFFICIENCY
 					{
-						public static LocString DESCRIPTION = (LocString)$"Decreased liquid consumption when breathing liquids.";
+						public static LocString DESCRIPTION = "Decreased liquid consumption when breathing liquids.";
 					}
 				}
+			}
+		}
+		public class AQ_CONFIG
+		{
+			public class AQUATIC_CREW
+			{
+				public static LocString NAME = "Fully Aquatic Crew";
+				public static LocString TOOLTIP = "Also adds an aquatic variant of all (normal) basegame duplicants";
 			}
 		}
 	}
