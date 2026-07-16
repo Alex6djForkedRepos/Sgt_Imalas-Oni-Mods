@@ -30,7 +30,7 @@ namespace UtilLibs
 		public static void Mod_Localization_Register()
 		{
 			if (_stringsRootType != null)
-				LocalisationUtil.Translate(_stringsRootType, true);
+				Translate(_stringsRootType, true);
 		}
 
 		public static void Translate(Type root, bool generateTemplate = false)
