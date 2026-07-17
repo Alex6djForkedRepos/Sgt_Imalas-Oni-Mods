@@ -41,9 +41,12 @@ namespace Util_TwitchIntegrationLib
 			RegisterAllEventsInNamespace_TwitchColony(nameSpace);
 		}
 
-		public static bool TryGetEvent(string eventId, out ONITwitchLib.EventInfo eventInfo)
+		public static bool TryGetEvent_Asquared(string eventId, out ONITwitchLib.EventInfo eventInfo)
 		{
 			eventInfo = null;
+			if (!ConditionHelper.AsquaredTwitchIntegration_Active())
+				return false;
+
 			if (Events.TryGetValue(eventId, out eventInfo) && eventInfo != null)
 			{
 				return true;
@@ -54,6 +57,13 @@ namespace Util_TwitchIntegrationLib
 				return true;
 			}
 			return false;
+		}
+		public static bool TryGetEvent_TwitchColony(string eventId, out TwitchColony.Api.EventDataInfo eventInfo)
+		{
+			eventInfo = null;
+			if (!ConditionHelper.TwitchColony_Active())
+				return false;
+			return TwitchColony.Api.TwitchColonyApi.TryGetEventData(eventId, out eventInfo);
 		}
 		static void CacheGlobalEventList()
 		{

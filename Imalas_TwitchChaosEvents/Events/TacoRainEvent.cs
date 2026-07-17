@@ -60,6 +60,7 @@ namespace Imalas_TwitchChaosEvents.Events
 
 
 			SpeedControlScreen.Instance.SetSpeed(0);
+			SpeedControlScreen.Instance.Unpause(false);
 			GameplayEventInstance eventInstance = GameplayEventManager.Instance.StartNewEvent(TacoMeteorPatches.ITC_TacoMeteors, world.id);
 			// ClusterManager.Instance.activeWorld.GetSMI<GameplaySeasonManager.Instance>().Start(Db.Get().GameplaySeasons.TemporalTearMeteorShowers);
 			if (Config.Instance.TacoEventMusic)

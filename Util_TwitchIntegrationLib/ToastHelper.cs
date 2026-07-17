@@ -33,18 +33,29 @@ namespace Util_TwitchIntegrationLib
 			}
 			else if (TwitchColonyApi.IsAvailable)
 			{
-				TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body);
+				if (orthographicSize > 0)
+					TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body, 5,pos,orthographicSize);
+				else
+					TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body, 5,pos);
 			}
 		}
-		public static void InstantiateToastWithGoTarget(string title, string body, GameObject target)
+		public static void InstantiateToastWithGoTarget(string title, string body, GameObject target, float orthographicSize = -1)
 		{
 			if (TwitchModInfo.TwitchIsPresent)
 			{
-				ToastManager.InstantiateToastWithGoTarget(title, body, target);
+				if (orthographicSize > 0)
+					ToastManager.InstantiateToastWithGoTarget(title, body, target);
+				else
+					ToastManager.InstantiateToastWithGoTarget(title, body, target, orthographicSize);
+
 			}
 			else if (TwitchColonyApi.IsAvailable)
 			{
-				TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body);
+				if (orthographicSize > 0)
+					TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body, 5, target, orthographicSize);
+				else
+					TwitchColonyApi.ShowBanner($"<size=150%>{title}</size>\n\n" + body, 5, target);
+
 			}
 		}
 	}
