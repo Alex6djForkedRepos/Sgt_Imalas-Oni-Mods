@@ -23,7 +23,7 @@ namespace Imalas_TwitchChaosEvents.Events
 
 		public Action<object> EventAction => (object data) =>
 		{
-			ToastManager.InstantiateToast(
+			ToastHelper.InstantiateToast(
 				STRINGS.CHAOSEVENTS.HAIRLOSS.TOAST,
 				 STRINGS.CHAOSEVENTS.HAIRLOSS.TOASTTEXT
 				 );

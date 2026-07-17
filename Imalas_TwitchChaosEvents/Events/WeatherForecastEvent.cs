@@ -83,7 +83,7 @@ namespace Imalas_TwitchChaosEvents.Events
 			EventInfo EventToTrigger = weatherEvents.Next();
 			SgtLogger.l("found weather event: " + EventToTrigger.FriendlyName);
 
-			ToastManager.InstantiateToast(STRINGS.CHAOSEVENTS.WEATHERFORECAST.TOAST, string.Format(STRINGS.CHAOSEVENTS.WEATHERFORECAST.TOASTTEXT, EventToTrigger.FriendlyName));
+			ToastHelper.InstantiateToast(STRINGS.CHAOSEVENTS.WEATHERFORECAST.TOAST, string.Format(STRINGS.CHAOSEVENTS.WEATHERFORECAST.TOASTTEXT, EventToTrigger.FriendlyName));
 			GameScheduler.Instance.Schedule("start weather", 20f, (_) => EventToTrigger.Trigger(null));
 		};
 

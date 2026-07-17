@@ -28,7 +28,7 @@ namespace Imalas_TwitchChaosEvents.Events
 		public Action<object> EventAction => (_) =>
 		{
 			Mopedication(true);
-			ToastManager.InstantiateToast(
+			ToastHelper.InstantiateToast(
 				STRINGS.CHAOSEVENTS.MOPED.TOAST,
 				STRINGS.CHAOSEVENTS.MOPED.TOASTTEXT);
 			GameScheduler.Instance.Schedule("unmoped", 20f, (_) => Mopedication(false));

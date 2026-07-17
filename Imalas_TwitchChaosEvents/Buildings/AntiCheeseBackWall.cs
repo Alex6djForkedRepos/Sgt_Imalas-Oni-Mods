@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Util_TwitchIntegrationLib;
 using UtilLibs;
 using static STRINGS.ELEMENTS;
 using static STRINGS.SUBWORLDS;
@@ -32,7 +33,7 @@ namespace Imalas_TwitchChaosEvents.Buildings
 				DoDamage(damageTilesHit[i], centerCell);
 				i++;
 			}
-			ToastManager.InstantiateToast(STRINGS.CHAOSEVENTS.CHEESEBACKWALLTRIGGERED.TOAST,STRINGS.CHAOSEVENTS.CHEESEBACKWALLTRIGGERED.TOASTTEXT);
+			ToastHelper.InstantiateToast(STRINGS.CHAOSEVENTS.CHEESEBACKWALLTRIGGERED.TOAST,STRINGS.CHAOSEVENTS.CHEESEBACKWALLTRIGGERED.TOASTTEXT);
 		}
 		public void DoDamage(Tuple<int, float> cellAndEnergy, int centerCell)
 		{

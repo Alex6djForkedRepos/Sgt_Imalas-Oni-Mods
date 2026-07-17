@@ -62,7 +62,7 @@ namespace Imalas_TwitchChaosEvents.Events
 			string SpawnDeadlyElement = Strings.Get("STRINGS.ONITWITCH.TOASTS.ELEMENT_GROUP.TITLE");
 			string SpawnDeadlyElementTooltip = Strings.Get("STRINGS.ONITWITCH.TOASTS.ELEMENT_GROUP.BODY_FORMAT");
 
-			ToastManager.InstantiateToastWithPosTarget(
+			ToastHelper.InstantiateToastWithPosTarget(
 			SpawnDeadlyElement,
 			string.Format(
 				SpawnDeadlyElementTooltip,

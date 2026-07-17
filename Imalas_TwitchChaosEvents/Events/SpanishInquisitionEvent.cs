@@ -68,7 +68,7 @@ namespace Imalas_TwitchChaosEvents.Events
 			if(Config.Instance.SpanishInquisitionFX)
 				SoundUtils.PlaySound(ModAssets.SOUNDS.SPANISH_INQUISITION, SoundUtils.GetSFXVolume() * 1.0f, true);
 
-			ToastManager.InstantiateToastWithPosTarget(STRINGS.CHAOSEVENTS.SPANISHINQUISITION.TOAST, STRINGS.CHAOSEVENTS.SPANISHINQUISITION.TOASTTEXT, bossGO.transform.position);
+			ToastHelper.InstantiateToastWithPosTarget(STRINGS.CHAOSEVENTS.SPANISHINQUISITION.TOAST, STRINGS.CHAOSEVENTS.SPANISHINQUISITION.TOASTTEXT, bossGO.transform.position);
 		};
 
 		GameObject SpawnInquisitionMember(string dupeName, int cell)

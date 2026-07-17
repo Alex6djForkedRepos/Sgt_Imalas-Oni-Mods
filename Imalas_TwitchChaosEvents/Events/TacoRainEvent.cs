@@ -68,7 +68,7 @@ namespace Imalas_TwitchChaosEvents.Events
 			//var pos = world.LookAtSurface();
 
 
-			ToastManager.InstantiateToastWithPosTarget(
+			ToastHelper.InstantiateToastWithPosTarget(
 			STRINGS.CHAOSEVENTS.TACORAIN.TOAST,
 			 body, GetSurfacePos(world), 80);
 		};

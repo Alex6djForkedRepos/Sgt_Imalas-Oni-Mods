@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Util_TwitchIntegrationLib;
 
 namespace Imalas_TwitchChaosEvents.Events
 {
@@ -19,7 +20,7 @@ namespace Imalas_TwitchChaosEvents.Events
 					ToggleStrikingOn(dupe.gameObject, true);
 				}
 			}
-			ToastManager.InstantiateToast(
+			ToastHelper.InstantiateToast(
 				STRINGS.CHAOSEVENTS.WORKERSTRIKE.NAME,
 				STRINGS.CHAOSEVENTS.WORKERSTRIKE.TOASTTEXT);
 
@@ -32,7 +33,7 @@ namespace Imalas_TwitchChaosEvents.Events
 						ToggleStrikingOn(dupe.gameObject, false);
 					}
 				}
-				ToastManager.InstantiateToast(
+				ToastHelper.InstantiateToast(
 					STRINGS.CHAOSEVENTS.WORKERSTRIKE.NAME,
 					STRINGS.CHAOSEVENTS.WORKERSTRIKE.TOASTTEXT_END);
 			});
