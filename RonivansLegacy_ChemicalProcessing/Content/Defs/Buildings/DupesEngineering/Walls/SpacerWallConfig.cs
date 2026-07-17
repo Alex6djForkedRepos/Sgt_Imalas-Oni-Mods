@@ -15,7 +15,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Defs.Buildings.DupesEngineer
 		public static string ID = "SpacerWall";
 		public override BuildingDef CreateBuildingDef()
 		{
-			BuildingDef def = BuildingTemplates.CreateBuildingDef(ID, 1, 1, "spacer_wall_small_kanim", 30, 3f, [10], [GameTags.Steel.ToString()], 1600f, BuildLocationRule.NotInTiles, noise: NOISE_POLLUTION.NONE, decor: new EffectorValues
+			BuildingDef def = BuildingTemplates.CreateBuildingDef(ID, 1, 1, "spacer_wall_small_kanim", 30, 3f, [10], [MATERIALS.REFINED_METAL], 1600f, BuildLocationRule.NotInTiles, noise: NOISE_POLLUTION.NONE, decor: new EffectorValues
 			{
 				amount = 15,
 				radius = 0
