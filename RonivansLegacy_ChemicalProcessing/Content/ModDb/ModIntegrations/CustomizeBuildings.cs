@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UtilLibs;
+using static STRINGS.BUILDING.STATUSITEMS;
 
 namespace RonivansLegacy_ChemicalProcessing.Content.ModDb.ModIntegrations
 {
@@ -37,6 +38,26 @@ namespace RonivansLegacy_ChemicalProcessing.Content.ModDb.ModIntegrations
 
 			SgtLogger.l($"Successfully loaded conduit config values from CustomizeBuildings:\nsolid: {solidCapacity}\nliquid: {liquidCapacity}\ngas: {gasCapacity}");
 			return true;
+		}
+
+		public static float GetSolarEnergyMultiplier()
+		{
+			InitTypes();
+			if (Initialized && TryGetConfigValue<float>("SolarEnergyMultiplier", out var solarEnergyMultiplier))
+				return solarEnergyMultiplier;
+			return 1;
+
+		}
+		public static bool TryGetMaxSolarPanelAmount(out float wattage)
+		{
+			wattage = 0;
+
+			InitTypes();
+			if (!Initialized)
+				return false;
+			if (TryGetConfigValue<float>("SolarMaxPower", out wattage))
+				return true;
+			return false;
 		}
 
 		public static bool TryGetSteamTurbineWattageAndPumpRate(out float wattage, out float pumpRate)

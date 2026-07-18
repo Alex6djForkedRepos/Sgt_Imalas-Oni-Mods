@@ -1,5 +1,6 @@
 ﻿using KSerialization;
 using RonivansLegacy_ChemicalProcessing.Content.ModDb;
+using RonivansLegacy_ChemicalProcessing.Content.ModDb.ModIntegrations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 		public float MaxWattage = 80f;
 		public CellOffset[] solarCellOffsets = [new(0, 2), new(0, 3), new(0, 4)];
 		private static readonly EventSystem.IntraObjectHandler<RotatableSmallSolarPanel> OnActiveChangedDelegate = new EventSystem.IntraObjectHandler<RotatableSmallSolarPanel>((component, data) => component.OnActiveChanged(data));
-
+		private float EnergyMultiplier = 1f;
 		public override void OnPrefabInit()
 		{
 			base.OnPrefabInit();
@@ -50,6 +51,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 			SetLightBlockIfHorizontal(true);
 			CheckSolidsAbove();
 			//AddSolidBaseTile();
+			EnergyMultiplier = CustomizeBuildings.GetSolarEnergyMultiplier();
 		}
 		void SetLightBlockIfHorizontal(bool blockLight)
 		{
@@ -155,7 +157,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 			{
 				CellOffset rotatedOffset = building.GetRotatedOffset(solarCellOffset);
 				int luxAtCell = Grid.LightIntensity[Grid.OffsetCell(Grid.PosToCell(this), rotatedOffset)];
-				currentWattage += luxAtCell * 0.00053f;
+				currentWattage += luxAtCell * 0.00053f * EnergyMultiplier;
 			}
 			float clampedWattage = Mathf.Clamp(currentWattage, 0.0f, MaxWattage);
 			this.operational.SetActive(clampedWattage > 0);
