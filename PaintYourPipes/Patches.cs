@@ -71,13 +71,14 @@ namespace PaintYourPipes
 			private static void InjectedAfterGroupFileLoad()
 			{
 				ModAssets.MakeGreyscaleVariantsForValidAnims(instance.AnimAssets);
-				if (BundledAssetsLoader.instance.Expansion1Assets != null)
+				if (BundledAssetsLoader.instance.Expansion1Assets != null && BundledAssetsLoader.instance.Expansion1Assets.AnimAssets != null && BundledAssetsLoader.instance.Expansion1Assets.AnimAssets.Any())
 				{
 					ModAssets.MakeGreyscaleVariantsForValidAnims(BundledAssetsLoader.instance.Expansion1Assets.AnimAssets);
 				}
 				foreach (BundledAssets dlcAssets in BundledAssetsLoader.instance.DlcAssetsList)
 				{
-					ModAssets.MakeGreyscaleVariantsForValidAnims(BundledAssetsLoader.instance.Expansion1Assets.AnimAssets);
+					if(dlcAssets.AnimAssets != null && dlcAssets.AnimAssets.Any())
+						ModAssets.MakeGreyscaleVariantsForValidAnims(dlcAssets.AnimAssets);
 				}
 				ModAssets.MakeGreyscaleVariantsForValidAnims([.. Assets.ModLoadedKAnims]);
 			}

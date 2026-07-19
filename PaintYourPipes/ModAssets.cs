@@ -129,6 +129,9 @@ namespace PaintYourPipes
 		}
 		internal static void MakeGreyscaleVariantsForValidAnims(IEnumerable<KAnimFile> animList)
 		{
+			if (animList == null)
+				return;
+
 			foreach (var existingAnim in animList)
 			{
 				if (existingAnim == null || !AnimsToGreyScale.Contains(existingAnim.name))
