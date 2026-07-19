@@ -438,6 +438,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 		///Gallery
 		GameObject PlanetoidEntryPrefab;
 		private GameObject galleryGridContainer;
+		private GridLayoutGroup galleryGrid;
 
 		GameObject StoryTraitEntryPrefab;
 		private GameObject StoryTraitGridContainer;
@@ -645,7 +646,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			canBackoutWithRightClick = true;
 			ConsumeMouseScroll = true;
 
-			OnResize();
+			OnResized();
 		}
 		public void DoAndRefreshView(System.Action action)
 		{
@@ -695,7 +696,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 
 		public void OnActivateWindow()
 		{
-			OnResize();
+			OnResized();
 
 			if (!init)
 			{
@@ -717,9 +718,9 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			SetHasFocus(show);
 
 			if (!show)
-				ScreenResize.Instance.OnResize -= OnResize;
+				ScreenResize.Instance.OnResize -= OnResized;
 			else
-				ScreenResize.Instance.OnResize += OnResize;
+				ScreenResize.Instance.OnResize += OnResized;
 
 			base.OnShow(show);
 			if (!show)
@@ -732,7 +733,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			await Task.Delay(ms);
 			task.Invoke();
 		}
-		public void OnResize()
+		public void OnResized()
 		{
 			var rectMain = this.rectTransform();
 			rectMain.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, UnityEngine.Screen.width * (1f / rectMain.lossyScale.x));
@@ -1751,6 +1752,7 @@ namespace ClusterTraitGenerationManager.UI.Screens
 			MixingSettingsContainer = transform.Find("ItemSelection/MixingSettingsSettingsContent/MixingSettingsSettingsContainer").gameObject;
 			CustomGameSettingsContainer = transform.Find("ItemSelection/CustomGameSettingsContent/CustomGameSettingsContainer").gameObject;
 			galleryGridContainer = transform.Find("ItemSelection/StarItemContent/StarItemContainer").gameObject;
+			galleryGrid = galleryGridContainer.GetComponent<GridLayoutGroup>();
 			PlanetoidEntryPrefab = transform.Find("ItemSelection/StarItemContent/StarItemContainer/Item").gameObject;
 			PlanetoidEntryPrefab?.SetActive(false);
 			galleryHeaderLabel = transform.Find("ItemSelection/Header/Label").GetComponent<LocText>();
@@ -3239,21 +3241,23 @@ namespace ClusterTraitGenerationManager.UI.Screens
 
 
 			itemLogic.ActiveToggle.OnClick += () => SelectItem(planet);
-			itemLogic.ActiveToggle.OnDoubleClick += () =>
-			{
-				SelectItem(planet);
-				if (CurrentStarmapItem != null)
-				{
-					TogglePlanetoid(CurrentStarmapItem);
-					RefreshView();
-
-					if (DlcManager.IsExpansion1Active())
-						ResetSOStarmap(true);
-				}
-			};
+			itemLogic.ActiveToggle.OnDoubleClick += () => ToggleAsteroid(planet);
+			itemLogic.Checkbox.OnChange += (_) => ToggleAsteroid(planet);
 			planetoidGridButtons[planet] = itemLogic;
 			//this.SetItemClickUISound(planet, component2);
 			availableGridButton.SetActive(true);
+		}
+		void ToggleAsteroid(StarmapItem planet)
+		{
+			SelectItem(planet);
+			if (CurrentStarmapItem != null)
+			{
+				TogglePlanetoid(CurrentStarmapItem);
+				RefreshView();
+
+				if (DlcManager.IsExpansion1Active())
+					ResetSOStarmap(true);
+			}
 		}
 
 
