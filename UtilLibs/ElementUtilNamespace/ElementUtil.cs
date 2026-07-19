@@ -99,6 +99,44 @@ namespace ElementUtilNamespace
 				return result;
 			}
 		}
+		//unused enum tostring idea, isnt called, so useless
+		static class EnumToStringRedirect
+		{
+			static bool logged = false;
+			//[HarmonyPatch(typeof(Type), "GetEnumData")]
+			public class Type_GetEnumData_Patch
+			{
+				public static void Postfix(Type __instance, ref string[] enumNames, ref Array enumValues)
+				{
+
+					SgtLogger.l("TtypeEnum: " + __instance.AssemblyQualifiedName);
+					if (__instance != typeof(SimHashes))
+						return;
+
+					var nameList = enumNames.ToList();
+					var valueList = (enumValues as object[]).ToList();
+					foreach (var item in SimHashNameLookup)
+					{
+						nameList.Add(item.Value);
+						valueList.Add(item.Key);
+					}
+
+
+					enumNames = nameList.ToArray();
+					enumValues = valueList.ToArray();
+					if (logged)
+						return;
+					logged = true;
+
+					SgtLogger.l("Postfixed Type_GetEnumData:");
+					for (int i = 0; i < enumNames.Length; i++)
+					{
+						SgtLogger.l("Element: " + nameList[i] + ": " + valueList[i]);
+					}
+				}
+			}
+		}
+
 
 		public static void ExecuteElementEnumPatches(Harmony harmony)
 		{
@@ -106,8 +144,8 @@ namespace ElementUtilNamespace
 			try
 			{
 				var original = AccessTools.Method(typeof(Enum), "InternalFormat");
-                var m_postfix = new HarmonyMethod(typeof(SgtElementUtil), nameof(SimHashInternalFormat_EnumPatch));
-                harmony.Patch(original, postfix: m_postfix);
+				var m_postfix = new HarmonyMethod(typeof(SgtElementUtil), nameof(SimHashInternalFormat_EnumPatch));
+				harmony.Patch(original, postfix: m_postfix);
 			}
 			catch (Exception e)
 			{
@@ -118,6 +156,7 @@ namespace ElementUtilNamespace
 			try
 			{
 				var original = AccessTools.Method(typeof(Enum), nameof(Enum.Parse), [typeof(Type), typeof(string), typeof(bool)]);
+				//var m_prefix = new HarmonyMethod(typeof(SgtElementUtil), nameof(PrefixSimHashInternalFormat_EnumPatch));
 				var m_postfix = new HarmonyMethod(typeof(SgtElementUtil), nameof(SimhashParse_EnumPatch));
 				harmony.Patch(original, postfix: m_postfix);
 			}
@@ -135,9 +174,16 @@ namespace ElementUtilNamespace
 		//		tag_string = corrected;
 		//}
 
+		//public static void PrefixSimHashInternalFormat_EnumPatch(Type eT, object value, ref string __result)
+		//{
+		//	SgtLogger.l(eT == null ? "eT is null" : "eT: " + eT);
+		//	SgtLogger.l(value == null ? "value is null" : "value: " + value);
+		//	SgtLogger.l(__result == null ? "__result is null" : "__result: " + __result);
+		//}
+
 		public static void SimHashInternalFormat_EnumPatch(Type eT, object value, ref string __result)
 		{
-            if (eT == typeof(SimHashes) && SimHashNameLookup.TryGetValue((SimHashes)value, out string id))
+			if (eT != null && eT == typeof(SimHashes) && SimHashNameLookup.TryGetValue((SimHashes)value, out string id))
 			{
 				__result = id;
 			}
@@ -145,6 +191,7 @@ namespace ElementUtilNamespace
 
 		public static bool SimHashToString_EnumPatch(Enum __instance, ref string __result)
 		{
+
 			if (__instance is SimHashes hashes)
 			{
 				return !SimHashNameLookup.TryGetValue(hashes, out __result);
