@@ -73,7 +73,7 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Defs.Buildings.DupesRefriger
 			storage.fetchCategory = Storage.FetchCategory.GeneralStorage;
 			storage.showCapacityStatusItem = true;
 			Prioritizable.AddRef(go);
-			go.AddOrGet<TreeFilterable>();
+			go.AddOrGet<TreeFilterable>().allResourceFilterLabelString = (string)UI.UISIDESCREENS.TREEFILTERABLESIDESCREEN.ALLBUTTON_EDIBLES;
 			go.AddOrGet<FoodStorage>();
 			go.AddOrGet<Refrigerator>();
 			RefrigeratorController.Def def = go.AddOrGetDef<RefrigeratorController.Def>();

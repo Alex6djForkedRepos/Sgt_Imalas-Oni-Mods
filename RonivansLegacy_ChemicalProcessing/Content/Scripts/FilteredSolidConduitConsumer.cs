@@ -20,12 +20,12 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 		private Building building;
 		[MyCmpReq]
 		private Storage storage;
-		[MyCmpGet]
-		private StorageLocker locker;
-		
+		private IUserControlledCapacity capacityController;
+
 
 		public override void OnSpawn()
 		{
+			capacityController = GetComponent<IUserControlledCapacity>();
 			base.OnSpawn();
 
 			_inputCell = building.GetUtilityInputCell();
@@ -40,10 +40,10 @@ namespace RonivansLegacy_ChemicalProcessing.Content.Scripts
 
 		public float GetRemainingCapacity()
 		{
-			if (locker == null)
+			if (capacityController == null)
 				return storage.RemainingCapacity();
 
-			return locker.UserMaxCapacity - locker.AmountStored;
+			return capacityController.UserMaxCapacity - capacityController.AmountStored;
 		}
 
 		private void ConduitUpdate(float dt)
