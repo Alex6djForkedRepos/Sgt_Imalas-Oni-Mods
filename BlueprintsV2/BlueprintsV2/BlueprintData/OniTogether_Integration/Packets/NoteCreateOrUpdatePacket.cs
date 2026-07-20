@@ -60,7 +60,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.OniTogether_Integration.Packet
 				switch (data.Type)
 				{
 					case BlueprintNoteData.NoteType.Text:
-						TextNote.Create(cell, data.Title, data.Text,data.SymbolTint,true); 
+						TextNote.Create(cell, data.Title, data.Text,data.Symbol, data.SymbolTint,true); 
 						break;
 					case BlueprintNoteData.NoteType.Element:
 						ElementNote.Create(cell, data.ElementId,data.ElementMass, data.ElementTemperature, true);

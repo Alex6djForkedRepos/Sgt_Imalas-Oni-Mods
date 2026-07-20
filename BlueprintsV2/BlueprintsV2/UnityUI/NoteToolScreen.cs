@@ -38,6 +38,8 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		FToggleButton TextMode, ElementMode;
 		FInputField2 TitleInput, TextInput;
 		FColorPickerArray ColorPicker;
+		FItemPickerArray SymbolPicker;
+
 		List<GameObject> NoteModeGOs = [];
 		public bool IsTextMode = true;
 
@@ -90,6 +92,9 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 
 		void Init()
 		{
+			SymbolPicker = transform.Find("SymbolPicker").gameObject.AddOrGet<FItemPickerArray>();
+			SymbolPicker.Init(TextNote.SymbolMap);
+
 			ColorPicker = transform.Find("ColorPicker").gameObject.AddOrGet<FColorPickerArray>();
 			TextMode = transform.Find("Buttons/TextToggle").gameObject.AddOrGet<FToggleButton>();
 			TextMode.OnClick += () => SelectMode(true);
@@ -117,17 +122,19 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			NoteModeGOs.Add(transform.Find("ColorPicker").gameObject);
 		}
 
+
 		void RefreshClearButtons(string _)
 		{
 			ClearTitle.SetInteractable(TitleInput.Text.Any());
 			ClearText.SetInteractable(TextInput.Text.Any());
 		}
 
-		internal void GetTextNoteInfo(out string title, out string text, out Color color)
+		internal void GetTextNoteInfo(out string title, out string text, out string symbol, out Color color)
 		{
 			title = TitleInput.Text.Any() ? TitleInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TITLE;
 			text = TextInput.Text.Any() ? TextInput.Text : STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TEXT;
 			color = ColorPicker.SelectedColor;
+			symbol = SymbolPicker.SelectedEntry;
 		}		
 	}
 }

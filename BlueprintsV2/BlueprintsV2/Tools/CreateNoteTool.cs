@@ -143,9 +143,9 @@ namespace BlueprintsV2.BlueprintsV2.Tools
 			if (!Grid.IsValidCell(cell))
 				return;
 
-			NoteToolScreen.Instance.GetTextNoteInfo(out string title, out string text, out Color color);
+			NoteToolScreen.Instance.GetTextNoteInfo(out string title, out string text, out string symbol, out Color color);
 
-			var data = TextNote.Create(cell, title, text, color, true);
+			var data = TextNote.Create(cell, title, text, symbol, color, true);
 			MP_Helpers.HandleNoteCreation(data);
 		}
 		public override void OnDragTool(int cell, int distFromOrigin)

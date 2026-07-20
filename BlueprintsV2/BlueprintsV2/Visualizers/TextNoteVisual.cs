@@ -24,10 +24,10 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 
 		public string BuildingID => null;
 
-		string Title, Text;
+		string Title, Text, Symbol;
 		Color Tint;
 
-		public TextNoteVisual(ulong playerId, int cell, Vector2I offset, string title, string text, Color tint)
+		public TextNoteVisual(ulong playerId, int cell, Vector2I offset, string title, string text, string symbol, Color tint)
 		{
 			this.playerId = playerId;
 			Visualizer = GameUtil.KInstantiate(Assets.GetPrefab(TextNoteConfig.ID), Grid.CellToPosCBC(cell, Grid.SceneLayer.FXFront), Grid.SceneLayer.FXFront, "BlueprintModLiquidIndicatorVisual");
@@ -35,11 +35,12 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 			Offset = offset;
 			if (Visualizer.TryGetComponent<TextNote>(out var info))
 			{
-				info.SetInfo(title, text, tint);
+				info.SetInfo(title, text, symbol, tint);
 			}
 			Title = title;
 			Text = text;
 			Tint = tint;
+			Symbol = symbol;
 		}
 
 		public bool IsPlaceable(int cellParam)
@@ -76,7 +77,7 @@ namespace BlueprintsV2.BlueprintsV2.Visualizers
 				infoIndicator.transform.SetPosition(posCbc);
 				if (infoIndicator.TryGetComponent<TextNote>(out var info))
 				{
-					info.SetInfo(Title, Text, Tint, true);
+					info.SetInfo(Title, Text, Symbol, Tint, true);
 				}
 				infoIndicator.SetActive(true);
 

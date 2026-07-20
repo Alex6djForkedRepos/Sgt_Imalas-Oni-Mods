@@ -23,6 +23,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		FButton ClearTitle, ClearText;
 		FInputField2 TitleInput, TextInput;
 		FColorPickerArray ColorPicker;
+		FItemPickerArray SymbolPicker;
 		public override bool IsValidForTarget(GameObject target) => !target.IsNullOrDestroyed() && target.TryGetComponent<TextNote>(out _);
 		public override void OnPrefabInit()
 		{
@@ -66,6 +67,10 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		{
 			transform.Find("Title").gameObject.SetActive(false);
 			transform.Find("Buttons").gameObject.SetActive(false);
+
+			SymbolPicker = transform.Find("SymbolPicker").gameObject.AddOrGet<FItemPickerArray>();
+			SymbolPicker.Init(TextNote.SymbolMap);
+			SymbolPicker.OnSelectionChanged += SetSymbol;
 
 			ColorPicker = transform.Find("ColorPicker").gameObject.AddOrGet<FColorPickerArray>();
 			ColorPicker.OnColorChange += SetColor;
@@ -111,6 +116,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 				title = (data.Title != STRINGS.BLUEPRINTS_BLUEPRINTNOTE.TEXTNOTE_EMPTY.TITLE ? data.Title : string.Empty);
 			}
 			ColorPicker.SetSelected(data.SymbolTint);
+			SymbolPicker.SetSelected(data.Symbol);
 		}
 		void SetTitle(string val)
 		{
@@ -125,5 +131,6 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			RefreshClearButtons();
 		}
 		void SetColor(Color color)  => Target?.UpdateInfo(tint: color);
+		void SetSymbol(string select)  => Target?.UpdateInfo(symbol: select);
 	}
 }

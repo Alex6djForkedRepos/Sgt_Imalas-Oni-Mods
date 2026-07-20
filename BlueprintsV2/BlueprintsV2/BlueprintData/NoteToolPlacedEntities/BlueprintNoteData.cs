@@ -26,12 +26,19 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 
 		public NoteType Type = NoteType.Invalid;
 		///Text Note Data
-		public string Text,Title;
+		public string Text, Title, Symbol;
 		public Color SymbolTint;
 		///Element Note Data
 		public SimHashes ElementId;
 		public float ElementMass;
 		public float ElementTemperature;
+
+		public Sprite GetNoteSprite()
+		{
+			if (!Symbol.IsNullOrWhiteSpace() && TextNote.SymbolMap.TryGetValue(Symbol, out var sprite))
+				return sprite;
+			return ModAssets.Note_Placer_Sprite;
+		}
 
 		public bool IsValid() => Type != NoteType.Invalid;
 
@@ -41,13 +48,14 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			jsonWriter.WritePropertyName("x"); jsonWriter.WriteValue(Location.x);
 			jsonWriter.WritePropertyName("y"); jsonWriter.WriteValue(Location.y);
 			jsonWriter.WritePropertyName("type"); jsonWriter.WriteValue((int)Type);
-			if(Type == NoteType.Text)
+			if (Type == NoteType.Text)
 			{
 				jsonWriter.WritePropertyName("title"); jsonWriter.WriteValue(Title);
 				jsonWriter.WritePropertyName("text"); jsonWriter.WriteValue(Text);
 				jsonWriter.WritePropertyName("tinthex"); jsonWriter.WriteValue(SymbolTint.ToHexString());
+				jsonWriter.WritePropertyName("symbol"); jsonWriter.WriteValue(Symbol);
 			}
-			else if(Type == NoteType.Element)
+			else if (Type == NoteType.Element)
 			{
 				jsonWriter.WritePropertyName("id"); jsonWriter.WriteValue((int)ElementId);
 				jsonWriter.WritePropertyName("mass"); jsonWriter.WriteValue(ElementMass);
@@ -69,7 +77,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				return false;
 
 			JToken typeToken = jsonObject.SelectToken("type");
-			if(typeToken == null || typeToken.Type != JTokenType.Integer)
+			if (typeToken == null || typeToken.Type != JTokenType.Integer)
 				return false;
 			Type = (NoteType)typeToken.Value<int>();
 			if (Type == NoteType.Text)
@@ -77,7 +85,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				JToken titleToken = jsonObject.SelectToken("title");
 				JToken textToken = jsonObject.SelectToken("text");
 				JToken tinthexToken = jsonObject.SelectToken("tinthex");
-				if(titleToken == null || titleToken.Type != JTokenType.String)
+				if (titleToken == null || titleToken.Type != JTokenType.String)
 					return false;
 				if (textToken == null || textToken.Type != JTokenType.String)
 					return false;
@@ -86,6 +94,11 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				Title = titleToken.Value<string>();
 				Text = textToken.Value<string>();
 				SymbolTint = Util.ColorFromHex(tinthexToken.Value<string>());
+
+				JToken symbolToken = jsonObject.SelectToken("symbol");
+				if (symbolToken != null && symbolToken.Type == JTokenType.String)
+					Symbol = symbolToken.Value<string>();
+
 				return true;
 			}
 			else if (Type == NoteType.Element)
@@ -115,13 +128,14 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				Type = this.Type,
 				Text = this.Text,
 				Title = this.Title,
+				Symbol = this.Symbol,
 				SymbolTint = this.SymbolTint,
 				ElementId = this.ElementId,
 				ElementMass = this.ElementMass,
 				ElementTemperature = this.ElementTemperature,
 			};
 		}
-		public static BlueprintNoteData CreateTextNote(Vector2I location, string title, string text, Color tint)
+		public static BlueprintNoteData CreateTextNote(Vector2I location, string title, string text, string icon, Color tint)
 		{
 			return new BlueprintNoteData()
 			{
@@ -129,6 +143,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				Type = NoteType.Text,
 				Title = title,
 				Text = text,
+				Symbol = icon,
 				SymbolTint = tint,
 			};
 		}

@@ -500,6 +500,7 @@ namespace BlueprintsV2
 					}
 				}
 				public static LocString COLORPICKERLABEL = "Note Icon Color:";
+				public static LocString SYMBOLPICKERLABEL = "Note Icon:";
 				public class BUTTONS
 				{
 					public class TEXTTOGGLE

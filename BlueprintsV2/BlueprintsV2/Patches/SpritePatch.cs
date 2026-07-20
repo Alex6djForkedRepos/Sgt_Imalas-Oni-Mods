@@ -1,4 +1,5 @@
 ﻿
+using BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities;
 using HarmonyLib;
 using UtilLibs;
 
@@ -39,12 +40,15 @@ namespace BlueprintsV2.Patches
 				ModAssets.NoteToolIcon_Sprite = InjectionMethods.AddSpriteToAssets(__instance, "BPV2_NoteTool");
 				ModAssets.AddNoteToolIcon_Sprite = InjectionMethods.AddSpriteToAssets(__instance, "BPV2_AddNote");
 				
-
-
-
 				ModAssets.PlanningToolPreview_Square = InjectionMethods.AddSpriteToAssets(__instance, "BPV2_PlantoolPlacer_Square");
 				ModAssets.PlanningToolPreview_Circle = InjectionMethods.AddSpriteToAssets(__instance, "BPV2_PlantoolPlacer_Circle");
 				ModAssets.PlanningToolPreview_Diamond= InjectionMethods.AddSpriteToAssets(__instance, "BPV2_PlantoolPlacer_Diamond");
+
+				var textnoteIcons = AssetUtils.AddAllSpritesInAssetsSubDir(__instance, "textnote_icons");
+				foreach(var sprite in textnoteIcons)
+				{
+					TextNote.SymbolMap[sprite.name] = sprite;
+				}
 			}
 		}
 	}

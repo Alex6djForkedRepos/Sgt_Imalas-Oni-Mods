@@ -145,7 +145,9 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 				switch (noteData.Type)
 				{
 					case BlueprintNoteData.NoteType.Text:
-						preview.SetDisplayed(new(ModAssets.Note_Placer_Sprite, noteData.SymbolTint));
+
+
+						preview.SetDisplayed(new(noteData.GetNoteSprite(), noteData.SymbolTint));
 						entry.AddOrGet<Vis_Tooltip>().SetText(noteData.Title, noteData.Text);
 						break;
 					case BlueprintNoteData.NoteType.Element:

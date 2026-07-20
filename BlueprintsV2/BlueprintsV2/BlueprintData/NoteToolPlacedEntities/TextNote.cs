@@ -13,10 +13,15 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 {
 	internal class TextNote : BlueprintNote
 	{
+		public static Dictionary<string, Sprite> SymbolMap = [];
+
+
+
 
 		[Serialize] Color SymbolTint = UIUtils.rgb(23, 120, 189);
 		[Serialize] string Title = "Note Title";
 		[Serialize] string Text = "";
+		[Serialize] string Symbol = string.Empty;
 
 		public override BlueprintNoteData GetNoteData(Vector2I? newPosition = null)
 		{
@@ -25,6 +30,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 				Type = BlueprintNoteData.NoteType.Text,
 				Title = this.Title,
 				Text = this.Text,
+				Symbol = this.Symbol,
 				SymbolTint = this.SymbolTint,
 				Location = newPosition ?? default
 			};
@@ -42,27 +48,34 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			selectable?.SetName(name);
 			this.gameObject.name = name;
 			description?.description = Text;
+			if (Symbol.Any() && SymbolMap.TryGetValue(Symbol, out var sprite))
+			{
+				renderer?.material.mainTexture = sprite.texture;
+			}
 			renderer?.material?.color = SymbolTint;
+
 			base.SetDescription();
 		}
 
-		internal void SetInfo(string title, string text, Color tint, bool shouldSeat = false)
+		internal void SetInfo(string title, string text, string symbol, Color tint, bool shouldSeat = false)
 		{
 			Title = title;
 			Text = text;
+			Symbol = symbol;
 			SymbolTint = tint;
 			SeatIndicator = shouldSeat;
 			SetDescription();
 		}
-		internal void UpdateInfo(string title = null, string text = null, Color? tint = null)
+		internal void UpdateInfo(string title = null, string text = null, string symbol = null, Color? tint = null)
 		{
 			if (title != null) Title = title;
-			if(text != null) Text = text;
+			if (text != null) Text = text;
 			if (tint != null && tint.HasValue) SymbolTint = tint.Value;
+			if(symbol != null)Symbol = symbol;
 			SetDescription();
 		}
 
-		public static BlueprintNote Create(int cell, string title, string text, Color color, bool seat = false)
+		public static BlueprintNote Create(int cell, string title, string text, string symbol, Color color, bool seat = false)
 		{
 			var infoIndicator = Util.KInstantiate(Assets.GetPrefab(TextNoteConfig.ID));
 			Grid.Objects[cell, (int)ModAssets.BlueprintNotesLayer] = infoIndicator;
@@ -71,7 +84,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			infoIndicator.transform.SetPosition(posCbc);
 			if (infoIndicator.TryGetComponent<TextNote>(out var info))
 			{
-				info.SetInfo(title, text, color, seat);
+				info.SetInfo(title, text, symbol, color, seat);
 			}
 			infoIndicator.SetActive(true);
 			return info;

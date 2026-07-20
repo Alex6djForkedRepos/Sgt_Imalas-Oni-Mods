@@ -534,7 +534,7 @@ namespace BlueprintsV2.BlueprintData
 					switch (note.Type)
 					{
 						case BlueprintNoteData.NoteType.Text:
-							FoundationVisuals[playerId].Add(new TextNoteVisual(playerId, Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.Title, note.Text, note.SymbolTint));
+							FoundationVisuals[playerId].Add(new TextNoteVisual(playerId, Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.Title, note.Text, note.Symbol, note.SymbolTint));
 							break;
 						case BlueprintNoteData.NoteType.Element:
 							FoundationVisuals[playerId].Add(new ElementNoteVisual(playerId, Grid.XYToCell(topLeft.x + liquidLocation.x, topLeft.y + liquidLocation.y), liquidLocation, note.ElementId, note.ElementMass, note.ElementTemperature));
