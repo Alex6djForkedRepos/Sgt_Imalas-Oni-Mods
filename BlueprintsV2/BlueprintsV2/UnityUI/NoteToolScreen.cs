@@ -120,6 +120,8 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			NoteModeGOs.Add(transform.Find("NoteTextInput").gameObject);
 			NoteModeGOs.Add(transform.Find("ColorPickerLabel").gameObject);
 			NoteModeGOs.Add(transform.Find("ColorPicker").gameObject);
+			NoteModeGOs.Add(transform.Find("SymbolPickerLabel").gameObject);
+			NoteModeGOs.Add(transform.Find("SymbolPicker").gameObject);
 		}
 
 
