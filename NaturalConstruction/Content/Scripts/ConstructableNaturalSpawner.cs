@@ -14,11 +14,12 @@ namespace NaturalConstruction.Content.Scripts
 	internal class ConstructableNaturalSpawner : Constructable, ISingleSliderControl
 	{
 		///does not work for backwall..
-		//[MyCmpAdd] CopyBuildingSettings copySettings;
+		[MyCmpAdd] CopyBuildingSettings copySettings;
 		[MyCmpGet] KSelectable selectable;
 		[Serialize] float naturalMass = -1;
 		[Serialize] float lastNaturalMass = 0;
 		bool backwallBuilding;
+		public bool Backwall => backwallBuilding;
 		private static readonly EventSystem.IntraObjectHandler<ConstructableNaturalSpawner> OnCopySettingsDelegate = new EventSystem.IntraObjectHandler<ConstructableNaturalSpawner>((System.Action<ConstructableNaturalSpawner, object>)((component, data) => component.OnCopySettings(data)));
 		int handle = -1;
 		public override void OnPrefabInit()
@@ -37,11 +38,11 @@ namespace NaturalConstruction.Content.Scripts
 			waitForFetchesBeforeDigging = true;
 			backwallBuilding = building.Def.ObjectLayer == ObjectLayer.Backwall;
 			RefreshFetchIfNeeded();
-			//handle = this.Subscribe((int)GameHashes.CopySettings, OnCopySettingsDelegate);
+			handle = this.Subscribe((int)GameHashes.CopySettings, OnCopySettingsDelegate);
 		}
 		public override void OnCleanUp()
 		{
-			//Unsubscribe(handle);
+			Unsubscribe(handle);
 			base.OnCleanUp();
 		}
 		private void OnCopySettings(object data)

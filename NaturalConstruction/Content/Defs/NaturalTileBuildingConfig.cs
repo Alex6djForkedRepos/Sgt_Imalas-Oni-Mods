@@ -45,6 +45,7 @@ namespace NaturalConstruction.Content.Defs
 			base.DoPostConfigureUnderConstruction(go);
 			UnityEngine.Object.DestroyImmediate(go.GetComponent<Constructable>());
 			go.AddComponent<ConstructableNaturalSpawner>();
+			go.AddOrGet<CopyBuildingSettings>();
 		}
 
 
