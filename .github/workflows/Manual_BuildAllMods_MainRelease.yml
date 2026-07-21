@@ -39,6 +39,8 @@ jobs:
             Install-Module powershell-yaml -Force
             # start creation of release desc. file
             echo "Automated build of all mods, based on the latest release ready code state" >> Desc.md
+            echo "<details>" >> Desc.md
+            echo "<summary>List of all mods in this release</summary>" >> Desc.md
             echo "| Folder | Mod Name | Mod Description |" >> Desc.md
             echo "|-|-|-|" >> Desc.md
             
@@ -77,7 +79,9 @@ jobs:
             #create zip file
             Compress-Archive `
             -Path $folderpath/* `
-            -DestinationPath $destination\$modId}   
+            -DestinationPath $destination\$modId}  
+            
+            echo "</details>" >> Desc.md
                         
             #finalize version info json file
             echo "]}" >> ./BuildsZipped/_ReleaseVersionInfoData.json
