@@ -26,6 +26,7 @@ namespace UtilLibs
 		private List<RecipeElement> inputs;
 		private List<RecipeElement> outputs;
 		private Dictionary<RecipeElement, Tag> GroupDescriptors = [];
+		private Func<string> runtimeDesc=null;
 
 		public RecipeElement[] GetOutputs() => outputs.ToArray();
 
@@ -160,6 +161,8 @@ namespace UtilLibs
 		}
 		public RecipeBuilder InputHEP(int hep)
 		{
+			if (DlcManager.IsPureVanilla())
+				return this;
 			this.hepConsumed = hep;
 			return this;
 		}
@@ -452,8 +455,16 @@ namespace UtilLibs
 				recipe.customSpritePrefabID = spritePrefabId;
 			if (!techRequirement.IsNullOrWhiteSpace())
 				recipe.requiredTech = techRequirement;
+			if(runtimeDesc != null)
+				recipe.runTimeDescription = runtimeDesc;
 
 			return recipe;
+		}
+
+		public RecipeBuilder RuntimeDescription(Func<string> runTimeDescription)
+		{
+			runtimeDesc = runTimeDescription;
+			return this;
 		}
 	}
 }
