@@ -13,6 +13,7 @@ namespace BionicBoostersPlus
 			base.OnLoad(harmony);
 			harmony.RegisterForLocalization(typeof(STRINGS), true);
 			SgtLogger.LogVersion(this, harmony);
+			UtilLibs.SharedTweaks.SelectedRecipeQueueScreenSizeFix.Register();
 		}
 
 		public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<KMod.Mod> mods)
