@@ -25,5 +25,10 @@ namespace BionicBoostersPlus.Content.Scripts
 				return string.Format(global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.STANDARD_ACTIVE_TEMPLATE, upgradeComponent.GetProperName(), text + GameUtil.GetFormattedWattage(currentWattageCost));
 			}
 		}
+		public override void InitializeStates(out BaseState default_state)
+		{
+			base.InitializeStates(out default_state);
+			root.TriggerOnExit(GameHashes.BionicUpgradeWattageChanged);
+		}
 	}
 }

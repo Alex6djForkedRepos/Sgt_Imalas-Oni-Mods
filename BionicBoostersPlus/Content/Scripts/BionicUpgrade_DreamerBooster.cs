@@ -12,7 +12,6 @@ namespace BionicBoostersPlus.Content.Scripts
 	/// </summary>
 	internal class BionicUpgrade_DreamerBooster : GameStateMachine<BionicUpgrade_DreamerBooster, BionicUpgrade_DreamerBooster.Instance, IStateMachineTarget, BionicUpgrade_DreamerBooster.Def>
 	{
-		public const float DataGatheringDuration = 600f;
 		private FloatParameter Progress;
 		public State not_ready;
 		public State ready;
@@ -39,7 +38,7 @@ namespace BionicBoostersPlus.Content.Scripts
 
 			public bool IsBeingMonitored => this.monitor != null;
 
-			public bool IsReady => this.Progress <= 1;
+			public bool IsReady => this.Progress >= 1;
 
 			public float Progress => this.sm.Progress.Get(this);
 

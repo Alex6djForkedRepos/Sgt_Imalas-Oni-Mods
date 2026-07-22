@@ -40,13 +40,7 @@ namespace BionicBoostersPlus
 				}
 				public class DREAMBOOSTER_DREAMING
 				{
-					public static LocString NAME = "Dreaming (of electic sheep)";
-
-					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
-				}
-				public class DREAMBOOSTERJOURNALSTORAGE
-				{
-					public static LocString NAME = "Dreaming (of electic sheep)";
+					public static LocString NAME = "Dreaming (of electric sheep)";
 
 					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
 				}

@@ -244,7 +244,7 @@ namespace BionicBoostersPlus.Content.ModDb
 
 			if(OC_Wattage > 0)
 			{
-				desc+= "\n\n" + string.Format(global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.STANDARD_ACTIVE_TEMPLATE, global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.NAME, DreamBooster_Wattage);
+				desc+= "\n\n" + string.Format(global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.STANDARD_ACTIVE_TEMPLATE, global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.NAME, OC_Wattage);
 			}
 
 

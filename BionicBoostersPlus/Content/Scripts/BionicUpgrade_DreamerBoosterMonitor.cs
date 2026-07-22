@@ -13,23 +13,31 @@ namespace BionicBoostersPlus.Content.Scripts
 	/// </summary>
 	internal class BionicUpgrade_DreamerBoosterMonitor : BionicUpgrade_SM<BionicUpgrade_DreamerBoosterMonitor, BionicUpgrade_DreamerBoosterMonitor.Instance>
 	{
-		public const float SecondsToMakeDreamjournal = 600;
+		public const float SecondsToMakeDreamjournal = 300;
 
-		public static void FindAndAttachToInstalledBooster(
-		  BionicUpgrade_DreamerBoosterMonitor.Instance smi)
+		public static void FindAndAttachToInstalledBooster(Instance smi)
 		{
 			smi.Initialize();
 		}
+		public static void OnBoosterAdded(Instance smi)
+		{
+			smi.OnAdded();
+		}
+		public static void OnBoosterRemoved(Instance smi)
+		{
+			smi.OnRemoved();
+		}
 
-		public static void DataGatheringUpdate(
-		  BionicUpgrade_DreamerBoosterMonitor.Instance smi,
-		  float dt)
+		public static void DreamGatheringUpdate(Instance smi,float dt)
 		{
 			smi.GatheringDataUpdate(dt);
 		}
 
 		public new class Instance : BaseInstance
 		{
+			[MyCmpGet]
+			public MinionResume resume;
+
 			private static GameObject dreamJournalPrefab;
 			Dreamer.Instance dreamer;
 			private BionicUpgrade_DreamerBooster.Instance dreamingBooster;
@@ -38,19 +46,39 @@ namespace BionicBoostersPlus.Content.Scripts
 
 			public Instance(IStateMachineTarget master, Def def) : base(master, def)
 			{
-				dreamer = master.gameObject.GetSMI<Dreamer.Instance>();
 				if (dreamJournalPrefab == null)
 					dreamJournalPrefab = Assets.GetPrefab(DreamJournalConfig.ID);
 			}
+			void InitDreamer()
+			{
+				dreamer ??= master.gameObject.GetSMI<Dreamer.Instance>();
+			}
+
 			public void StartDreaming()
 			{
+				InitDreamer();
 				dreamer.SetDream(Db.Get().Dreams.CommonDream);
 				dreamer.StartDreaming();
 			}
 			public void StopDreaming()
 			{
+				InitDreamer();
 				dreamer.StopDreaming();
 			}
+			public void OnAdded()
+			{
+				InitDreamer();
+			}
+			public void OnRemoved()
+			{
+				StopDreaming();
+				if(dreamingBooster != null)
+				{
+					dreamingBooster.SetMonitor(null);
+					dreamingBooster = null;
+				}
+			}
+
 			public void Initialize()
 			{
 				foreach (BionicUpgradesMonitor.UpgradeComponentSlot upgradeComponentSlot in this.gameObject.GetSMI<BionicUpgradesMonitor.Instance>().upgradeComponentSlots)
@@ -105,8 +133,6 @@ namespace BionicBoostersPlus.Content.Scripts
 			}
 		}
 
-		public const float DataGatheringDuration = 600f;
-
 		public State noBooster;
 		public State idle;
 		public State dreaming;
@@ -115,15 +141,23 @@ namespace BionicBoostersPlus.Content.Scripts
 		{
 			base.serializable = SerializeType.ParamsOnly;
 			default_state = noBooster;
+
+			root.Enter(OnBoosterAdded)
+				.TriggerOnExit(GameHashes.BionicUpgradeWattageChanged)
+				.Exit(OnBoosterRemoved);
+
 			noBooster.Enter(FindAndAttachToInstalledBooster)
 				.GoTo(idle);
 
 			idle.TagTransition(GameTags.BionicBedTime, dreaming)
+				.TriggerOnEnter(GameHashes.BionicUpgradeWattageChanged)
 				.ToggleStatusItem(BB_StatusItems.DreamBooster_Idle)
 				.Enter(smi => smi.StopDreaming());
 			dreaming
+				.TriggerOnEnter(GameHashes.BionicUpgradeWattageChanged)
 				.TagTransition(GameTags.BionicBedTime, idle, true)
 				.ToggleStatusItem(BB_StatusItems.DreamBooster_Dreaming)
+				.Update(DreamGatheringUpdate)
 				.Enter(smi => smi.StartDreaming());
 		}
 	}
