@@ -17,6 +17,7 @@ namespace BionicBoostersPlus.Content.Scripts
 			{
 				return base.Data.WattageCost;
 			}
+			
 			public override string GetCurrentWattageCostName()
 			{
 				float currentWattageCost = GetCurrentWattageCost();

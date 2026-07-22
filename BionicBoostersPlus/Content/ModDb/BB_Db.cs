@@ -13,7 +13,7 @@ namespace BionicBoostersPlus.Content.ModDb
 			//BB_Effects.Register(db);
 			//BB_Accessories.Register(db.Accessories, db.AccessorySlots);
 			//BB_Personalities.RegisterPersonalities(db.Personalities);
-			//BB_StatusItems.InitStatusitems(db);
+			BB_StatusItems.InitStatusitems(db);
 			//BB_TUNING.RegisterType();
 			//BB_SkillGroups.Register(db.SkillGroups);
 			BB_SkillPerks.Register(db.SkillPerks);

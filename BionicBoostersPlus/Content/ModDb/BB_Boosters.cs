@@ -36,7 +36,7 @@ namespace BionicBoostersPlus.Content.ModDb
 			ConfigInstance = instance;
 			MakeBoosters_Overclocked(instance, boosterList);
 
-			//MakeBooster_Dreamer(instance, boosterList);
+			MakeBooster_Dreamer(boosterList);
 
 			//release reference.
 			ConfigInstance = null;
@@ -311,14 +311,6 @@ namespace BionicBoostersPlus.Content.ModDb
 			string id = DreamBoosterID;
 			string targetAttributeId = db.Attributes.Athletics.Id;
 
-			AttributeModifier[] modifiers = ConfigInstance.CreateBoosterModifiers(id, new Dictionary<string, float>()
-			{
-				{
-					targetAttributeId,
-					-8
-				}
-			});
-
 			SkillPerk[] skillPerks = [BB_SkillPerks.BB_BionicDream];
 
 			sb.Clear();
@@ -329,21 +321,22 @@ namespace BionicBoostersPlus.Content.ModDb
 			sb.AppendLine();
 			sb.AppendLine(string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME));
 
-			var boosterDef = new BionicUpgrade_SkilledWorker.Def(id, targetAttributeId, modifiers, skillPerks, null);
+			var boosterDef = new BionicUpgrade_DreamerBoosterMonitor.Def(id);
 			var boosterGO = BionicUpgradeComponentConfig.CreateNewUpgradeComponent(
 				id,
 				null,
 				null,
 				DreamBooster_Wattage,
-				(smi => new BionicUpgrade_SkilledWorker.Instance(smi.GetMaster(), boosterDef)),
+				(smi => new BionicUpgrade_DreamerBoosterMonitor.Instance(smi.GetMaster(), boosterDef)),
 				sb.ToString(),
 				DlcManager.DLC3,
-				"upgrade_disc_kanim",
-				"agriculture_0",
+				"bbp_dreambooster_kanim",
 				booster: BionicUpgradeComponentConfig.BoosterType.Sleep,
 				skillPerks: skillPerks,
 				recipeInputOverride: [new ComplexRecipe.RecipeElement((Tag)SleepClinicPajamas.ID, 1f), new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 4f)],
 				addTechItem: false);
+
+			boosterGO.AddOrGetDef<BionicUpgrade_DreamerBooster.Def>();
 
 			boosterList.Add(boosterGO);
 

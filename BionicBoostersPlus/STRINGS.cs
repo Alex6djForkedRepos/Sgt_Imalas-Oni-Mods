@@ -10,6 +10,48 @@ namespace BionicBoostersPlus
 {
 	internal class STRINGS
 	{
+		public class MISC
+		{
+			public class STATUSITEMS
+			{
+				public class DREAMBOOSTERJOURNALSTORAGEFULL
+				{
+					public static LocString NAME = (LocString)"Dowsing Complete";
+					public static LocString TOOLTIP = (LocString)$"This {PRE_KEYWORD}Dreaming Booster{PST_KEYWORD} has sufficient dream data stored to create a new dream journal.\n\nIt must be installed in a Bionic Duplicant in order to function";
+				}
+
+				public class DREAMBOOSTERJOURNALSTORAGE
+				{
+					public static LocString NAME = (LocString)"Stored Dreamdata: {0}";
+					public static LocString TOOLTIP = (LocString)$"{PRE_KEYWORD}Dreaming Boosters{PST_KEYWORD} retain dream data gathered by Bionic Duplicants\n\nWhen sufficient dream data is collected and this booster is installed in a Bionic Duplicant, a new dream journal will be generated";
+				}
+			}
+		}
+		public class DUPLICANTS
+		{
+			public class STATUSITEMS
+			{
+
+				public class DREAMBOOSTER_IDLE
+				{
+					public static LocString NAME = FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + " equipped";
+
+					public static LocString TOOLTIP = "This Duplicant can now produce " + FormatAsLink("Dream Journals", "DREAMJOURNAL") + " when defragmenting";
+				}
+				public class DREAMBOOSTER_DREAMING
+				{
+					public static LocString NAME = "Dreaming (of electic sheep)";
+
+					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
+				}
+				public class DREAMBOOSTERJOURNALSTORAGE
+				{
+					public static LocString NAME = "Dreaming (of electic sheep)";
+
+					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
+				}
+			}
+		}
 		public class ITEMS
 		{
 			public class BIONIC_BOOSTERS
