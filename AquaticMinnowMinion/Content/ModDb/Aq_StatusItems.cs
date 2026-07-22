@@ -12,9 +12,9 @@ namespace AquaticMinnowMinion.Content.ModDb
 		static string o2 = null;
 		public static void InitStatusitems(Db db)
 		{
-			var bsi = Db.Get().BuildingStatusItems;
+			var dsi = Db.Get().DuplicantStatusItems;
 
-			BreathingInAquatic = bsi.CreateStatusItem("BreathingInAquatic", "DUPLICANTS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, status_overlays: 130);
+			BreathingInAquatic = dsi.CreateStatusItem("BreathingInAquatic", "DUPLICANTS", "", StatusItem.IconType.Info, NotificationType.Neutral, false, OverlayModes.None.ID, status_overlays: 130);
 			BreathingInAquatic.resolveStringCallback = (Func<string, object, string>)((str, data) =>
 			{
 				OxygenBreather oxygenBreather = (OxygenBreather)data;
