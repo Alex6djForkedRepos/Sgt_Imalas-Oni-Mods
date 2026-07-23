@@ -1,66 +1,41 @@
-﻿//using Database;
-//using System;
-//using System.Collections.Generic;
-//using System.Text;
+﻿using Database;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-//namespace BionicBoostersPlus.Content.ModDb
-//{
-//	internal class BB_Skills
-//	{
-//		public static Skill
-//			 Adaptation_EyeProtection //Double Eyelids
-//			, Adaptation_GillProtection //Mucus Glands
-//			, Adaptation_Insulation //Blubber/Fat Layer
-//			, Adaptation_WaterBreathingRateReduction //idk, sth about rebreathing/slowing down heartrate when diving
-//			, Adaptation_SlimySkin
-//			;
+namespace BionicBoostersPlus.Content.ModDb
+{
+	internal class BB_Skills
+	{
+		public static Skill
+			Bionics_C3_Watts, //decreased wattage, perma stress relief
+			 Bionics_D3_Rads //RadiationResistance
+			;
 
-//		public static void Register(Skills __instance)
-//		{
-
-//			Adaptation_WaterBreathingRateReduction =
-//				__instance.AddSkill(new Skill("Adaptation_WaterBreathingRateReduction",
-//				ADAPTATION_WATERBREATHINGRATEREDUCTION.NAME,
-//				ADAPTATION_WATERBREATHINGRATEREDUCTION.TOOLTIP,
-//				0, "", "skillbadge_role_adaptation_gills",
-//				Aq_SkillGroups.ADAPTATION_ID,
-//				[Aq_SkillPerks.Adapt_WaterbreathingEfficiency, Db.Get().SkillPerks.IncreasedLungCapacity],
-//				null
-//				//, requiredDuplicantModel, dlc
-//				));
-
-//			Adaptation_EyeProtection =
-//				__instance.AddSkill(new Skill("Adaptation_EyeProtection",
-//				ADAPTATION_EYEPROTECTION.NAME,
-//				ADAPTATION_EYEPROTECTION.TOOLTIP,
-//				0, "", "skillbadge_role_adaptation_eye_protection",
-//				Aq_SkillGroups.ADAPTATION_ID,
-//				[Aq_SkillPerks.Adapt_EyeProtectionMinor, Aq_SkillPerks.Adapt_EyeProtectionMajor],
-//				null
-//				//, requiredDuplicantModel, dlc
-//				));
-
-//			Adaptation_Insulation =
-//				__instance.AddSkill(new Skill("Adaptation_Insulation",
-//				ADAPTATION_INSULATION.NAME,
-//				ADAPTATION_INSULATION.TOOLTIP,
-//				0, "", "skillbadge_role_adaptation_insulation",
-//				Aq_SkillGroups.ADAPTATION_ID,
-//				[Aq_SkillPerks.Adapt_ColdImmunity, Aq_SkillPerks.Adapt_FatLayer],
-//				null
-//				//, requiredDuplicantModel, dlc
-//				));
-
-//			Adaptation_GillProtection =
-//				__instance.AddSkill(new Skill("Adaptation_GillProtection",
-//				ADAPTATION_GILLPROTECTION.NAME,
-//				ADAPTATION_GILLPROTECTION.TOOLTIP,
-//				1, "", "skillbadge_role_adaptation_mucus",
-//				Aq_SkillGroups.ADAPTATION_ID,
-//				[Aq_SkillPerks.Adapt_SuitAirImmunity, Aq_SkillPerks.Adapt_ItchyGillsImmunity, Aq_SkillPerks.Adapt_GillMoisturizing, Aq_SkillPerks.Adapt_HeatImmunity],
-//				[Adaptation_WaterBreathingRateReduction.Id, Adaptation_EyeProtection.Id, Adaptation_Insulation.Id]
-//				//, requiredDuplicantModel, dlc
-//				));
-//		}
-//	}
-//}
+		public static void Register(Skills __instance)
+		{
+			Bionics_C3_Watts =
+				__instance.AddSkill(new Skill("Bionics_C3_Watts",
+				STRINGS.DUPLICANTS.ROLES.BIONICS_C3_WATTS.NAME,
+				STRINGS.DUPLICANTS.ROLES.BIONICS_C3_WATTS.TOOLTIP,
+				2, "", "skillbadge_bionic_schematics3",
+				Db.Get().SkillGroups.BionicSkills.Id,
+				[BB_SkillPerks.BB_Circuits_WattageReduction, BB_SkillPerks.BB_Circuits_StressRelief],
+				[__instance.BionicsC2.Id, __instance.BionicsD2.Id],
+				 GameTags.Minions.Models.Bionic.Name,
+				 [DlcManager.DLC3_ID]
+				));
+			Bionics_D3_Rads =
+				__instance.AddSkill(new Skill("Bionics_D3_Rads",
+				STRINGS.DUPLICANTS.ROLES.BIONICS_D3_RADS.NAME,
+				STRINGS.DUPLICANTS.ROLES.BIONICS_D3_RADS.TOOLTIP,
+				2, "", "skillbadge_bionic_hardware3",
+				Db.Get().SkillGroups.BionicSkills.Id,
+				DlcManager.IsExpansion1Active() ? [BB_SkillPerks.BB_Plating_RadResistance, BB_SkillPerks.BB_Plating_Health] : [BB_SkillPerks.BB_Plating_Health], //no rad resistence in base game
+				[__instance.BionicsD2.Id],
+				 GameTags.Minions.Models.Bionic.Name,
+				 [DlcManager.DLC3_ID]
+				));
+		}
+	}
+}

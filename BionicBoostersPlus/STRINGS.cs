@@ -50,9 +50,22 @@ namespace BionicBoostersPlus
 				{
 					public static LocString NAME = "Dreaming (of electric sheep)";
 
-					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
+					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equipping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
 				}
 				
+			}
+			public class ROLES
+			{
+				public class BIONICS_C3_WATTS
+				{
+					public static LocString NAME = FormatAsLink("Optimized Circuitry", nameof(BIONICS_C3_WATTS));
+					public static LocString TOOLTIP = "Optimizes the design of the Bionic Duplicants circuits, allowing them to run at a higher efficiency and with less disturbances of the organic components.";
+				}
+				public class BIONICS_D3_RADS
+				{
+					public static LocString NAME = FormatAsLink("Internal Plating", nameof(BIONICS_D3_RADS));
+					public static LocString TOOLTIP = "Allows Bionic Duplicants to work safely in areas with higher ambient radiation";
+				}
 			}
 		}
 		public class ITEMS
@@ -116,6 +129,10 @@ namespace BionicBoostersPlus
 					public class BB_REDUCEDWATERSTRESS
 					{
 						public static LocString DESCRIPTION = $"Reduces Stress from liquid exposure.";
+					}
+					public class BB_WATTAGEREDUCTION
+					{
+						public static LocString DESCRIPTION = "Power Draw";
 					}
 				}
 			}

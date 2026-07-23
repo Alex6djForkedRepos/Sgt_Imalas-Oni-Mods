@@ -66,6 +66,8 @@ namespace BionicBoostersPlus.Content.Scripts
 			private static GameObject dreamJournalPrefab;
 			Dreamer.Instance dreamer;
 			private BionicUpgrade_DreamerBooster.Instance dreamingBooster;
+
+			public float TimeToNextJournal => SecondsToMakeDreamjournal - SecondsToMakeDreamjournal * (dreamingBooster?.Progress ?? 0);
 			public bool CanSpawnDreamJournal => this.dreamingBooster != null && this.dreamingBooster.IsReady;
 			public bool IsDreaming() => IsInsideState(base.sm.dreaming);
 

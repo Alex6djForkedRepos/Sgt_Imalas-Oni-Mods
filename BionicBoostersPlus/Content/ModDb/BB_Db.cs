@@ -17,7 +17,7 @@ namespace BionicBoostersPlus.Content.ModDb
 			//BB_TUNING.RegisterType();
 			//BB_SkillGroups.Register(db.SkillGroups);
 			BB_SkillPerks.Register(db.SkillPerks);
-			//BB_Skills.Register(db.Skills);
+			BB_Skills.Register(db.Skills);
 			//BB_ChoreTypes.Register(db.ChoreTypes);
 			//BB_Traits.Register(db);
 		}

@@ -22,7 +22,7 @@ namespace BionicBoostersPlus.Content.Scripts
 					float randomPercentage = UnityEngine.Random.Range(minPercentage, maxPercentage);
 					float units = element.Units;
 
-					SgtLogger.l("Rolled random amount of products: " + randomPercentage);
+					//SgtLogger.l("Rolled random amount of products: " + randomPercentage);
 					float percentageUnits = Mathf.Clamp(Mathf.RoundToInt(randomPercentage * units), 1, units * maxPercentage);
 					element.Units = percentageUnits;
 				}
