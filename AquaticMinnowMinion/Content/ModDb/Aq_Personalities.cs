@@ -41,11 +41,15 @@ namespace AquaticMinnowMinion.Content.ModDb
 				SgtLogger.error("COULD NOT FIND MINNOW!");
 				return;
 			}
-			var a_minnow = AddAquaticMinionVariant(minnowReference, false, AQUATIC_MINNOW, global::STRINGS.DUPLICANTS.PERSONALITIES.MINNOW.NAME, Aq_Traits.Aquatic_Freediver);
+
+			bool makeAquaticCrew = Config.Instance.AquaticCrew;
+
+			//																				needs at least 1 valid aquatic minion or startscreen model lock crashes
+			var a_minnow = AddAquaticMinionVariant(minnowReference, !makeAquaticCrew, AQUATIC_MINNOW, global::STRINGS.DUPLICANTS.PERSONALITIES.MINNOW.NAME, Aq_Traits.Aquatic_Freediver);
 			personalities.Add(a_minnow);
 			SgtLogger.l("aquatic minnow registered");
 
-			if (Config.Instance.AquaticCrew)
+			if (makeAquaticCrew)
 			{
 				SgtLogger.l("registering dynamic personalities for the whole crew....");
 				foreach (var basePersonality in personalities.resources)
