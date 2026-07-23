@@ -61,6 +61,12 @@ namespace BionicBoostersPlus
 					public static LocString DESC = "Grants a Bionic Duplicant the ability to dream of electric sheep.";
 					public static LocString EFFECT = "Dreaming while Defragmenting";
 				}
+				public class BB_BOOSTER_BATTERYSLOT
+				{
+					public static LocString NAME = FormatAsLink("Battery Slot Booster", "BB_BOOSTER_BATTERYSLOT");
+					public static LocString DESC = "Allows the installation of another power bank using the space of booster's slot.\nThis booster is bending the specs of the bionic duplicant model, causing slight discomfort.";
+					public static LocString EFFECT = "Trading skills for power bank capacity";
+				}
 			}
 		}
 		public class BUILDINGS

@@ -20,9 +20,14 @@ namespace BionicBoostersPlus.Content.ModDb
 	internal class BB_Boosters
 	{
 		const string DreamBoosterID = "BB_Booster_Dream";
+		const string BatteryBoosterID = "BB_Booster_Batteryslot";
 
 		const float DreamBooster_Wattage = 60;
 		const float OC_Wattage = 10;
+
+		const float OC_Stressdelta = 15f;
+		const float Batteryslot_Stressdelta = 5f;
+
 		static StringBuilder sb = new StringBuilder();
 
 
@@ -37,6 +42,7 @@ namespace BionicBoostersPlus.Content.ModDb
 			MakeBoosters_Overclocked(instance, boosterList);
 
 			MakeBooster_Dreamer(boosterList);
+			MakeBooster_BatterySlot(boosterList);
 
 			//release reference.
 			ConfigInstance = null;
@@ -206,7 +212,7 @@ namespace BionicBoostersPlus.Content.ModDb
 
 		}
 
-		public static AttributeModifier[] GetOCModifiersForPrimaryAttribute(string boosterId, string primaryAttributeId, float primaryIncrease = 8, float athleticsIncrease = 4, float stressDeltaPerFycle = 15)
+		public static AttributeModifier[] GetOCModifiersForPrimaryAttribute(string boosterId, string primaryAttributeId, float primaryIncrease = 8, float athleticsIncrease = 4, float stressDeltaPerFycle = OC_Stressdelta)
 		{
 			Dictionary<string, float> attributes = new Dictionary<string, float>();
 
@@ -313,22 +319,31 @@ namespace BionicBoostersPlus.Content.ModDb
 
 			SkillPerk[] skillPerks = [BB_SkillPerks.BB_BionicDream];
 
-			sb.Clear();
-			sb.AppendLine(global::STRINGS.UI.UISIDESCREENS.BIONIC_SIDE_SCREEN.BOOSTER_ASSIGNMENT.HEADER_PERKS);
-			sb.AppendLine(STRINGS.ITEMS.BIONIC_BOOSTERS.BB_BOOSTER_DREAM.EFFECT);
-			sb.AppendLine();
-			sb.AppendLine(string.Format(global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.STANDARD_ACTIVE_TEMPLATE, global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.NAME, DreamBooster_Wattage));
-			sb.AppendLine();
-			sb.AppendLine(string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME));
+			AttributeModifier[] modifiers = ConfigInstance.CreateBoosterModifiers(id, new Dictionary<string, float>()
+			{
+				{
+					targetAttributeId,
+					-8
+				}
+			});
 
-			var boosterDef = new BionicUpgrade_DreamerBoosterMonitor.Def(id);
+			//sb.Clear();
+			//sb.AppendLine(global::STRINGS.UI.UISIDESCREENS.BIONIC_SIDE_SCREEN.BOOSTER_ASSIGNMENT.HEADER_PERKS);
+			//sb.AppendLine(STRINGS.ITEMS.BIONIC_BOOSTERS.BB_BOOSTER_DREAM.EFFECT);
+			//sb.AppendLine();
+			//sb.AppendLine(string.Format(global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.TOOLTIP.STANDARD_ACTIVE_TEMPLATE, global::STRINGS.DUPLICANTS.MODIFIERS.BIONIC_WATTS.NAME, DreamBooster_Wattage));
+			//sb.AppendLine();
+			//sb.AppendLine(string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME));
+
+
+			var boosterDef = new BionicUpgrade_DreamerBoosterMonitor.Def(id, modifiers);
 			var boosterGO = BionicUpgradeComponentConfig.CreateNewUpgradeComponent(
 				id,
 				null,
 				null,
 				DreamBooster_Wattage,
 				(smi => new BionicUpgrade_DreamerBoosterMonitor.Instance(smi.GetMaster(), boosterDef)),
-				sb.ToString(),
+				$"{boosterDef.GetDescription()}\n\n{string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME)}",
 				DlcManager.DLC3,
 				"bbp_dreambooster_kanim",
 				booster: BionicUpgradeComponentConfig.BoosterType.Sleep,
@@ -337,6 +352,48 @@ namespace BionicBoostersPlus.Content.ModDb
 				addTechItem: false);
 
 			boosterGO.AddOrGetDef<BionicUpgrade_DreamerBooster.Def>();
+
+			boosterList.Add(boosterGO);
+
+		}
+		public static void MakeBooster_BatterySlot(List<GameObject> boosterList)
+		{
+
+			var db = Db.Get();
+
+			string id = BatteryBoosterID;
+
+			AttributeModifier[] modifiers = ConfigInstance.CreateBoosterModifiers(id, new Dictionary<string, float>()
+			{
+				{
+					db.Attributes.BionicBatteryCountCapacity.Id,
+					1
+				},
+				{
+					db.Attributes.Athletics.Id,
+					2
+				},
+				{
+					db.Amounts.Stress.deltaAttribute.Id,
+					Batteryslot_Stressdelta / 600f
+				},
+			});
+
+			var boosterDef = new BionicUpgrade_BatterySlot.Def(id, modifiers);
+			var boosterGO = BionicUpgradeComponentConfig.CreateNewUpgradeComponent(
+				id,
+				null,
+				null,
+				0,
+				(smi => new BionicUpgrade_BatterySlot.Instance(smi.GetMaster(), boosterDef)),
+				$"{boosterDef.GetDescription()}\n\n{string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME)}",
+				DlcManager.DLC3,
+				"bbp_batterybooster_kanim",
+				booster: BionicUpgradeComponentConfig.BoosterType.Overclocked,
+				skillPerks: [],
+				recipeInputOverride: [new ComplexRecipe.RecipeElement(GameTags.RefinedMetal, 5f), new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 1f)],
+				addTechItem: false);
+
 
 			boosterList.Add(boosterGO);
 
