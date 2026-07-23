@@ -48,7 +48,7 @@ namespace BlueprintsV2.BlueprintsV2.BlueprintData.NoteToolPlacedEntities
 			selectable?.SetName(name);
 			this.gameObject.name = name;
 			description?.description = Text;
-			if (Symbol.Any() && SymbolMap.TryGetValue(Symbol, out var sprite))
+			if (!Symbol.IsNullOrWhiteSpace() && SymbolMap.TryGetValue(Symbol, out var sprite))
 			{
 				renderer?.material.mainTexture = sprite.texture;
 			}
