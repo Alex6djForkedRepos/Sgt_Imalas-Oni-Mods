@@ -10,7 +10,7 @@ namespace BionicBoostersPlus.Content.ModDb
 		{
 			//BB_Urges.Register(db.Urges);
 			//BB_Amounts.RegisterAmounts(db.Amounts);
-			//BB_Effects.Register(db);
+			BB_Effects.Register(db);
 			//BB_Accessories.Register(db.Accessories, db.AccessorySlots);
 			//BB_Personalities.RegisterPersonalities(db.Personalities);
 			BB_StatusItems.InitStatusitems(db);

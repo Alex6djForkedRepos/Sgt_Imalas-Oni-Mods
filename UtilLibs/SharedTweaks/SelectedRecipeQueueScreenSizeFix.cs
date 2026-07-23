@@ -18,7 +18,7 @@ namespace UtilLibs.SharedTweaks
 		{
 			new SelectedRecipeQueueScreenSizeFix().RegisterForForwarding();
 		}
-		public override Version Version => new Version(1, 0, 0, 0);
+		public override Version Version => new Version(1, 0, 0, 1);
 		public override void Initialize(Harmony plibInstance)
 		{
 			try
@@ -41,7 +41,7 @@ namespace UtilLibs.SharedTweaks
 			if (uiScale > 1f)
 				uiScale *= uiScale; ///stronger reduction at higher ui scales to account for other elements above and below it taking more space
 
-			float maxAvailableScreenSpaceAt1080p = 1080 - 448;
+			float maxAvailableScreenSpaceAt1080p = 1080 - 448 - 100;
 			if (__instance.RefreshMinionDisplayAnim())
 				maxAvailableScreenSpaceAt1080p -= 128;
 

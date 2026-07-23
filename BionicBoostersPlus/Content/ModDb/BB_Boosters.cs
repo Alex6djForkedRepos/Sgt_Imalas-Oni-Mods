@@ -21,12 +21,14 @@ namespace BionicBoostersPlus.Content.ModDb
 	{
 		const string DreamBoosterID = "BB_Booster_Dream";
 		const string BatteryBoosterID = "BB_Booster_Batteryslot";
+		const string WaterproofBoosterID = "BB_Booster_Waterproofed";
 
 		const float DreamBooster_Wattage = 60;
 		const float OC_Wattage = 10;
 
 		const float OC_Stressdelta = 15f;
 		const float Batteryslot_Stressdelta = 5f;
+		const float Waterproofed_ExtraOilConsumption = -5f;
 
 		static StringBuilder sb = new StringBuilder();
 
@@ -43,6 +45,7 @@ namespace BionicBoostersPlus.Content.ModDb
 
 			MakeBooster_Dreamer(boosterList);
 			MakeBooster_BatterySlot(boosterList);
+			MakeBooster_Waterproofing(boosterList);
 
 			//release reference.
 			ConfigInstance = null;
@@ -348,7 +351,7 @@ namespace BionicBoostersPlus.Content.ModDb
 				"bbp_dreambooster_kanim",
 				booster: BionicUpgradeComponentConfig.BoosterType.Sleep,
 				skillPerks: skillPerks,
-				recipeInputOverride: [new ComplexRecipe.RecipeElement((Tag)SleepClinicPajamas.ID, 1f), new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 4f)],
+				recipeInputOverride: [new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 6f), new ComplexRecipe.RecipeElement((Tag)SleepClinicPajamas.ID, 1f)],
 				addTechItem: false);
 
 			boosterGO.AddOrGetDef<BionicUpgrade_DreamerBooster.Def>();
@@ -375,7 +378,7 @@ namespace BionicBoostersPlus.Content.ModDb
 				},
 				{
 					db.Amounts.Stress.deltaAttribute.Id,
-					Batteryslot_Stressdelta / 600f
+					Batteryslot_Stressdelta / CONSTS.CYCLE_LENGTH
 				},
 			});
 
@@ -391,7 +394,45 @@ namespace BionicBoostersPlus.Content.ModDb
 				"bbp_batterybooster_kanim",
 				booster: BionicUpgradeComponentConfig.BoosterType.Overclocked,
 				skillPerks: [],
-				recipeInputOverride: [new ComplexRecipe.RecipeElement(GameTags.RefinedMetal, 5f), new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 1f)],
+				recipeInputOverride: [new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 2f), new ComplexRecipe.RecipeElement(RefinementRecipeHelper.GetAllMetals().ToArray(), 5f)],
+				addTechItem: false);
+
+
+			boosterList.Add(boosterGO);
+
+		}		
+		public static void MakeBooster_Waterproofing(List<GameObject> boosterList)
+		{
+
+			var db = Db.Get();
+
+			string id = WaterproofBoosterID;
+
+			AttributeModifier[] modifiers = ConfigInstance.CreateBoosterModifiers(id, new Dictionary<string, float>()
+			{
+				{
+					db.Attributes.Athletics.Id,
+					4
+				},
+				{
+					db.Amounts.BionicOil.deltaAttribute.Id, Waterproofed_ExtraOilConsumption / CONSTS.CYCLE_LENGTH
+				}
+			});
+			SkillPerk[] skillPerks = [BB_SkillPerks.BB_ReducedWaterStress];
+
+			var boosterDef = new BionicUpgrade_SkilledWorker.Def(id, db.Attributes.Athletics.Id, modifiers,skillPerks);
+			var boosterGO = BionicUpgradeComponentConfig.CreateNewUpgradeComponent(
+				id,
+				null,
+				null,
+				0,
+				(smi => new BionicUpgrade_SkilledWorker.Instance(smi.GetMaster(), boosterDef)),
+				$"{boosterDef.GetDescription()}\n\n{string.Format(global::STRINGS.ITEMS.BIONIC_BOOSTERS.FABRICATION_SOURCE, global::STRINGS.BUILDINGS.PREFABS.ADVANCEDCRAFTINGTABLE.NAME)}",
+				DlcManager.DLC3,
+				"bbp_waterproofbooster_kanim",
+				booster: BionicUpgradeComponentConfig.BoosterType.Intermediate,
+				skillPerks: skillPerks,
+				recipeInputOverride: [new ComplexRecipe.RecipeElement(PowerStationToolsConfig.tag, 6f), new ComplexRecipe.RecipeElement(RefinementRecipeHelper.GetPlastics().ToArray(), 5f)],
 				addTechItem: false);
 
 

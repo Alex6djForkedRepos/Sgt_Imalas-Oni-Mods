@@ -12,8 +12,6 @@ namespace BionicBoostersPlus.Content.Scripts
 {
 	internal class BionicUpgrade_BatterySlot : BionicUpgrade_SM<BionicUpgrade_BatterySlot, BionicUpgrade_BatterySlot.Instance>
 	{
-		public const float SecondsToMakeDreamjournal = 300;
-
 		public static void OnBoosterAdded(Instance smi)
 		{
 			smi.OnAdded();
@@ -47,6 +45,7 @@ namespace BionicBoostersPlus.Content.Scripts
 		{
 			[MyCmpGet]
 			public MinionResume resume;
+			public AttributeModifier inWaterStressReduction;
 
 
 			public Instance(IStateMachineTarget master, Def def) : base(master, def)

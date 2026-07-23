@@ -16,7 +16,7 @@ namespace BionicBoostersPlus
 			{
 				public class DREAMBOOSTERJOURNALSTORAGEFULL
 				{
-					public static LocString NAME = (LocString)"Dowsing Complete";
+					public static LocString NAME = (LocString)"Dream Recorded";
 					public static LocString TOOLTIP = (LocString)$"This {PRE_KEYWORD}Dreaming Booster{PST_KEYWORD} has sufficient dream data stored to create a new dream journal.\n\nIt must be installed in a Bionic Duplicant in order to function";
 				}
 
@@ -29,9 +29,17 @@ namespace BionicBoostersPlus
 		}
 		public class DUPLICANTS
 		{
+			public class MODIFIERS
+			{
+				public class BB_WATERPROOFEDSTRESSREDUCTION
+				{
+					public static LocString NAME = "Hydrophobic Coating";
+					public static LocString TOOLTIP = "This Bionic Duplicant got its internal components covered in an extra thick layer of gear oil,\nprotecting them from most adverse effects of water based problems.\nCauses increased gear oil consumption";
+				}
+
+			}
 			public class STATUSITEMS
 			{
-
 				public class DREAMBOOSTER_IDLE
 				{
 					public static LocString NAME = FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + " equipped";
@@ -44,6 +52,7 @@ namespace BionicBoostersPlus
 
 					public static LocString TOOLTIP = "This Duplicant is adventuring through their own subconscious\n\nBionic Dreams are caused by equpping a " + FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM") + "\n\n" + FormatAsLink("Dream Journal", "DREAMJOURNAL") + " will be ready in {time}";
 				}
+				
 			}
 		}
 		public class ITEMS
@@ -59,13 +68,19 @@ namespace BionicBoostersPlus
 				{
 					public static LocString NAME = FormatAsLink("Dreaming Booster", "BB_BOOSTER_DREAM");
 					public static LocString DESC = "Grants a Bionic Duplicant the ability to dream of electric sheep.";
-					public static LocString EFFECT = "Dreaming while Defragmenting";
+					//public static LocString EFFECT = "Dreaming while Defragmenting";
 				}
 				public class BB_BOOSTER_BATTERYSLOT
 				{
 					public static LocString NAME = FormatAsLink("Battery Slot Booster", "BB_BOOSTER_BATTERYSLOT");
 					public static LocString DESC = "Allows the installation of another power bank using the space of booster's slot.\nThis booster is bending the specs of the bionic duplicant model, causing slight discomfort.";
-					public static LocString EFFECT = "Trading skills for power bank capacity";
+					//public static LocString EFFECT = "Trading skills for power bank capacity";
+				}
+				public class BB_BOOSTER_WATERPROOFED
+				{
+					public static LocString NAME = FormatAsLink("Waterproofing Booster", "BB_BOOSTER_WATERPROOFED");
+					public static LocString DESC = "Coats the internal electric components of the Bionic Duplicant in a thick layer of gear oil,\nprotecting them from most adverse effects of water induced stress.";
+					//public static LocString EFFECT = "Trading skills for power bank capacity";
 				}
 			}
 		}
@@ -97,6 +112,10 @@ namespace BionicBoostersPlus
 					public class BB_BIONICDREAM
 					{
 						public static LocString DESCRIPTION = $"Ability to dream while defragmenting.";
+					}
+					public class BB_REDUCEDWATERSTRESS
+					{
+						public static LocString DESCRIPTION = $"Reduces Stress from liquid exposure.";
 					}
 				}
 			}
