@@ -19,6 +19,21 @@ msgid ""
 msgstr ""
 "Бионические дубликанты имеют встроенную реакцию на стресс, поскольку они в большинстве случаев несовместимы с нормальными реакциями на стресс"
 
+#. SetStartDupes.STRINGS.DSS_PREFERSWARMER_WARNING
+msgctxt "SetStartDupes.STRINGS.DSS_PREFERSWARMER_WARNING"
+msgid ""
+"<color=#FF0000FF><b>WARNING!\n"
+"</b></color>This trait can lead to a negative duplicant insulation value, which will lead to a bug with dupes constantly heating up, as well "
+"as potential crashes.\n"
+"This can be counteracted with a warm coat or snazzy suit.\n"
+"<b>Use at your own risk!</b>"
+msgstr ""
+"<color=#FF0000FF><b>ПРЕДУПРЕЖДЕНИЕ!\n"
+"</b></color>Эта особенность может привести к отрицательному значению теплоизоляции у дубликантов, что вызовет ошибку, из-за которой дубликанты "
+"будут постоянно перегреваться, а также может привести к сбоям в игре.\n"
+"Этому можно противодействовать, одев тёплое пальто или шикарный костюм.\n"
+"<b>Используйте на свой страх и риск!</b>"
+
 #. SetStartDupes.STRINGS.EXCLUSIVITY_RULE_CONFLICTING
 msgctxt "SetStartDupes.STRINGS.EXCLUSIVITY_RULE_CONFLICTING"
 msgid ""
@@ -110,6 +125,11 @@ msgstr "Удалить"
 msgctxt "SetStartDupes.STRINGS.UI.BUTTONS.REROLLCAREPACKAGE"
 msgid "Переделать для получения другой посылки"
 msgstr "Переделать для получения другой посылки"
+
+#. SetStartDupes.STRINGS.UI.BUTTONS.SELECTCAREPACKAGE
+msgctxt "SetStartDupes.STRINGS.UI.BUTTONS.SELECTCAREPACKAGE"
+msgid "Select a Care Package from a list of currently available ones."
+msgstr "Выбрать посылку из списка доступных"
 
 #. SetStartDupes.STRINGS.UI.CAREPACKAGEEDITOR.BUTTONS.CLOSEBUTTON.TEXT
 msgctxt "SetStartDupes.STRINGS.UI.CAREPACKAGEEDITOR.BUTTONS.CLOSEBUTTON.TEXT"
@@ -501,6 +521,20 @@ msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.DUPLICANTSTARTAMOUNT.TOOLTIP"
 msgid "Выберите количество дубликантов, с которым вы хотите начать игру."
 msgstr "Выберите количество дубликантов, с которым вы хотите начать игру."
 
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.NAME
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.NAME"
+msgid "Extra starting skill points"
+msgstr "Доп. начальные очки навыков"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.TOOLTIP
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.EXTRA_SKILL_POINTS.TOOLTIP"
+msgid ""
+"Add extra skill points to new duplicant via a selection in the modification window.\n"
+"Requires printing pod duplicant modification to be active to add extra skillpoints to printing pod duplicants."
+msgstr ""
+"Добавляет дополнительные очки навыков новому дубликату, выбрав соответствующий пункт в окне модификации.\n"
+"Требуется активировать модификацию дубликанта из печатного станка, чтобы добавить дополнительные очки навыков к дубликатам из печатного станка."
+
 #. SetStartDupes.STRINGS.UI.DSS_OPTIONS.FORCEPRINTINGMODEL.NAME
 msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.FORCEPRINTINGMODEL.NAME"
 msgid "Печатать только определённые модели дубликантов"
@@ -558,6 +592,22 @@ msgstr "Включить редактор дубликантов в стиле D
 msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.LIVEDUPESTATCHANGE.TOOLTIP"
 msgid "Редактируйте своих активных дубликантов в новом редакторе, похожем на редактор сохраненных игр Duplicity"
 msgstr "Редактируйте своих активных дубликантов в новом редакторе, похожем на редактор сохраненных игр Duplicity"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.MINNOWSKIN.NAME
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.MINNOWSKIN.NAME"
+msgid "Minnow Skin"
+msgstr "Скин Рыбки"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.MINNOWSKIN.TOOLTIP
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.MINNOWSKIN.TOOLTIP"
+msgid ""
+"Adds Minnow to the pool of selectable skins\n"
+"once the aquatic initiative has been completed atleast once on any savegame.\n"
+"Requires Aquatic Planet Pack DLC."
+msgstr ""
+"Добавляет Рыбку в список выбираемых скинов после того, как \n"
+"сюжетная линия будет пройдена хотя бы один раз в любой сохранённой игре.\n"
+"Требуется набор \"Водная планета\"."
 
 #. SetStartDupes.STRINGS.UI.DSS_OPTIONS.MODIFYDURINGGAME_CAREPACKAGES.NAME
 msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.MODIFYDURINGGAME_CAREPACKAGES.NAME"
@@ -855,6 +905,42 @@ msgid ""
 msgstr ""
 "Количество дней, на которое должны быть выделены дополнительные стартовые ресурсы.\n"
 "Не действует, если функция \"Дополнительные стартовые ресурсы\" отключена."
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVEL_CAP_MOD.NAME
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVEL_CAP_MOD.NAME"
+msgid "Attribute Leveling Cap"
+msgstr "Максимальный уровень атрибутов"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVEL_CAP_MOD.TOOLTIP
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVEL_CAP_MOD.TOOLTIP"
+msgid ""
+"Changes the maximum level up to which duplicants can gain levels in attributes.\n"
+"If other mods add a higher target, it will be used instead of the configured value.\n"
+"Default Vanilla Cap: 20"
+msgstr ""
+"Изменяет максимальный уровень, до которого дубликанты могут повышать уровни атрибутов.\n"
+"Если другие моды добавляют более высокое целевое значение, оно будет использоваться вместо заданного значения.\n"
+"Максимальный уровень по умолчанию: 20"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_ATTRIBUTES.NAME
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_ATTRIBUTES.NAME"
+msgid "XP Multiplier Attributes"
+msgstr "Множитель опыта атрибутов"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_ATTRIBUTES.TOOLTIP
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_ATTRIBUTES.TOOLTIP"
+msgid "Multiply the XP gains that duplicants individual attributes."
+msgstr "Умножает опыт, который получают дубликанты за использование атрибутов."
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_SKILLS.NAME
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_SKILLS.NAME"
+msgid "XP Multiplier Skills"
+msgstr "Множитель опыта навыков"
+
+#. SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_SKILLS.TOOLTIP
+msgctxt "SetStartDupes.STRINGS.UI.DSS_OPTIONS.XP_LEVELING_MULTIPLIER_SKILLS.TOOLTIP"
+msgid "Multiply the XP gains of duplicants skill leveling (skill points level)"
+msgstr "Умножает опыт, получаемый дубликантами при повышении уровня навыков (уровень очков навыков)."
 
 #. SetStartDupes.STRINGS.UI.DUPEEDITING.CATEGORIES.HEADER.LABEL
 msgctxt "SetStartDupes.STRINGS.UI.DUPEEDITING.CATEGORIES.HEADER.LABEL"

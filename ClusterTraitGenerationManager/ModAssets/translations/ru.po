@@ -10,7 +10,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Application: Oxygen Not IncludedPOT Version: 2.0\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #. ClusterTraitGenerationManager.STRINGS.CLUSTER_NAMES.CGM.DESCRIPTION
 msgctxt "ClusterTraitGenerationManager.STRINGS.CLUSTER_NAMES.CGM.DESCRIPTION"
@@ -1328,10 +1328,24 @@ msgctxt "ClusterTraitGenerationManager.STRINGS.UI.GENERIC_YESNO.YES"
 msgid "Yes"
 msgstr "Да"
 
+#. ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.GENERICGEYSER
+msgctxt "ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.GENERICGEYSER"
+msgid "This geyser is <style=\"KKeyword\"><b>generic</b></style> and can generate randomly."
+msgstr "Этот гейзер <style=\"KKeyword\"><b>общий</b></style> и может генерироваться случайным образом."
+
 #. ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.INFO_ONLY
 msgctxt "ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.INFO_ONLY"
 msgid "Эти данные приведены только для информации и не являются настраиваемыми."
 msgstr "Эти данные приведены только для информации и не являются настраиваемыми."
+
+#. ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.NONGENERICGEYSER
+msgctxt "ClusterTraitGenerationManager.STRINGS.UI.INFOTOOLTIPS.NONGENERICGEYSER"
+msgid ""
+"This geyser is <style=\"KKeyword\"><b>non-generic</b></style> and can only generate naturally when declared in the worldgen file of the asteroid.\n"
+"By default, it cannot get spawned in from the \"Geoactive\" trait or similar modded variants."
+msgstr ""
+"Этот гейзер <style=\"KKeyword\"><b>не общий</b></style> и может генерироваться естественным путем только в том случае, если он указан в файле генерации астероида.\n"
+"По умолчанию он не может быть создан характиристикой \"геоактивный\" или подобных модифицированных вариантов."
 
 #. ClusterTraitGenerationManager.STRINGS.UI.SEEDLOCK.NAME
 msgctxt "ClusterTraitGenerationManager.STRINGS.UI.SEEDLOCK.NAME"
