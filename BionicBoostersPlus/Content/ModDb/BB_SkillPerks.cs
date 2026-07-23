@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using UtilLibs;
+using static STRINGS.UI.ROLES_SCREEN.PERKS;
 
 namespace BionicBoostersPlus.Content.ModDb
 {
@@ -13,6 +14,7 @@ namespace BionicBoostersPlus.Content.ModDb
 			BB_BionicDream,
 			BB_BionicCarryCapacityOC,
 			BB_ReducedWaterStress,
+			BB_CanCraftOverclocks,
 
 			BB_Plating_RadResistance,
 			BB_Plating_Health,
@@ -36,6 +38,7 @@ namespace BionicBoostersPlus.Content.ModDb
 
 			var stressDelta = db.Amounts.Stress.deltaAttribute.Id;
 
+			BB_CanCraftOverclocks = __instance.Add(new SimpleSkillPerk(nameof(BB_CanCraftOverclocks), string.Format(CAN_USE_BUILDING.DESCRIPTION, STRINGS.BUILDINGS.PREFABS.BBP_MK3BOOSTERMAKER.NAME)));
 			BB_BionicDream = __instance.Add(new SimpleSkillPerk(nameof(BB_BionicDream), STRINGS.UI.ROLES_SCREEN.PERKS.BB_BIONICDREAM.DESCRIPTION));
 			BB_BionicCarryCapacityOC = __instance.Add(new SkillAttributePerk(nameof(BB_BionicCarryCapacityOC), Db.Get().Attributes.CarryAmount.Id, 500f, BB_Boosters.GetOCName(BionicUpgradeComponentConfig.Booster_Carry1), true));
 			BB_ReducedWaterStress = __instance.Add(new SimpleSkillPerk(nameof(BB_ReducedWaterStress), STRINGS.UI.ROLES_SCREEN.PERKS.BB_REDUCEDWATERSTRESS.DESCRIPTION));

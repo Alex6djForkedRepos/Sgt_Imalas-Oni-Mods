@@ -22,7 +22,7 @@
 
 	<!-- Mod Info -->
 	<PropertyGroup>
-		<ModName>BionicBoostersPlus</ModName>
+		<ModName>Bionics Expanded</ModName>
 		<ModDescription></ModDescription>
 		<MinimumSupportedBuild>$(TargetGameVersion)</MinimumSupportedBuild>
 		<APIVersion>2</APIVersion>

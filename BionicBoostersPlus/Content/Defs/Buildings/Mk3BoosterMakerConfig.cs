@@ -1,4 +1,5 @@
-﻿using BionicBoostersPlus.Content.Scripts;
+﻿using BionicBoostersPlus.Content.ModDb;
+using BionicBoostersPlus.Content.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace BionicBoostersPlus.Content.Defs.Buildings
 			buildingDef.ViewMode = OverlayModes.Power.ID;
 			buildingDef.AudioCategory = "Metal";
 			buildingDef.PowerInputOffset = new CellOffset(0, 0);
-			buildingDef.RequiredSkillPerkID = Db.Get().SkillPerks.CanCraftElectronics.Id;
+			buildingDef.RequiredSkillPerkID = BB_SkillPerks.BB_CanCraftOverclocks.Id;
 			if (DlcManager.IsExpansion1Active())
 			{
 				buildingDef.UseHighEnergyParticleInputPort = true;

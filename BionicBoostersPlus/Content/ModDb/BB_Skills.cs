@@ -14,6 +14,9 @@ namespace BionicBoostersPlus.Content.ModDb
 
 		public static void Register(Skills __instance)
 		{
+			__instance.BionicsC2.perks.Add(BB_SkillPerks.BB_CanCraftOverclocks);
+			__instance.Engineering1.perks.Add(BB_SkillPerks.BB_CanCraftOverclocks);
+
 			Bionics_C3_Watts =
 				__instance.AddSkill(new Skill("Bionics_C3_Watts",
 				STRINGS.DUPLICANTS.ROLES.BIONICS_C3_WATTS.NAME,
