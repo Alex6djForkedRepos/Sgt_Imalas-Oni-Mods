@@ -44,6 +44,7 @@ namespace AquaticMinnowMinion.Content.ModDb
 
 			bool makeAquaticCrew = Config.Instance.AquaticCrew;
 
+
 			//																				needs at least 1 valid aquatic minion or startscreen model lock crashes
 			var a_minnow = AddAquaticMinionVariant(minnowReference, !makeAquaticCrew, AQUATIC_MINNOW, global::STRINGS.DUPLICANTS.PERSONALITIES.MINNOW.NAME, Aq_Traits.Aquatic_Freediver);
 			personalities.Add(a_minnow);
