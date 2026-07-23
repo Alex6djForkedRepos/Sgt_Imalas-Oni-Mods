@@ -1,4 +1,6 @@
 ﻿using BionicBoostersPlus.Content.ModDb;
+using Database;
+using Klei.AI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,9 +30,32 @@ namespace BionicBoostersPlus.Content.Scripts
 			smi.OnRemoved();
 		}
 
-		public static void DreamGatheringUpdate(Instance smi,float dt)
+		public static void DreamGatheringUpdate(Instance smi, float dt)
 		{
 			smi.GatheringDataUpdate(dt);
+		}
+
+		public new class Def : BionicUpgrade_SM<BionicUpgrade_DreamerBoosterMonitor, Instance>.Def
+		{
+			public AttributeModifier[] modifiers;
+			public Def(string upgradeID, AttributeModifier[] modifiers = null) : base(upgradeID)
+			{
+				this.modifiers = modifiers;
+			}
+			public override string GetDescription()
+			{
+				string description = global::STRINGS.UI.UISIDESCREENS.BIONIC_SIDE_SCREEN.BOOSTER_ASSIGNMENT.HEADER_PERKS;
+				description += "\n";
+				description += SkillPerk.GetDescription(BB_SkillPerks.BB_BionicDream.Id);
+				description += "\n\n";
+				if (this.modifiers.Length != 0)
+				{
+					description += global::STRINGS.UI.UISIDESCREENS.BIONIC_SIDE_SCREEN.BOOSTER_ASSIGNMENT.HEADER_ATTRIBUTES;
+					for (int index = 0; index < this.modifiers.Length; ++index)
+						description = $"{description + "\n"}{this.modifiers[index].GetName()}: {this.modifiers[index].GetFormattedString()}";
+				}
+				return description;
+			}
 		}
 
 		public new class Instance : BaseInstance
@@ -68,14 +93,28 @@ namespace BionicBoostersPlus.Content.Scripts
 			public void OnAdded()
 			{
 				InitDreamer();
+				ToggleAttributeModifiers(true);
 			}
 			public void OnRemoved()
 			{
 				StopDreaming();
-				if(dreamingBooster != null)
+				ToggleAttributeModifiers(false);
+				if (dreamingBooster != null)
 				{
 					dreamingBooster.SetMonitor(null);
 					dreamingBooster = null;
+				}
+			}
+			private void ToggleAttributeModifiers(bool on)
+			{
+				Klei.AI.Attributes attributes = this.resume.GetIdentity.GetAttributes();
+
+				foreach (AttributeModifier modifier in ((BionicUpgrade_DreamerBoosterMonitor.Def)this.smi.def).modifiers)
+				{
+					if (on)
+						attributes.Add(modifier);
+					else
+						attributes.Remove(modifier);
 				}
 			}
 

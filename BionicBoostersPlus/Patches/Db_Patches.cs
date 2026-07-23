@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BionicBoostersPlus.Content.Scripts
+namespace BionicBoostersPlus.Patches
 {
 	class Db_Patches
 	{
