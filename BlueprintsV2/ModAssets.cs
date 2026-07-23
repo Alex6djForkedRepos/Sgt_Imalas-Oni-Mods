@@ -705,6 +705,42 @@ namespace BlueprintsV2
 			return Mathf.Min(def.Temperature, minMeltTemp);
 		}
 
+		public static int IconSort(string x, string y)
+		{
+			int arrow = CompareArrow(x, y);
+			if (arrow != 0)
+				return arrow;
+			int num = CompareNumber(x, y);
+			if (num != 0)
+				return num;
+			return x.CompareTo(y);
+		}
+
+
+		private static int CompareArrow(string first, string second)
+		{
+			bool firstContains = first.IndexOf("_arrow_") != -1;
+			bool secondContains = second.IndexOf("_arrow_") != -1;
+
+			if (firstContains && !secondContains)
+				return 1;
+			else if (!firstContains && secondContains)
+				return -1;
+			return 0;
+		}
+		private static int CompareNumber(string first, string second)
+		{
+			bool firstContains = first.IndexOf("_num_") != -1;
+			bool secondContains = second.IndexOf("_num_") != -1;
+
+			if (firstContains && !secondContains)
+				return 1;
+			else if (!firstContains && secondContains)
+				return -1;
+			return 0;
+		}
+
+
 		public static class ActionKeys
 		{
 			public static readonly string ACTION_CREATE_KEY = "BlueprintsV2.create.opentool";

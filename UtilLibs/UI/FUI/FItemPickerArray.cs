@@ -56,10 +56,12 @@ namespace UtilLibs.UI.FUI
 		public string SelectedEntry = string.Empty;
 		public event Action<string> OnSelectionChanged;
 		Dictionary<string, Sprite> _values = [];
+		Comparison<string> _sortFunction = null;
 
-		public void Init(Dictionary<string, Sprite> vals)
+		public void Init(Dictionary<string, Sprite> vals, Comparison<string> sorter)
 		{
 			_values = vals;
+			_sortFunction = sorter;
 			InitPallette();
 		}
 
@@ -83,23 +85,33 @@ namespace UtilLibs.UI.FUI
 		{
 			Prefab = transform.Find("Item").gameObject.AddComponent<FItemPickerEntry>();
 			Prefab.gameObject.SetActive(false);
-
 			for (int i = transform.childCount - 1; i >= 0; i--)
 			{
 				var child = transform.GetChild(i);
 				if (child.gameObject != Prefab.gameObject)
 					Destroy(child.gameObject);
 			}
+			PalletteEntries.Clear();
 
-			foreach (var vals in _values)
+			List<string> keysOrdered = _values.Keys.ToList();
+			if (_sortFunction != null)
 			{
+				keysOrdered.Sort(_sortFunction);
+				//SgtLogger.l("Sorted items");
+			}
+			//else
+				//SgtLogger.l("no sorting...");
+
+			foreach (var key in keysOrdered)
+			{
+				//SgtLogger.l("Adding icon: " + key);
 				var entry = Util.KInstantiateUI<FItemPickerEntry>(Prefab.gameObject, gameObject);
-				entry.Init(vals.Key, vals.Value, OnSelectItem);
+				entry.Init(key, _values[key], OnSelectItem);
 				entry.gameObject.SetActive(true);
-				PalletteEntries[vals.Key] = entry;
+				PalletteEntries[key] = entry;
 			}
 			if (_values != null && _values.Keys.Any())
-				SelectedEntry = _values.Keys.First();
+				SelectedEntry = keysOrdered.First();
 		}
 		void RefreshPallette()
 		{

@@ -11,6 +11,7 @@ using System.Text;
 using UnityEngine;
 using UtilLibs;
 using static BlueprintsV2.ModAssets;
+using static MathUtil;
 
 namespace BlueprintsV2.BlueprintData
 {
@@ -24,6 +25,7 @@ namespace BlueprintsV2.BlueprintData
 		public static readonly string DiggingSpots = "digcommands";
 		public static readonly string WorldNotes = "worldNotes";
 		public static readonly string ModIntegration_PlanningTool_Items = "planningtoolmod_shapecollection";
+		public static readonly string Metadata = "metadata";
 
 		public static readonly string IconId = "icon";
 		public static readonly string IconTint = "icontint";
@@ -111,6 +113,17 @@ namespace BlueprintsV2.BlueprintData
 		/// ... at least that was the plan, its unused currently
 		/// </summary>
 		public int[,] TileMap = null;
+
+		/// <summary>
+		/// A storage container for a bunch of optional metadata that can be used by
+		/// other platforms to store additional information in the blueprint so it survives roundtrips.
+		/// The mod currently does not make use of this, but might do so in the future.
+		/// </summary>
+		public Dictionary<string, string> Metadata { get; private set; } = new()
+		//{
+		//	{"TestingMetadataKey","TestingMetadataValue" }
+		//}
+		;
 
 		/// <summary>
 		/// Create a new blueprint at the given file location.
@@ -549,6 +562,28 @@ namespace BlueprintsV2.BlueprintData
 					}
 				}
 			}
+			JToken metadataToken = rootObject.SelectToken(JsonKeys.Metadata);
+
+			if (metadataToken is JObject metadataObject)
+			{
+				Metadata = new Dictionary<string, string>();
+				try
+				{
+					foreach (JProperty property in metadataObject.Properties())
+					{
+						if (property.Value.Type != JTokenType.String)
+						{
+							continue;
+						}
+
+						Metadata[property.Name] = property.Value.Value<string>();
+					}
+				}
+				catch (JsonException e)
+				{
+					SgtLogger.warning("Error while deserializing blueprint metadata:\n" + e.Message);
+				}
+			}
 			SanitizePositions();
 		}
 
@@ -694,6 +729,17 @@ namespace BlueprintsV2.BlueprintData
 					jsonWriter.WriteEndObject();
 				}
 				jsonWriter.WriteEndArray();
+			}
+			if (Metadata.Any())
+			{
+				jsonWriter.WritePropertyName(JsonKeys.Metadata);
+				jsonWriter.WriteStartObject();
+				foreach (var kvp in Metadata)
+				{
+					jsonWriter.WritePropertyName(kvp.Key);
+					jsonWriter.WriteValue(kvp.Value);
+				}
+				jsonWriter.WriteEndObject();
 			}
 
 			jsonWriter.WriteEndObject();

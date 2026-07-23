@@ -69,7 +69,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 			transform.Find("Buttons").gameObject.SetActive(false);
 
 			SymbolPicker = transform.Find("SymbolPicker").gameObject.AddOrGet<FItemPickerArray>();
-			SymbolPicker.Init(TextNote.SymbolMap);
+			SymbolPicker.Init(TextNote.SymbolMap, ModAssets.IconSort);
 			SymbolPicker.OnSelectionChanged += SetSymbol;
 
 			ColorPicker = transform.Find("ColorPicker").gameObject.AddOrGet<FColorPickerArray>();

@@ -93,7 +93,7 @@ namespace BlueprintsV2.BlueprintsV2.UnityUI
 		void Init()
 		{
 			SymbolPicker = transform.Find("SymbolPicker").gameObject.AddOrGet<FItemPickerArray>();
-			SymbolPicker.Init(TextNote.SymbolMap);
+			SymbolPicker.Init(TextNote.SymbolMap, ModAssets.IconSort);
 
 			ColorPicker = transform.Find("ColorPicker").gameObject.AddOrGet<FColorPickerArray>();
 			TextMode = transform.Find("Buttons/TextToggle").gameObject.AddOrGet<FToggleButton>();
