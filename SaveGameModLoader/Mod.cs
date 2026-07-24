@@ -112,6 +112,7 @@ namespace SaveGameModLoader
 			ModSyncUtils.RegisterModAsSyncMod(this.mod);
 			base.OnLoad(harmony);
 			Steam_MakeMod.TryPatchingSteam(harmony);
+			harmony.RegisterForLocalization(typeof(STRINGS), true);
 
 		}
 		public override void OnAllModsLoaded(Harmony harmony, IReadOnlyList<KMod.Mod> mods)

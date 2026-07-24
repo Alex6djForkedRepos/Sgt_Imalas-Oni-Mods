@@ -41,6 +41,10 @@ namespace SaveGameModLoader
 		[JsonProperty]
 		public bool ShowAuthorNamesAlways { get; set; } = false;
 
+		[Option("STRINGS.MPM_CONFIG.HIDEINCOMPATIBLESAVES.NAME", "STRINGS.MPM_CONFIG.HIDEINCOMPATIBLESAVES.TOOLTIP")]
+		[JsonProperty]
+		public bool HideIncompatibleSaves { get; set; } = true;
+
 		public Config()
 		{
 			ModProfileFolder = FileSystem.Normalize(Path.Combine(Path.Combine(KMod.Manager.GetDirectory(), "config"), "[ModSync]StoredModConfigs"));

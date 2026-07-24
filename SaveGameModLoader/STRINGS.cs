@@ -43,6 +43,11 @@ namespace SaveGameModLoader
 				public static LocString NAME = "Show mod authors names always";
 				public static LocString TOOLTIP = "When active, show mod author names in all ordering configurations.\nOtherwise, they are only listed when sorting by author.";
 			}
+			public class HIDEINCOMPATIBLESAVES
+			{
+				public static LocString NAME = "Hide Incompatible Saves";
+				public static LocString TOOLTIP = "Hide savegames that are not compatible with the current game version \n(spaced out saves in base game and vice versa)";
+			}
 		}
 		public class UI
 		{
